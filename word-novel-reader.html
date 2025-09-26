@@ -13,6 +13,7 @@
             padding: 0;
             background-color: #f3f2f1;
             overflow: hidden;
+            user-select: none; /* 防止意外选择界面元素 */
         }
 
         .title-bar {
@@ -23,6 +24,11 @@
             align-items: center;
             gap: 10px;
             font-size: 13px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
         }
 
         .title-bar .app-icon {
@@ -55,7 +61,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.1s ease;
+            transition: background-color 0.15s ease;
             position: relative;
         }
 
@@ -65,33 +71,14 @@
 
         .title-controls button:active {
             background-color: rgba(255, 255, 255, 0.2);
-            transform: scale(0.95);
-        }
-
-        .title-controls .minimize-btn:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .title-controls .minimize-btn:active {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .title-controls .maximize-btn:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .title-controls .maximize-btn:active {
-            background-color: rgba(255, 255, 255, 0.2);
         }
 
         .title-controls .close-btn:hover {
             background-color: #e81123;
-            color: white;
         }
 
         .title-controls .close-btn:active {
             background-color: #c50e1f;
-            transform: scale(0.95);
         }
 
         /* Windows 风格图标使用CSS绘制 */
@@ -130,6 +117,11 @@
             padding: 0;
             display: flex;
             font-size: 13px;
+            position: fixed;
+            top: 37px; /* title-bar height */
+            left: 0;
+            right: 0;
+            z-index: 999;
         }
 
         .menu-item {
@@ -139,6 +131,7 @@
             cursor: pointer;
             color: #323130;
             border-bottom: 2px solid transparent;
+            transition: background-color 0.2s ease;
         }
 
         .menu-item:hover {
@@ -157,6 +150,11 @@
             display: flex;
             align-items: center;
             gap: 3px;
+            position: fixed;
+            top: 78px; /* title-bar + menu-bar height */
+            left: 0;
+            right: 0;
+            z-index: 998;
         }
 
         .quick-btn {
@@ -166,6 +164,7 @@
             cursor: pointer;
             border-radius: 2px;
             color: #605e5c;
+            transition: background-color 0.2s ease;
         }
 
         .quick-btn:hover {
@@ -178,8 +177,10 @@
 
         .main-container {
             display: flex;
-            height: calc(100vh - 120px);
+            height: calc(100vh - 142px); /* 120px顶部 + 22px底部 */
             background-color: #f3f2f1;
+            margin-top: 120px; /* 为固定的顶部导航留出空间 */
+            margin-bottom: 22px; /* 为固定的底部状态栏留出空间 */
         }
 
         .document-area {
@@ -211,6 +212,21 @@
             background: transparent;
             resize: none;
             width: 100%;
+            user-select: text; /* 允许选择文档内容 */
+        }
+
+        /* 保持文档内容的隐蔽性，不添加明显的视觉反馈 */
+
+        /* 光标闪烁效果 */
+        .document-content.typing::after {
+            content: '|';
+            animation: cursor-blink 1s infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes cursor-blink {
+            0%, 50% { opacity: 0.7; }
+            51%, 100% { opacity: 0; }
         }
 
         .status-bar {
@@ -223,6 +239,11 @@
             align-items: center;
             color: #605e5c;
             height: 22px;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 997;
         }
 
         /* 隐藏控制触发区域 */
@@ -245,14 +266,15 @@
             height: 3px;
             background: #d1d1d1;
             border-radius: 50%;
-            opacity: 0.5;
-            transition: all 0.2s ease;
+            opacity: 0.3;
+            transition: all 0.3s ease;
         }
 
         .control-trigger:hover::after {
-            opacity: 1;
+            opacity: 0.8;
             background: #0078d4;
-            transform: scale(1.5);
+            transform: scale(1.8);
+            box-shadow: 0 0 4px rgba(0, 120, 212, 0.3);
         }
 
         .hidden-controls {
@@ -267,16 +289,19 @@
             z-index: 1000;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.2s ease-in-out;
+            transform: translateY(-8px);
+            transition: all 0.25s ease-out;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             border: 1px solid #d1d1d1;
             min-width: 120px;
+            backdrop-filter: blur(10px);
         }
 
         .control-trigger:hover + .hidden-controls,
         .hidden-controls:hover {
             opacity: 1;
             visibility: visible;
+            transform: translateY(0);
         }
 
         .control-group {
@@ -301,8 +326,21 @@
             border-radius: 3px;
             cursor: pointer;
             font-size: 10px;
-            transition: all 0.1s ease;
+            transition: all 0.2s ease;
             font-family: 'Segoe UI', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hidden-controls button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s ease;
         }
 
         .hidden-controls button:hover {
@@ -310,8 +348,13 @@
             border-color: #c8c6c4;
         }
 
+        .hidden-controls button:hover::before {
+            left: 100%;
+        }
+
         .hidden-controls button:active {
             background: #d2d0ce;
+            transform: scale(0.98);
         }
 
         .hidden-controls button.primary {
@@ -322,12 +365,34 @@
 
         .hidden-controls button.primary:hover {
             background: #106ebe;
+            box-shadow: 0 2px 4px rgba(0, 120, 212, 0.3);
         }
 
         .status-indicator {
             font-size: 9px;
             color: #0078d4;
             font-weight: 500;
+            padding: 2px 6px;
+            border-radius: 10px;
+            background: rgba(0, 120, 212, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .status-indicator.active {
+            color: #107c10;
+            background: rgba(16, 124, 16, 0.1);
+            animation: pulse-subtle 2s infinite;
+        }
+
+        .status-indicator.completed {
+            color: #8764b8;
+            background: rgba(135, 100, 184, 0.1);
+        }
+
+        @keyframes pulse-subtle {
+            0% { background: rgba(16, 124, 16, 0.1); }
+            50% { background: rgba(16, 124, 16, 0.2); }
+            100% { background: rgba(16, 124, 16, 0.1); }
         }
 
         .hidden-input {
@@ -339,6 +404,56 @@
         .page-break {
             page-break-after: always;
             margin-top: 1in;
+        }
+
+        /* 页面加载动画 */
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 字数更新动画 */
+        .word-count-updated {
+            animation: wordCountPulse 0.3s ease-out;
+        }
+
+        @keyframes wordCountPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); color: #107c10; }
+            100% { transform: scale(1); }
+        }
+
+        /* 隐藏滚动条但保持功能 */
+        .document-area::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .document-area::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .document-area::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+        }
+
+        .document-area::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        /* 进度条 */
+        .progress-indicator {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 2px;
+            background: rgba(0, 120, 212, 0.3);
+            transition: width 0.3s ease;
+            border-radius: 1px;
         }
     </style>
 </head>
@@ -397,13 +512,14 @@
     <div class="main-container">
         <!-- 文档区域 -->
         <div class="document-area">
-            <div class="document-page">
+            <div class="document-page fade-in">
                 <div 
                     class="document-content" 
                     contenteditable="true" 
                     id="documentContent"
                     placeholder="在此处键入..."
                 ></div>
+                <div class="progress-indicator" id="progressIndicator" style="width: 0%"></div>
             </div>
         </div>
     </div>
@@ -453,6 +569,7 @@
         // 获取DOM元素
         const documentContent = document.getElementById('documentContent');
         const progressText = document.getElementById('progressText');
+        const progressIndicator = document.getElementById('progressIndicator');
         const statusText = document.getElementById('statusText');
         const wordCount = document.getElementById('wordCount');
         const modeBtn = document.getElementById('modeBtn');
@@ -469,6 +586,7 @@
                 
                 updateProgress();
                 statusText.textContent = '已加载';
+                statusText.className = 'status-indicator';
                 
                 // 清理内容，移除多余的空白字符
                 novelContent = novelContent.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
@@ -490,6 +608,7 @@
             if (isNovelMode) {
                 modeBtn.textContent = '停止';
                 statusText.textContent = '活跃';
+                statusText.className = 'status-indicator active';
                 documentContent.focus();
                 typingStats.startTime = Date.now();
                 typingStats.charactersTyped = 0;
@@ -505,6 +624,7 @@
             } else {
                 modeBtn.textContent = '开始';
                 statusText.textContent = '已加载';
+                statusText.className = 'status-indicator';
                 
                 // 停止光标监控
                 stopCursorMonitoring();
@@ -521,6 +641,7 @@
             updateProgress();
             updateWordCount();
             statusText.textContent = novelContent ? '已重置' : '等待导入';
+            statusText.className = 'status-indicator';
             
             // 重置后将光标设置到开始位置
             documentContent.focus();
@@ -530,12 +651,31 @@
         // 更新进度显示
         function updateProgress() {
             progressText.textContent = `${currentPosition}/${novelContent.length}`;
+            
+            // 更新进度条
+            if (novelContent.length > 0) {
+                const percentage = (currentPosition / novelContent.length) * 100;
+                progressIndicator.style.width = `${percentage}%`;
+            } else {
+                progressIndicator.style.width = '0%';
+            }
         }
 
         // 更新字数统计
         function updateWordCount() {
             const text = documentContent.textContent || '';
-            wordCount.textContent = text.length;
+            const newCount = text.length;
+            const oldCount = parseInt(wordCount.textContent) || 0;
+            
+            wordCount.textContent = newCount;
+            
+            // 添加更新动画
+            if (newCount !== oldCount && newCount > 0) {
+                wordCount.classList.add('word-count-updated');
+                setTimeout(() => {
+                    wordCount.classList.remove('word-count-updated');
+                }, 300);
+            }
         }
 
         // 强化的光标位置控制系统
@@ -699,6 +839,7 @@
             // 检查是否读完
             if (currentPosition >= novelContent.length) {
                 statusText.textContent = '完成';
+                statusText.className = 'status-indicator completed';
             }
         });
 
@@ -775,6 +916,7 @@
                     // 检查是否读完
                     if (currentPosition >= novelContent.length) {
                         statusText.textContent = '完成';
+                        statusText.className = 'status-indicator completed';
                     }
                 }
                 
