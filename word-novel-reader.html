@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word - 文档1</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f3f2f1;
+            overflow: hidden;
+        }
+
+        .title-bar {
+            background-color: #2b579a;
+            color: white;
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+        }
+
+        .title-bar .app-icon {
+            width: 16px;
+            height: 16px;
+            background-color: white;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2b579a;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .title-controls {
+            margin-left: auto;
+            display: flex;
+        }
+
+        .title-controls button {
+            background: none;
+            border: none;
+            color: white;
+            width: 46px;
+            height: 32px;
+            cursor: pointer;
+            font-size: 10px;
+            font-family: 'Segoe UI Symbol', 'Segoe UI', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.1s ease;
+            position: relative;
+        }
+
+        .title-controls button:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .title-controls button:active {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: scale(0.95);
+        }
+
+        .title-controls .minimize-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .title-controls .minimize-btn:active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .title-controls .maximize-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .title-controls .maximize-btn:active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .title-controls .close-btn:hover {
+            background-color: #e81123;
+            color: white;
+        }
+
+        .title-controls .close-btn:active {
+            background-color: #c50e1f;
+            transform: scale(0.95);
+        }
+
+        /* Windows 风格图标使用CSS绘制 */
+        .minimize-btn::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 1px;
+            background-color: currentColor;
+            bottom: 50%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .maximize-btn::after {
+            content: '';
+            position: absolute;
+            width: 9px;
+            height: 9px;
+            border: 1px solid currentColor;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .close-btn::after {
+            content: '×';
+            font-size: 20px;
+            font-weight: normal;
+            line-height: 1;
+        }
+
+        .menu-bar {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #d1d1d1;
+            padding: 0;
+            display: flex;
+            font-size: 13px;
+        }
+
+        .menu-item {
+            padding: 8px 12px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #323130;
+            border-bottom: 2px solid transparent;
+        }
+
+        .menu-item:hover {
+            background-color: #e5e5e5;
+        }
+
+        .menu-item.active {
+            border-bottom-color: #0078d4;
+            background-color: #ffffff;
+        }
+
+        .quick-access {
+            background-color: #f8f9fa;
+            padding: 6px 12px;
+            border-bottom: 1px solid #d1d1d1;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .quick-btn {
+            background: none;
+            border: none;
+            padding: 4px;
+            cursor: pointer;
+            border-radius: 2px;
+            color: #605e5c;
+        }
+
+        .quick-btn:hover {
+            background-color: #e5e5e5;
+        }
+
+        .quick-btn i {
+            font-size: 12px;
+        }
+
+        .main-container {
+            display: flex;
+            height: calc(100vh - 120px);
+            background-color: #f3f2f1;
+        }
+
+        .document-area {
+            flex: 1;
+            background-color: #e5e5e5;
+            padding: 40px 60px;
+            overflow-y: auto;
+            display: flex;
+            justify-content: center;
+        }
+
+        .document-page {
+            width: 8.5in;
+            min-height: 11in;
+            background-color: #ffffff;
+            padding: 1in;
+            box-shadow: 0 0 10px rgba(0,0,0,0.15);
+            position: relative;
+        }
+
+        .document-content {
+            min-height: 100%;
+            border: none;
+            outline: none;
+            font-family: 'Calibri', sans-serif;
+            font-size: 11pt;
+            line-height: 1.15;
+            color: #000000;
+            background: transparent;
+            resize: none;
+            width: 100%;
+        }
+
+        .status-bar {
+            background-color: #f3f2f1;
+            border-top: 1px solid #d1d1d1;
+            padding: 4px 16px;
+            font-size: 11px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #605e5c;
+            height: 22px;
+        }
+
+        /* 隐藏控制触发区域 */
+        .control-trigger {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 30px;
+            height: 30px;
+            z-index: 999;
+            cursor: pointer;
+        }
+
+        .control-trigger::after {
+            content: '';
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 3px;
+            height: 3px;
+            background: #d1d1d1;
+            border-radius: 50%;
+            opacity: 0.5;
+            transition: all 0.2s ease;
+        }
+
+        .control-trigger:hover::after {
+            opacity: 1;
+            background: #0078d4;
+            transform: scale(1.5);
+        }
+
+        .hidden-controls {
+            position: fixed;
+            top: 8px;
+            right: 8px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #323130;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border: 1px solid #d1d1d1;
+            min-width: 120px;
+        }
+
+        .control-trigger:hover + .hidden-controls,
+        .hidden-controls:hover {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .control-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 10px;
+            color: #605e5c;
+        }
+
+        .hidden-controls button {
+            background: #f3f2f1;
+            color: #323130;
+            border: 1px solid #d1d1d1;
+            padding: 4px 12px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 10px;
+            transition: all 0.1s ease;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .hidden-controls button:hover {
+            background: #e5e5e5;
+            border-color: #c8c6c4;
+        }
+
+        .hidden-controls button:active {
+            background: #d2d0ce;
+        }
+
+        .hidden-controls button.primary {
+            background: #0078d4;
+            color: white;
+            border-color: #106ebe;
+        }
+
+        .hidden-controls button.primary:hover {
+            background: #106ebe;
+        }
+
+        .status-indicator {
+            font-size: 9px;
+            color: #0078d4;
+            font-weight: 500;
+        }
+
+        .hidden-input {
+            position: absolute;
+            left: -9999px;
+            opacity: 0;
+        }
+
+        .page-break {
+            page-break-after: always;
+            margin-top: 1in;
+        }
+    </style>
+</head>
+<body>
+    <!-- 标题栏 -->
+    <div class="title-bar">
+        <div class="app-icon">W</div>
+        <span>文档1 - Word</span>
+        <div class="title-controls">
+            <button class="minimize-btn" title="最小化"></button>
+            <button class="maximize-btn" title="最大化"></button>
+            <button class="close-btn" title="关闭"></button>
+        </div>
+    </div>
+
+    <!-- 菜单栏 -->
+    <div class="menu-bar">
+        <button class="menu-item">文件</button>
+        <button class="menu-item active">开始</button>
+        <button class="menu-item">插入</button>
+        <button class="menu-item">设计</button>
+        <button class="menu-item">布局</button>
+        <button class="menu-item">引用</button>
+        <button class="menu-item">邮件</button>
+        <button class="menu-item">审阅</button>
+        <button class="menu-item">视图</button>
+    </div>
+
+    <!-- 快速访问工具栏 -->
+    <div class="quick-access">
+        <button class="quick-btn" onclick="document.getElementById('novelFile').click()" title="打开">
+            <i class="fas fa-folder-open"></i>
+        </button>
+        <button class="quick-btn" title="保存">
+            <i class="fas fa-save"></i>
+        </button>
+        <button class="quick-btn" title="撤销">
+            <i class="fas fa-undo"></i>
+        </button>
+        <button class="quick-btn" title="重做">
+            <i class="fas fa-redo"></i>
+        </button>
+        <span style="margin: 0 10px; color: #d1d1d1;">|</span>
+        <button class="quick-btn" title="粗体">
+            <i class="fas fa-bold"></i>
+        </button>
+        <button class="quick-btn" title="斜体">
+            <i class="fas fa-italic"></i>
+        </button>
+        <button class="quick-btn" title="下划线">
+            <i class="fas fa-underline"></i>
+        </button>
+    </div>
+
+    <!-- 主要内容区域 -->
+    <div class="main-container">
+        <!-- 文档区域 -->
+        <div class="document-area">
+            <div class="document-page">
+                <div 
+                    class="document-content" 
+                    contenteditable="true" 
+                    id="documentContent"
+                    placeholder="在此处键入..."
+                ></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 隐藏控制面板触发区域 -->
+    <div class="control-trigger"></div>
+    
+    <!-- 隐藏控制面板 -->
+    <div class="hidden-controls">
+        <input type="file" id="novelFile" style="display: none;" accept=".txt" onchange="loadNovel(this)">
+        
+        <div class="control-group">
+            <div class="control-row">
+                <span>状态:</span>
+                <span class="status-indicator" id="statusText">等待导入</span>
+            </div>
+            
+            <div class="control-row">
+                <span>进度:</span>
+                <span id="progressText">0/0</span>
+            </div>
+            
+            <div style="margin-top: 8px; display: flex; gap: 4px;">
+                <button onclick="document.getElementById('novelFile').click()">导入</button>
+                <button id="modeBtn" class="primary" onclick="toggleMode()">开始</button>
+                <button onclick="resetProgress()">重置</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 状态栏 -->
+    <div class="status-bar">
+        <div>第 1 页，共 1 页 | 字数: <span id="wordCount">0</span></div>
+        <div>中文（简体，中国） | 100%</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let novelContent = '';
+        let currentPosition = 0;
+        let isNovelMode = false;
+        let typingStats = {
+            startTime: null,
+            charactersTyped: 0
+        };
+
+        // 获取DOM元素
+        const documentContent = document.getElementById('documentContent');
+        const progressText = document.getElementById('progressText');
+        const statusText = document.getElementById('statusText');
+        const wordCount = document.getElementById('wordCount');
+        const modeBtn = document.getElementById('modeBtn');
+
+        // 加载小说文件
+        function loadNovel(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                novelContent = e.target.result;
+                currentPosition = 0;
+                
+                updateProgress();
+                statusText.textContent = '已加载';
+                
+                // 清理内容，移除多余的空白字符
+                novelContent = novelContent.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+                novelContent = novelContent.replace(/\n{3,}/g, '\n\n'); // 最多保留两个连续换行
+                
+                console.log(`小说加载完成，共 ${novelContent.length} 个字符`);
+            };
+            reader.readAsText(file, 'UTF-8');
+        }
+
+        // 切换伪装模式
+        function toggleMode() {
+            if (!novelContent) {
+                return;
+            }
+
+            isNovelMode = !isNovelMode;
+            
+            if (isNovelMode) {
+                modeBtn.textContent = '停止';
+                statusText.textContent = '活跃';
+                documentContent.focus();
+                typingStats.startTime = Date.now();
+                typingStats.charactersTyped = 0;
+            } else {
+                modeBtn.textContent = '开始';
+                statusText.textContent = '已加载';
+            }
+        }
+
+        // 重置阅读进度
+        function resetProgress() {
+            currentPosition = 0;
+            documentContent.innerHTML = '';
+            updateProgress();
+            updateWordCount();
+            statusText.textContent = novelContent ? '已重置' : '等待导入';
+        }
+
+        // 更新进度显示
+        function updateProgress() {
+            progressText.textContent = `${currentPosition}/${novelContent.length}`;
+        }
+
+        // 更新字数统计
+        function updateWordCount() {
+            const text = documentContent.textContent || '';
+            wordCount.textContent = text.length;
+        }
+
+        // 更新打字速度（简化版）
+        function updateTypingSpeed() {
+            // 简化处理，不显示具体速度
+        }
+
+        // 处理键盘输入
+        documentContent.addEventListener('keydown', function(e) {
+            if (!isNovelMode || !novelContent) {
+                return; // 正常模式或没有小说内容时正常输入
+            }
+
+            e.preventDefault(); // 阻止默认输入行为
+            
+            if (e.key === 'Backspace') {
+                // 处理退格
+                const content = documentContent.textContent;
+                if (content.length > 0) {
+                    documentContent.textContent = content.slice(0, -1);
+                    currentPosition = Math.max(0, currentPosition - 1);
+                }
+            } else if (e.key === 'Enter') {
+                // 处理回车
+                if (currentPosition < novelContent.length) {
+                    documentContent.textContent += '\n';
+                    currentPosition++;
+                }
+            } else if (e.key.length === 1 && !e.ctrlKey && !e.altKey) {
+                // 处理正常字符输入
+                if (currentPosition < novelContent.length) {
+                    const nextChar = novelContent[currentPosition];
+                    documentContent.textContent += nextChar;
+                    currentPosition++;
+                    typingStats.charactersTyped++;
+                    
+                    // 自动滚动到底部
+                    documentContent.scrollTop = documentContent.scrollHeight;
+                }
+            }
+
+            updateProgress();
+            updateWordCount();
+            updateTypingSpeed();
+
+            // 检查是否读完
+            if (currentPosition >= novelContent.length) {
+                statusText.textContent = '完成';
+            }
+        });
+
+        // 防止粘贴时破坏功能
+        documentContent.addEventListener('paste', function(e) {
+            if (isNovelMode) {
+                e.preventDefault();
+            }
+        });
+
+        // 防止拖拽时破坏功能
+        documentContent.addEventListener('drop', function(e) {
+            if (isNovelMode) {
+                e.preventDefault();
+            }
+        });
+
+        // 定期更新打字速度
+        setInterval(updateTypingSpeed, 1000);
+
+        // 页面加载完成后的初始化
+        window.addEventListener('load', function() {
+            documentContent.focus();
+            console.log('Word小说阅读器已加载完成');
+        });
+
+        // 添加一些Word的快捷键模拟
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey) {
+                switch(e.key) {
+                    case 's':
+                        e.preventDefault();
+                        // 模拟保存
+                        console.log('保存模拟');
+                        break;
+                    case 'z':
+                        if (isNovelMode) {
+                            e.preventDefault(); // 在小说模式下禁用撤销
+                        }
+                        break;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
