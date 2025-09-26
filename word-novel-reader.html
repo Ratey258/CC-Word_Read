@@ -175,6 +175,17 @@
             font-size: 12px;
         }
 
+        .quick-btn.primary {
+            background: #0078d4;
+            color: white;
+            border: 1px solid #106ebe;
+        }
+
+        .quick-btn.primary:hover {
+            background: #106ebe;
+            color: white;
+        }
+
         .main-container {
             display: flex;
             height: calc(100vh - 142px); /* 120px顶部 + 22px底部 */
@@ -246,127 +257,6 @@
             z-index: 997;
         }
 
-        /* 隐藏控制触发区域 */
-        .control-trigger {
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: 30px;
-            height: 30px;
-            z-index: 999;
-            cursor: pointer;
-        }
-
-        .control-trigger::after {
-            content: '';
-            position: absolute;
-            top: 6px;
-            right: 6px;
-            width: 3px;
-            height: 3px;
-            background: #d1d1d1;
-            border-radius: 50%;
-            opacity: 0.3;
-            transition: all 0.3s ease;
-        }
-
-        .control-trigger:hover::after {
-            opacity: 0.8;
-            background: #0078d4;
-            transform: scale(1.8);
-            box-shadow: 0 0 4px rgba(0, 120, 212, 0.3);
-        }
-
-        .hidden-controls {
-            position: fixed;
-            top: 8px;
-            right: 8px;
-            background: rgba(255, 255, 255, 0.95);
-            color: #323130;
-            padding: 12px;
-            border-radius: 6px;
-            font-size: 11px;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-8px);
-            transition: all 0.25s ease-out;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            border: 1px solid #d1d1d1;
-            min-width: 120px;
-            backdrop-filter: blur(10px);
-        }
-
-        .control-trigger:hover + .hidden-controls,
-        .hidden-controls:hover {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .control-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 10px;
-            color: #605e5c;
-        }
-
-        .hidden-controls button {
-            background: #f3f2f1;
-            color: #323130;
-            border: 1px solid #d1d1d1;
-            padding: 4px 12px;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 10px;
-            transition: all 0.2s ease;
-            font-family: 'Segoe UI', sans-serif;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hidden-controls button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .hidden-controls button:hover {
-            background: #e5e5e5;
-            border-color: #c8c6c4;
-        }
-
-        .hidden-controls button:hover::before {
-            left: 100%;
-        }
-
-        .hidden-controls button:active {
-            background: #d2d0ce;
-            transform: scale(0.98);
-        }
-
-        .hidden-controls button.primary {
-            background: #0078d4;
-            color: white;
-            border-color: #106ebe;
-        }
-
-        .hidden-controls button.primary:hover {
-            background: #106ebe;
-            box-shadow: 0 2px 4px rgba(0, 120, 212, 0.3);
-        }
 
         .status-indicator {
             font-size: 9px;
@@ -401,6 +291,146 @@
             opacity: 0;
         }
 
+        /* 设置面板样式 */
+        .settings-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .settings-panel {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            width: 480px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .settings-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e1e1e1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .settings-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #323130;
+            margin: 0;
+        }
+
+        .settings-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #605e5c;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: background-color 0.2s ease;
+        }
+
+        .settings-close:hover {
+            background-color: #f3f2f1;
+        }
+
+        .settings-content {
+            padding: 24px;
+        }
+
+        .setting-group {
+            margin-bottom: 24px;
+        }
+
+        .setting-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #323130;
+            margin-bottom: 8px;
+        }
+
+        .setting-description {
+            font-size: 13px;
+            color: #605e5c;
+            margin-bottom: 12px;
+        }
+
+        .setting-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d1d1;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.2s ease;
+        }
+
+        .setting-input:focus {
+            outline: none;
+            border-color: #0078d4;
+            box-shadow: 0 0 0 1px #0078d4;
+        }
+
+        .setting-range {
+            width: 100%;
+            margin: 8px 0;
+        }
+
+        .range-value {
+            display: inline-block;
+            min-width: 40px;
+            text-align: center;
+            background: #f3f2f1;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #323130;
+        }
+
+        .settings-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #e1e1e1;
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .settings-btn {
+            padding: 8px 16px;
+            border: 1px solid #d1d1d1;
+            border-radius: 4px;
+            background: white;
+            color: #323130;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .settings-btn:hover {
+            background-color: #f3f2f1;
+        }
+
+        .settings-btn.primary {
+            background: #0078d4;
+            border-color: #0078d4;
+            color: white;
+        }
+
+        .settings-btn.primary:hover {
+            background: #106ebe;
+            border-color: #106ebe;
+        }
+
         .page-break {
             page-break-after: always;
             margin-top: 1in;
@@ -425,6 +455,36 @@
             0% { transform: scale(1); }
             50% { transform: scale(1.05); color: #107c10; }
             100% { transform: scale(1); }
+        }
+
+        /* 通知样式 */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #107c10;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 10000;
+            font-size: 14px;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease-out;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: #107c10;
+        }
+
+        .notification.error {
+            background: #d13438;
         }
 
         /* 隐藏滚动条但保持功能 */
@@ -480,6 +540,8 @@
         <button class="menu-item">邮件</button>
         <button class="menu-item">审阅</button>
         <button class="menu-item">视图</button>
+        <button class="menu-item" onclick="document.getElementById('novelFile').click()">导入</button>
+        <button class="menu-item" onclick="toggleSettings()">设置</button>
     </div>
 
     <!-- 快速访问工具栏 -->
@@ -506,6 +568,11 @@
         <button class="quick-btn" title="下划线">
             <i class="fas fa-underline"></i>
         </button>
+        
+        <!-- 右侧控制区域 -->
+        <div style="margin-left: auto; display: flex; align-items: center; gap: 8px;">
+            <!-- 控制按钮已移除，界面更加简洁 -->
+        </div>
     </div>
 
     <!-- 主要内容区域 -->
@@ -524,28 +591,56 @@
         </div>
     </div>
 
-    <!-- 隐藏控制面板触发区域 -->
-    <div class="control-trigger"></div>
-    
-    <!-- 隐藏控制面板 -->
-    <div class="hidden-controls">
-        <input type="file" id="novelFile" style="display: none;" accept=".txt" onchange="loadNovel(this)">
-        
-        <div class="control-group">
-            <div class="control-row">
-                <span>状态:</span>
-                <span class="status-indicator" id="statusText">等待导入</span>
+    <!-- 隐藏的文件输入框 -->
+    <input type="file" id="novelFile" style="display: none;" accept=".txt" onchange="loadNovel(this)">
+
+    <!-- 设置面板 -->
+    <div class="settings-overlay" id="settingsOverlay">
+        <div class="settings-panel">
+            <div class="settings-header">
+                <h2 class="settings-title">小说阅读设置</h2>
+                <button class="settings-close" onclick="toggleSettings()">&times;</button>
             </div>
-            
-            <div class="control-row">
-                <span>进度:</span>
-                <span id="progressText">0/0</span>
+            <div class="settings-content">
+                <div class="setting-group">
+                    <label class="setting-label">每次输出字符数量</label>
+                    <div class="setting-description">控制每次显示的小说文字数量，影响阅读节奏</div>
+                    <input type="range" class="setting-range" id="charsPerOutput" min="1" max="50" value="5" 
+                           oninput="updateRangeValue('charsPerOutput', 'charsValue')">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+                        <span>1字符</span>
+                        <span class="range-value" id="charsValue">5</span>
+                        <span>50字符</span>
+                    </div>
+                </div>
+                
+                <div class="setting-group">
+                    <label class="setting-label">输出间隔时间 (毫秒)</label>
+                    <div class="setting-description">控制每次输出之间的间隔时间，数值越大速度越慢</div>
+                    <input type="range" class="setting-range" id="outputInterval" min="50" max="1000" value="200" 
+                           oninput="updateRangeValue('outputInterval', 'intervalValue')">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+                        <span>50ms</span>
+                        <span class="range-value" id="intervalValue">200</span>
+                        <span>1000ms</span>
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <label class="setting-label">预设方案</label>
+                    <div class="setting-description">选择预设的输出速度方案</div>
+                    <select class="setting-input" id="presetSelect" onchange="applyPreset()">
+                        <option value="custom">自定义</option>
+                        <option value="slow">慢速阅读 (1字符/500ms)</option>
+                        <option value="normal">正常阅读 (5字符/200ms)</option>
+                        <option value="fast">快速阅读 (10字符/100ms)</option>
+                        <option value="ultrafast">极速阅读 (20字符/50ms)</option>
+                    </select>
+                </div>
             </div>
-            
-            <div style="margin-top: 8px; display: flex; gap: 4px;">
-                <button onclick="document.getElementById('novelFile').click()">导入</button>
-                <button id="modeBtn" class="primary" onclick="toggleMode()">开始</button>
-                <button onclick="resetProgress()">重置</button>
+            <div class="settings-footer">
+                <button class="settings-btn" onclick="resetSettings()">重置默认</button>
+                <button class="settings-btn primary" onclick="saveSettings()">保存设置</button>
             </div>
         </div>
     </div>
@@ -565,14 +660,40 @@
             startTime: null,
             charactersTyped: 0
         };
+        
+        // 设置相关变量
+        let settings = {
+            charsPerOutput: 5,
+            outputInterval: 200
+        };
+        let settingsVisible = false;
 
         // 获取DOM元素
         const documentContent = document.getElementById('documentContent');
-        const progressText = document.getElementById('progressText');
-        const progressIndicator = document.getElementById('progressIndicator');
-        const statusText = document.getElementById('statusText');
         const wordCount = document.getElementById('wordCount');
-        const modeBtn = document.getElementById('modeBtn');
+
+        // 显示通知
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            // 显示动画
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+
+            // 3秒后自动隐藏
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
 
         // 加载小说文件
         function loadNovel(input) {
@@ -584,13 +705,19 @@
                 novelContent = e.target.result;
                 currentPosition = 0;
                 
-                updateProgress();
-                statusText.textContent = '已加载';
-                statusText.className = 'status-indicator';
-                
                 // 清理内容，移除多余的空白字符
                 novelContent = novelContent.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
                 novelContent = novelContent.replace(/\n{3,}/g, '\n\n'); // 最多保留两个连续换行
+                
+                // 显示成功通知
+                showNotification(`小说"${file.name}"导入成功！`);
+                
+                // 自动开启小说模式
+                setTimeout(() => {
+                    if (!isNovelMode) {
+                        toggleMode();
+                    }
+                }, 500);
                 
                 console.log(`小说加载完成，共 ${novelContent.length} 个字符`);
             };
@@ -606,9 +733,6 @@
             isNovelMode = !isNovelMode;
             
             if (isNovelMode) {
-                modeBtn.textContent = '停止';
-                statusText.textContent = '活跃';
-                statusText.className = 'status-indicator active';
                 documentContent.focus();
                 typingStats.startTime = Date.now();
                 typingStats.charactersTyped = 0;
@@ -622,10 +746,6 @@
                 
                 console.log('小说模式已启动，光标控制已激活');
             } else {
-                modeBtn.textContent = '开始';
-                statusText.textContent = '已加载';
-                statusText.className = 'status-indicator';
-                
                 // 停止光标监控
                 stopCursorMonitoring();
                 cursorControlEnabled = false;
@@ -640,8 +760,9 @@
             documentContent.innerHTML = '';
             updateProgress();
             updateWordCount();
-            statusText.textContent = novelContent ? '已重置' : '等待导入';
-            statusText.className = 'status-indicator';
+            
+            // 显示重置通知
+            showNotification('阅读进度已重置');
             
             // 重置后将光标设置到开始位置
             documentContent.focus();
@@ -650,15 +771,8 @@
 
         // 更新进度显示
         function updateProgress() {
-            progressText.textContent = `${currentPosition}/${novelContent.length}`;
-            
-            // 更新进度条
-            if (novelContent.length > 0) {
-                const percentage = (currentPosition / novelContent.length) * 100;
-                progressIndicator.style.width = `${percentage}%`;
-            } else {
-                progressIndicator.style.width = '0%';
-            }
+            // 进度更新逻辑已简化，只更新必要的内部状态
+            console.log(`阅读进度: ${currentPosition}/${novelContent.length}`);
         }
 
         // 更新字数统计
@@ -794,20 +908,11 @@
                     setCursorToEnd();
                 }
             } else if (e.key === 'Enter') {
-                // 处理回车 - 显示小说的下一个字符
-                if (currentPosition < novelContent.length) {
-                    const nextChar = novelContent[currentPosition];
-                    documentContent.textContent += nextChar;
-                    currentPosition++;
-                    typingStats.charactersTyped++;
-                    savedContent = documentContent.textContent; // 更新保存的内容
-                    
-                    // 设置光标到末尾
-                    setCursorToEnd();
-                    
-                    // 自动滚动到底部
-                    documentContent.scrollTop = documentContent.scrollHeight;
-                }
+                // 处理回车 - 显示小说的多个字符
+                outputMultipleChars();
+                
+                // 自动滚动到底部
+                documentContent.scrollTop = documentContent.scrollHeight;
             } else if (!e.ctrlKey && !e.altKey && !e.metaKey && 
                        e.key !== 'Tab' && e.key !== 'Escape' && e.key !== 'F1' && 
                        e.key !== 'F2' && e.key !== 'F3' && e.key !== 'F4' && 
@@ -816,20 +921,11 @@
                        e.key !== 'F11' && e.key !== 'F12' && e.key !== 'CapsLock' && 
                        e.key !== 'Shift' && e.key !== 'Control' && e.key !== 'Alt') {
                 // 处理所有其他按键输入（包括中文、英文、数字、符号等）
-                // 不管用户按什么键，都显示小说的下一个字符
-                if (currentPosition < novelContent.length) {
-                    const nextChar = novelContent[currentPosition];
-                    documentContent.textContent += nextChar;
-                    currentPosition++;
-                    typingStats.charactersTyped++;
-                    savedContent = documentContent.textContent; // 更新保存的内容
-                    
-                    // 设置光标到末尾
-                    setCursorToEnd();
-                    
-                    // 自动滚动到底部
-                    documentContent.scrollTop = documentContent.scrollHeight;
-                }
+                // 不管用户按什么键，都显示小说的多个字符
+                outputMultipleChars();
+                
+                // 自动滚动到底部
+                documentContent.scrollTop = documentContent.scrollHeight;
             }
 
             updateProgress();
@@ -893,32 +989,13 @@
                 // 停止监控
                 stopCursorMonitoring();
                 
-                // 恢复到输入前的内容，然后添加小说的下一个字符
+                // 恢复到输入前的内容，然后添加小说的多个字符
                 documentContent.textContent = savedContent;
                 
-                if (currentPosition < novelContent.length) {
-                    const nextChar = novelContent[currentPosition];
-                    documentContent.textContent += nextChar;
-                    currentPosition++;
-                    typingStats.charactersTyped++;
-                    savedContent = documentContent.textContent; // 更新保存的内容
-                    
-                    // 强制设置光标到末尾，使用更长延迟
-                    setCursorToEnd(true);
-                    
-                    // 自动滚动到底部
-                    documentContent.scrollTop = documentContent.scrollHeight;
-                    
-                    updateProgress();
-                    updateWordCount();
-                    updateTypingSpeed();
-                    
-                    // 检查是否读完
-                    if (currentPosition >= novelContent.length) {
-                        statusText.textContent = '完成';
-                        statusText.className = 'status-indicator completed';
-                    }
-                }
+                outputMultipleChars();
+                
+                // 自动滚动到底部
+                documentContent.scrollTop = documentContent.scrollHeight;
                 
                 console.log('中文输入结束，恢复状态');
             }
@@ -984,9 +1061,148 @@
         // 定期更新打字速度
         setInterval(updateTypingSpeed, 1000);
 
+        // 设置相关函数
+        function toggleSettings() {
+            const overlay = document.getElementById('settingsOverlay');
+            settingsVisible = !settingsVisible;
+            overlay.style.display = settingsVisible ? 'flex' : 'none';
+            
+            if (settingsVisible) {
+                loadSettings();
+            }
+        }
+        
+        // 点击遮罩层关闭设置
+        document.getElementById('settingsOverlay').addEventListener('click', function(e) {
+            if (e.target === this) {
+                toggleSettings();
+            }
+        });
+
+        function updateRangeValue(rangeId, valueId) {
+            const range = document.getElementById(rangeId);
+            const valueSpan = document.getElementById(valueId);
+            valueSpan.textContent = range.value;
+            
+            // 更新预设选择为"自定义"
+            document.getElementById('presetSelect').value = 'custom';
+        }
+
+        function applyPreset() {
+            const preset = document.getElementById('presetSelect').value;
+            const charsRange = document.getElementById('charsPerOutput');
+            const intervalRange = document.getElementById('outputInterval');
+            
+            switch(preset) {
+                case 'slow':
+                    charsRange.value = 1;
+                    intervalRange.value = 500;
+                    break;
+                case 'normal':
+                    charsRange.value = 5;
+                    intervalRange.value = 200;
+                    break;
+                case 'fast':
+                    charsRange.value = 10;
+                    intervalRange.value = 100;
+                    break;
+                case 'ultrafast':
+                    charsRange.value = 20;
+                    intervalRange.value = 50;
+                    break;
+            }
+            
+            if (preset !== 'custom') {
+                updateRangeValue('charsPerOutput', 'charsValue');
+                updateRangeValue('outputInterval', 'intervalValue');
+            }
+        }
+
+        function loadSettings() {
+            const charsRange = document.getElementById('charsPerOutput');
+            const intervalRange = document.getElementById('outputInterval');
+            
+            charsRange.value = settings.charsPerOutput;
+            intervalRange.value = settings.outputInterval;
+            
+            updateRangeValue('charsPerOutput', 'charsValue');
+            updateRangeValue('outputInterval', 'intervalValue');
+        }
+
+        function saveSettings() {
+            settings.charsPerOutput = parseInt(document.getElementById('charsPerOutput').value);
+            settings.outputInterval = parseInt(document.getElementById('outputInterval').value);
+            
+            console.log('保存设置:', settings);
+            
+            // 保存到localStorage
+            localStorage.setItem('novelReaderSettings', JSON.stringify(settings));
+            
+            showNotification('设置已保存！');
+            toggleSettings();
+        }
+
+        function resetSettings() {
+            settings.charsPerOutput = 5;
+            settings.outputInterval = 200;
+            
+            loadSettings();
+            document.getElementById('presetSelect').value = 'normal';
+            
+            showNotification('设置已重置为默认值！');
+        }
+
+        // 输出多个字符的函数
+        function outputMultipleChars() {
+            if (!isNovelMode || !novelContent || currentPosition >= novelContent.length) {
+                return;
+            }
+            
+            const charsToOutput = Math.min(settings.charsPerOutput, novelContent.length - currentPosition);
+            const newChars = novelContent.substr(currentPosition, charsToOutput);
+            
+            console.log(`输出字符: ${charsToOutput}个, 设置值: ${settings.charsPerOutput}, 内容: "${newChars}"`);
+            
+            documentContent.textContent += newChars;
+            currentPosition += charsToOutput;
+            typingStats.charactersTyped += charsToOutput;
+            savedContent = documentContent.textContent;
+            
+            // 设置光标到末尾
+            setCursorToEnd();
+            
+            // 更新统计
+            updateProgress();
+            updateWordCount();
+            updateTypingSpeed();
+            
+            // 检查是否读完
+            if (currentPosition >= novelContent.length) {
+                const statusText = document.querySelector('.status-indicator');
+                if (statusText) {
+                    statusText.textContent = '完成';
+                    statusText.className = 'status-indicator completed';
+                }
+            }
+        }
+
         // 页面加载完成后的初始化
         window.addEventListener('load', function() {
             documentContent.focus();
+            
+            // 从localStorage加载设置
+            const savedSettings = localStorage.getItem('novelReaderSettings');
+            if (savedSettings) {
+                try {
+                    settings = { ...settings, ...JSON.parse(savedSettings) };
+                    console.log('加载设置:', settings);
+                } catch (e) {
+                    console.warn('无法加载保存的设置，使用默认设置');
+                }
+            } else {
+                console.log('没有保存的设置，使用默认设置:', settings);
+            }
+            
             console.log('Word小说阅读器已加载完成');
         });
 
@@ -1002,6 +1218,12 @@
                     case 'z':
                         if (isNovelMode) {
                             e.preventDefault(); // 在小说模式下禁用撤销
+                        }
+                        break;
+                    case 'r':
+                        if (novelContent) {
+                            e.preventDefault();
+                            resetProgress(); // Ctrl+R 重置进度
                         }
                         break;
                 }
