@@ -494,9 +494,23 @@
                 typingStats.startTime = Date.now();
                 typingStats.charactersTyped = 0;
                 savedContent = documentContent.textContent; // 初始化保存的内容
+                
+                // 启用光标控制系统
+                cursorControlEnabled = true;
+                
+                // 确保光标在文本末尾
+                setCursorToEnd();
+                
+                console.log('小说模式已启动，光标控制已激活');
             } else {
                 modeBtn.textContent = '开始';
                 statusText.textContent = '已加载';
+                
+                // 停止光标监控
+                stopCursorMonitoring();
+                cursorControlEnabled = false;
+                
+                console.log('小说模式已停止，光标控制已停用');
             }
         }
 
@@ -507,6 +521,10 @@
             updateProgress();
             updateWordCount();
             statusText.textContent = novelContent ? '已重置' : '等待导入';
+            
+            // 重置后将光标设置到开始位置
+            documentContent.focus();
+            setCursorToEnd();
         }
 
         // 更新进度显示
@@ -518,6 +536,92 @@
         function updateWordCount() {
             const text = documentContent.textContent || '';
             wordCount.textContent = text.length;
+        }
+
+        // 强化的光标位置控制系统
+        let cursorControlEnabled = true;
+        let lastCursorPosition = 0;
+        
+        // 设置光标到文本末尾的强化函数
+        function setCursorToEnd(forceDelay = false) {
+            if (!cursorControlEnabled) return;
+            
+            const delay = forceDelay ? 100 : 10; // 中文输入法需要更长延迟
+            
+            setTimeout(() => {
+                try {
+                    const range = document.createRange();
+                    const selection = window.getSelection();
+                    
+                    // 确保元素有焦点
+                    if (document.activeElement !== documentContent) {
+                        documentContent.focus();
+                    }
+                    
+                    if (documentContent.childNodes.length > 0) {
+                        // 如果有子节点，设置到最后一个文本节点的末尾
+                        const lastNode = documentContent.childNodes[documentContent.childNodes.length - 1];
+                        if (lastNode.nodeType === Node.TEXT_NODE) {
+                            range.setStart(lastNode, lastNode.textContent.length);
+                            range.setEnd(lastNode, lastNode.textContent.length);
+                        } else {
+                            range.selectNodeContents(documentContent);
+                            range.collapse(false);
+                        }
+                    } else {
+                        // 如果没有子节点，设置到元素内容末尾
+                        range.selectNodeContents(documentContent);
+                        range.collapse(false);
+                    }
+                    
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                    
+                    // 记录当前位置
+                    lastCursorPosition = documentContent.textContent.length;
+                    
+                } catch (error) {
+                    console.warn('设置光标位置失败:', error);
+                    // 备用方法
+                    documentContent.focus();
+                }
+            }, delay);
+        }
+        
+        // 监控光标位置的函数
+        function monitorCursorPosition() {
+            if (!isNovelMode || !cursorControlEnabled) return;
+            
+            try {
+                const selection = window.getSelection();
+                if (selection.rangeCount > 0) {
+                    const range = selection.getRangeAt(0);
+                    const currentPos = range.startOffset;
+                    const textLength = documentContent.textContent.length;
+                    
+                    // 如果光标不在末尾，强制移动到末尾
+                    if (currentPos !== textLength || range.startContainer !== documentContent.lastChild) {
+                        setCursorToEnd(true);
+                    }
+                }
+            } catch (error) {
+                // 忽略错误，继续监控
+            }
+        }
+        
+        // 定期监控光标位置（特别是在输入法使用期间）
+        let cursorMonitorInterval = null;
+        
+        function startCursorMonitoring() {
+            if (cursorMonitorInterval) return;
+            cursorMonitorInterval = setInterval(monitorCursorPosition, 50);
+        }
+        
+        function stopCursorMonitoring() {
+            if (cursorMonitorInterval) {
+                clearInterval(cursorMonitorInterval);
+                cursorMonitorInterval = null;
+            }
         }
 
         // 更新打字速度（简化版）
@@ -545,6 +649,9 @@
                     documentContent.textContent = content.slice(0, -1);
                     currentPosition = Math.max(0, currentPosition - 1);
                     savedContent = documentContent.textContent; // 更新保存的内容
+                    
+                    // 设置光标到末尾
+                    setCursorToEnd();
                 }
             } else if (e.key === 'Enter') {
                 // 处理回车 - 显示小说的下一个字符
@@ -554,6 +661,9 @@
                     currentPosition++;
                     typingStats.charactersTyped++;
                     savedContent = documentContent.textContent; // 更新保存的内容
+                    
+                    // 设置光标到末尾
+                    setCursorToEnd();
                     
                     // 自动滚动到底部
                     documentContent.scrollTop = documentContent.scrollHeight;
@@ -574,6 +684,9 @@
                     typingStats.charactersTyped++;
                     savedContent = documentContent.textContent; // 更新保存的内容
                     
+                    // 设置光标到末尾
+                    setCursorToEnd();
+                    
                     // 自动滚动到底部
                     documentContent.scrollTop = documentContent.scrollHeight;
                 }
@@ -589,27 +702,55 @@
             }
         });
 
-        // 处理中文输入法
+        // 处理中文输入法 - 强化版本
         let isComposing = false;
         let savedContent = '';
+        let compositionStartPosition = 0;
         
         documentContent.addEventListener('compositionstart', function(e) {
             if (isNovelMode) {
                 isComposing = true;
-                // 保存当前内容，不阻止事件
+                cursorControlEnabled = false; // 暂时禁用光标控制
+                
+                // 保存当前内容和位置
                 savedContent = documentContent.textContent;
+                compositionStartPosition = savedContent.length;
+                
+                // 开始监控光标位置
+                startCursorMonitoring();
+                
+                console.log('中文输入开始，保存状态');
             }
         });
         
         documentContent.addEventListener('compositionupdate', function(e) {
             if (isNovelMode) {
-                // 允许输入法正常显示候选字符，但我们会在compositionend时清理
+                // 在输入过程中，允许输入法正常工作
+                // 但定期尝试将光标保持在正确位置
+                setTimeout(() => {
+                    try {
+                        const selection = window.getSelection();
+                        if (selection.rangeCount > 0) {
+                            const range = selection.getRangeAt(0);
+                            // 只有当光标明显偏离时才强制调整
+                            if (range.startOffset < compositionStartPosition - 5) {
+                                setCursorToEnd(true);
+                            }
+                        }
+                    } catch (error) {
+                        // 忽略错误
+                    }
+                }, 10);
             }
         });
         
         documentContent.addEventListener('compositionend', function(e) {
             if (isNovelMode) {
                 isComposing = false;
+                cursorControlEnabled = true; // 重新启用光标控制
+                
+                // 停止监控
+                stopCursorMonitoring();
                 
                 // 恢复到输入前的内容，然后添加小说的下一个字符
                 documentContent.textContent = savedContent;
@@ -620,6 +761,9 @@
                     currentPosition++;
                     typingStats.charactersTyped++;
                     savedContent = documentContent.textContent; // 更新保存的内容
+                    
+                    // 强制设置光标到末尾，使用更长延迟
+                    setCursorToEnd(true);
                     
                     // 自动滚动到底部
                     documentContent.scrollTop = documentContent.scrollHeight;
@@ -633,6 +777,8 @@
                         statusText.textContent = '完成';
                     }
                 }
+                
+                console.log('中文输入结束，恢复状态');
             }
         });
 
@@ -645,12 +791,7 @@
                     documentContent.textContent = savedContent;
                     
                     // 设置光标到末尾
-                    const range = document.createRange();
-                    const selection = window.getSelection();
-                    range.selectNodeContents(documentContent);
-                    range.collapse(false);
-                    selection.removeAllRanges();
-                    selection.addRange(range);
+                    setCursorToEnd();
                 }
             }
         });
@@ -659,6 +800,35 @@
         documentContent.addEventListener('paste', function(e) {
             if (isNovelMode) {
                 e.preventDefault();
+            }
+        });
+        
+        // 添加额外的光标位置恢复机制
+        documentContent.addEventListener('focus', function(e) {
+            if (isNovelMode && cursorControlEnabled) {
+                // 获得焦点时确保光标在正确位置
+                setTimeout(() => {
+                    setCursorToEnd(true);
+                }, 20);
+            }
+        });
+        
+        documentContent.addEventListener('click', function(e) {
+            if (isNovelMode && cursorControlEnabled) {
+                // 点击时确保光标在正确位置
+                setTimeout(() => {
+                    setCursorToEnd(true);
+                }, 20);
+            }
+        });
+        
+        // 监听选区变化事件
+        document.addEventListener('selectionchange', function(e) {
+            if (isNovelMode && cursorControlEnabled && !isComposing) {
+                // 选区变化时检查光标位置
+                setTimeout(() => {
+                    monitorCursorPosition();
+                }, 10);
             }
         });
 
