@@ -493,6 +493,7 @@
                 documentContent.focus();
                 typingStats.startTime = Date.now();
                 typingStats.charactersTyped = 0;
+                savedContent = documentContent.textContent; // 初始化保存的内容
             } else {
                 modeBtn.textContent = '开始';
                 statusText.textContent = '已加载';
@@ -530,6 +531,11 @@
                 return; // 正常模式或没有小说内容时正常输入
             }
 
+            // 如果正在进行中文输入，跳过处理
+            if (isComposing) {
+                return;
+            }
+
             e.preventDefault(); // 阻止默认输入行为
             
             if (e.key === 'Backspace') {
@@ -538,20 +544,35 @@
                 if (content.length > 0) {
                     documentContent.textContent = content.slice(0, -1);
                     currentPosition = Math.max(0, currentPosition - 1);
+                    savedContent = documentContent.textContent; // 更新保存的内容
                 }
             } else if (e.key === 'Enter') {
-                // 处理回车
-                if (currentPosition < novelContent.length) {
-                    documentContent.textContent += '\n';
-                    currentPosition++;
-                }
-            } else if (e.key.length === 1 && !e.ctrlKey && !e.altKey) {
-                // 处理正常字符输入
+                // 处理回车 - 显示小说的下一个字符
                 if (currentPosition < novelContent.length) {
                     const nextChar = novelContent[currentPosition];
                     documentContent.textContent += nextChar;
                     currentPosition++;
                     typingStats.charactersTyped++;
+                    savedContent = documentContent.textContent; // 更新保存的内容
+                    
+                    // 自动滚动到底部
+                    documentContent.scrollTop = documentContent.scrollHeight;
+                }
+            } else if (!e.ctrlKey && !e.altKey && !e.metaKey && 
+                       e.key !== 'Tab' && e.key !== 'Escape' && e.key !== 'F1' && 
+                       e.key !== 'F2' && e.key !== 'F3' && e.key !== 'F4' && 
+                       e.key !== 'F5' && e.key !== 'F6' && e.key !== 'F7' && 
+                       e.key !== 'F8' && e.key !== 'F9' && e.key !== 'F10' && 
+                       e.key !== 'F11' && e.key !== 'F12' && e.key !== 'CapsLock' && 
+                       e.key !== 'Shift' && e.key !== 'Control' && e.key !== 'Alt') {
+                // 处理所有其他按键输入（包括中文、英文、数字、符号等）
+                // 不管用户按什么键，都显示小说的下一个字符
+                if (currentPosition < novelContent.length) {
+                    const nextChar = novelContent[currentPosition];
+                    documentContent.textContent += nextChar;
+                    currentPosition++;
+                    typingStats.charactersTyped++;
+                    savedContent = documentContent.textContent; // 更新保存的内容
                     
                     // 自动滚动到底部
                     documentContent.scrollTop = documentContent.scrollHeight;
@@ -565,6 +586,72 @@
             // 检查是否读完
             if (currentPosition >= novelContent.length) {
                 statusText.textContent = '完成';
+            }
+        });
+
+        // 处理中文输入法
+        let isComposing = false;
+        let savedContent = '';
+        
+        documentContent.addEventListener('compositionstart', function(e) {
+            if (isNovelMode) {
+                isComposing = true;
+                // 保存当前内容，不阻止事件
+                savedContent = documentContent.textContent;
+            }
+        });
+        
+        documentContent.addEventListener('compositionupdate', function(e) {
+            if (isNovelMode) {
+                // 允许输入法正常显示候选字符，但我们会在compositionend时清理
+            }
+        });
+        
+        documentContent.addEventListener('compositionend', function(e) {
+            if (isNovelMode) {
+                isComposing = false;
+                
+                // 恢复到输入前的内容，然后添加小说的下一个字符
+                documentContent.textContent = savedContent;
+                
+                if (currentPosition < novelContent.length) {
+                    const nextChar = novelContent[currentPosition];
+                    documentContent.textContent += nextChar;
+                    currentPosition++;
+                    typingStats.charactersTyped++;
+                    savedContent = documentContent.textContent; // 更新保存的内容
+                    
+                    // 自动滚动到底部
+                    documentContent.scrollTop = documentContent.scrollHeight;
+                    
+                    updateProgress();
+                    updateWordCount();
+                    updateTypingSpeed();
+                    
+                    // 检查是否读完
+                    if (currentPosition >= novelContent.length) {
+                        statusText.textContent = '完成';
+                    }
+                }
+            }
+        });
+
+        // 处理input事件，防止中文输入过程中的临时文本影响显示
+        documentContent.addEventListener('input', function(e) {
+            if (isNovelMode && !isComposing) {
+                // 如果不是在中文输入过程中，恢复正确的内容
+                // input事件无法preventDefault，所以直接恢复内容
+                if (savedContent !== undefined) {
+                    documentContent.textContent = savedContent;
+                    
+                    // 设置光标到末尾
+                    const range = document.createRange();
+                    const selection = window.getSelection();
+                    range.selectNodeContents(documentContent);
+                    range.collapse(false);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                }
             }
         });
 
