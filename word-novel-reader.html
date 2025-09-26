@@ -640,6 +640,7 @@
             </div>
             <div class="settings-footer">
                 <button class="settings-btn" onclick="resetSettings()">重置默认</button>
+                <button class="settings-btn" onclick="clearAllData()" style="background-color: #dc3545; color: white;">清除所有数据</button>
                 <button class="settings-btn primary" onclick="saveSettings()">保存设置</button>
             </div>
         </div>
@@ -667,6 +668,7 @@
             outputInterval: 200
         };
         let settingsVisible = false;
+        let fileName = ''; // 存储当前小说文件名
 
         // 获取DOM元素
         const documentContent = document.getElementById('documentContent');
@@ -700,27 +702,66 @@
             const file = input.files[0];
             if (!file) return;
 
+            // 检查文件类型
+            const allowedTypes = ['.txt', '.md', '.text'];
+            const fileExtension = file.name.toLowerCase().split('.').pop();
+            if (!allowedTypes.includes('.' + fileExtension)) {
+                showNotification('请选择文本文件（.txt、.md）！', 'error');
+                return;
+            }
+
+            // 检查文件大小（限制为10MB）
+            if (file.size > 10 * 1024 * 1024) {
+                showNotification('文件过大！请选择小于10MB的文件。', 'error');
+                return;
+            }
+
             const reader = new FileReader();
+            
             reader.onload = function(e) {
-                novelContent = e.target.result;
-                currentPosition = 0;
-                
-                // 清理内容，移除多余的空白字符
-                novelContent = novelContent.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-                novelContent = novelContent.replace(/\n{3,}/g, '\n\n'); // 最多保留两个连续换行
-                
-                // 显示成功通知
-                showNotification(`小说"${file.name}"导入成功！`);
-                
-                // 自动开启小说模式
-                setTimeout(() => {
-                    if (!isNovelMode) {
-                        toggleMode();
+                try {
+                    novelContent = e.target.result;
+                    
+                    if (!novelContent || novelContent.trim().length === 0) {
+                        showNotification('文件内容为空！', 'error');
+                        return;
                     }
-                }, 500);
-                
-                console.log(`小说加载完成，共 ${novelContent.length} 个字符`);
+                    
+                    currentPosition = 0;
+                    
+                    // 清理内容，移除多余的空白字符
+                    novelContent = novelContent.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+                    novelContent = novelContent.replace(/\n{3,}/g, '\n\n'); // 最多保留两个连续换行
+                    
+                    // 保存小说内容和文件名
+                    fileName = file.name;
+                    currentPosition = 0;
+                    
+                    // 使用DataManager保存数据
+                    DataManager.saveNovelProgress();
+                    
+                    // 显示成功通知
+                    showNotification(`小说"${file.name}"导入成功！`);
+                    
+                    // 自动开启小说模式
+                    setTimeout(() => {
+                        if (!isNovelMode) {
+                            toggleMode();
+                        }
+                    }, 500);
+                    
+                    console.log(`小说加载完成，共 ${novelContent.length} 个字符`);
+                } catch (error) {
+                    showNotification('文件读取失败：' + error.message, 'error');
+                    console.error('文件读取错误:', error);
+                }
             };
+            
+            reader.onerror = function(error) {
+                showNotification('文件读取失败！', 'error');
+                console.error('FileReader错误:', error);
+            };
+            
             reader.readAsText(file, 'UTF-8');
         }
 
@@ -736,10 +777,13 @@
                 documentContent.focus();
                 typingStats.startTime = Date.now();
                 typingStats.charactersTyped = 0;
-                savedContent = documentContent.textContent; // 初始化保存的内容
+                savedContent = documentContent.innerHTML; // 初始化保存的HTML内容
                 
                 // 启用光标控制系统
                 cursorControlEnabled = true;
+                
+                // 启动性能监控
+                startTypingSpeedMonitor();
                 
                 // 确保光标在文本末尾
                 setCursorToEnd();
@@ -750,6 +794,9 @@
                 stopCursorMonitoring();
                 cursorControlEnabled = false;
                 
+                // 停止性能监控
+                stopTypingSpeedMonitor();
+                
                 console.log('小说模式已停止，光标控制已停用');
             }
         }
@@ -758,6 +805,7 @@
         function resetProgress() {
             currentPosition = 0;
             documentContent.innerHTML = '';
+            savedContent = '';
             updateProgress();
             updateWordCount();
             
@@ -777,6 +825,7 @@
 
         // 更新字数统计
         function updateWordCount() {
+            // 使用textContent来获取纯文本长度，避免HTML标签影响计数
             const text = documentContent.textContent || '';
             const newCount = text.length;
             const oldCount = parseInt(wordCount.textContent) || 0;
@@ -792,52 +841,63 @@
             }
         }
 
-        // 强化的光标位置控制系统
+        // 优化的光标位置控制系统
         let cursorControlEnabled = true;
         let lastCursorPosition = 0;
         
-        // 设置光标到文本末尾的强化函数
+        // 设置光标到文本末尾的优化函数
         function setCursorToEnd(forceDelay = false) {
-            if (!cursorControlEnabled) return;
+            if (!cursorControlEnabled || !isNovelMode) return;
             
-            const delay = forceDelay ? 100 : 10; // 中文输入法需要更长延迟
+            const delay = forceDelay ? 100 : 10;
             
             setTimeout(() => {
                 try {
-                    const range = document.createRange();
-                    const selection = window.getSelection();
-                    
                     // 确保元素有焦点
                     if (document.activeElement !== documentContent) {
                         documentContent.focus();
                     }
                     
+                    const range = document.createRange();
+                    const selection = window.getSelection();
+                    
+                    // 处理包含HTML元素的情况
                     if (documentContent.childNodes.length > 0) {
-                        // 如果有子节点，设置到最后一个文本节点的末尾
+                        // 找到最后一个文本节点或元素
                         const lastNode = documentContent.childNodes[documentContent.childNodes.length - 1];
                         if (lastNode.nodeType === Node.TEXT_NODE) {
+                            // 最后是文本节点
                             range.setStart(lastNode, lastNode.textContent.length);
-                            range.setEnd(lastNode, lastNode.textContent.length);
                         } else {
-                            range.selectNodeContents(documentContent);
-                            range.collapse(false);
+                            // 最后是元素节点（如<br>），在其后面设置光标
+                            range.setStartAfter(lastNode);
                         }
                     } else {
-                        // 如果没有子节点，设置到元素内容末尾
-                        range.selectNodeContents(documentContent);
-                        range.collapse(false);
+                        // 空内容时
+                        range.setStart(documentContent, 0);
                     }
                     
+                    range.collapse(true);
                     selection.removeAllRanges();
                     selection.addRange(range);
                     
-                    // 记录当前位置
                     lastCursorPosition = documentContent.textContent.length;
                     
                 } catch (error) {
                     console.warn('设置光标位置失败:', error);
-                    // 备用方法
+                    // 回退到简单的焦点设置
                     documentContent.focus();
+                    try {
+                        const range = document.createRange();
+                        const selection = window.getSelection();
+                        range.selectNodeContents(documentContent);
+                        range.collapse(false);
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                    } catch (e2) {
+                        // 最后的回退
+                        documentContent.focus();
+                    }
                 }
             }, delay);
         }
@@ -850,11 +910,32 @@
                 const selection = window.getSelection();
                 if (selection.rangeCount > 0) {
                     const range = selection.getRangeAt(0);
-                    const currentPos = range.startOffset;
                     const textLength = documentContent.textContent.length;
                     
+                    // 检查光标是否在文档末尾附近
+                    let isAtEnd = false;
+                    
+                    // 如果有子节点，检查光标是否在最后一个节点
+                    if (documentContent.childNodes.length > 0) {
+                        const lastNode = documentContent.childNodes[documentContent.childNodes.length - 1];
+                        const container = range.startContainer;
+                        
+                        if (container === lastNode || container === documentContent) {
+                            // 获取光标位置相对于整个文档的偏移
+                            const docRange = document.createRange();
+                            docRange.setStart(documentContent, 0);
+                            docRange.setEnd(range.startContainer, range.startOffset);
+                            const currentOffset = docRange.toString().length;
+                            
+                            isAtEnd = Math.abs(currentOffset - textLength) <= 1;
+                        }
+                    } else {
+                        // 空文档
+                        isAtEnd = range.startContainer === documentContent && range.startOffset === 0;
+                    }
+                    
                     // 如果光标不在末尾，强制移动到末尾
-                    if (currentPos !== textLength || range.startContainer !== documentContent.lastChild) {
+                    if (!isAtEnd) {
                         setCursorToEnd(true);
                     }
                 }
@@ -900,9 +981,12 @@
                 // 处理退格
                 const content = documentContent.textContent;
                 if (content.length > 0) {
-                    documentContent.textContent = content.slice(0, -1);
+                    // 获取纯文本内容并删除最后一个字符
+                    const newText = content.slice(0, -1);
+                    // 转换为HTML格式
+                    documentContent.innerHTML = newText.replace(/\n/g, '<br>');
                     currentPosition = Math.max(0, currentPosition - 1);
-                    savedContent = documentContent.textContent; // 更新保存的内容
+                    savedContent = documentContent.innerHTML; // 更新保存的HTML内容
                     
                     // 设置光标到末尾
                     setCursorToEnd();
@@ -928,14 +1012,16 @@
                 documentContent.scrollTop = documentContent.scrollHeight;
             }
 
-            updateProgress();
-            updateWordCount();
-            updateTypingSpeed();
+            // 使用节流优化更新频率
+            throttleUpdate();
 
             // 检查是否读完
             if (currentPosition >= novelContent.length) {
-                statusText.textContent = '完成';
-                statusText.className = 'status-indicator completed';
+                const statusText = document.querySelector('.status-indicator');
+                if (statusText) {
+                    statusText.textContent = '完成';
+                    statusText.className = 'status-indicator completed';
+                }
             }
         });
 
@@ -950,7 +1036,7 @@
                 cursorControlEnabled = false; // 暂时禁用光标控制
                 
                 // 保存当前内容和位置
-                savedContent = documentContent.textContent;
+                savedContent = documentContent.innerHTML;
                 compositionStartPosition = savedContent.length;
                 
                 // 开始监控光标位置
@@ -990,7 +1076,7 @@
                 stopCursorMonitoring();
                 
                 // 恢复到输入前的内容，然后添加小说的多个字符
-                documentContent.textContent = savedContent;
+                documentContent.innerHTML = savedContent;
                 
                 outputMultipleChars();
                 
@@ -1007,7 +1093,7 @@
                 // 如果不是在中文输入过程中，恢复正确的内容
                 // input事件无法preventDefault，所以直接恢复内容
                 if (savedContent !== undefined) {
-                    documentContent.textContent = savedContent;
+                    documentContent.innerHTML = savedContent;
                     
                     // 设置光标到末尾
                     setCursorToEnd();
@@ -1022,32 +1108,24 @@
             }
         });
         
-        // 添加额外的光标位置恢复机制
-        documentContent.addEventListener('focus', function(e) {
+        // 统一的光标位置恢复机制
+        function ensureCursorAtEnd() {
             if (isNovelMode && cursorControlEnabled) {
-                // 获得焦点时确保光标在正确位置
-                setTimeout(() => {
-                    setCursorToEnd(true);
-                }, 20);
+                setCursorToEnd(true);
             }
-        });
+        }
         
-        documentContent.addEventListener('click', function(e) {
-            if (isNovelMode && cursorControlEnabled) {
-                // 点击时确保光标在正确位置
-                setTimeout(() => {
-                    setCursorToEnd(true);
-                }, 20);
-            }
+        // 整合的事件监听器
+        ['focus', 'click'].forEach(eventType => {
+            documentContent.addEventListener(eventType, () => {
+                setTimeout(ensureCursorAtEnd, 20);
+            });
         });
         
         // 监听选区变化事件
         document.addEventListener('selectionchange', function(e) {
             if (isNovelMode && cursorControlEnabled && !isComposing) {
-                // 选区变化时检查光标位置
-                setTimeout(() => {
-                    monitorCursorPosition();
-                }, 10);
+                setTimeout(monitorCursorPosition, 10);
             }
         });
 
@@ -1058,8 +1136,37 @@
             }
         });
 
-        // 定期更新打字速度
-        setInterval(updateTypingSpeed, 1000);
+        // 性能优化：节流更新函数
+        let updateTimer = null;
+        function throttleUpdate() {
+            if (updateTimer) return; // 如果已有待更新，跳过
+            
+            updateTimer = setTimeout(() => {
+                updateProgress();
+                updateWordCount();
+                updateTypingSpeed();
+                updateTimer = null;
+            }, 100); // 限制更新频率为100ms
+        }
+
+        // 定期更新打字速度（只在小说模式时）
+        let typingSpeedInterval = null;
+        function startTypingSpeedMonitor() {
+            if (!typingSpeedInterval) {
+                typingSpeedInterval = setInterval(() => {
+                    if (isNovelMode) {
+                        updateTypingSpeed();
+                    }
+                }, 1000);
+            }
+        }
+        
+        function stopTypingSpeedMonitor() {
+            if (typingSpeedInterval) {
+                clearInterval(typingSpeedInterval);
+                typingSpeedInterval = null;
+            }
+        }
 
         // 设置相关函数
         function toggleSettings() {
@@ -1068,7 +1175,7 @@
             overlay.style.display = settingsVisible ? 'flex' : 'none';
             
             if (settingsVisible) {
-                loadSettings();
+                updateSettingsUI();
             }
         }
         
@@ -1118,7 +1225,7 @@
             }
         }
 
-        function loadSettings() {
+        function updateSettingsUI() {
             const charsRange = document.getElementById('charsPerOutput');
             const intervalRange = document.getElementById('outputInterval');
             
@@ -1135,8 +1242,8 @@
             
             console.log('保存设置:', settings);
             
-            // 保存到localStorage
-            localStorage.setItem('novelReaderSettings', JSON.stringify(settings));
+            // 保存设置
+            DataManager.saveSettings();
             
             showNotification('设置已保存！');
             toggleSettings();
@@ -1146,10 +1253,135 @@
             settings.charsPerOutput = 5;
             settings.outputInterval = 200;
             
-            loadSettings();
+            updateSettingsUI();
             document.getElementById('presetSelect').value = 'normal';
             
             showNotification('设置已重置为默认值！');
+        }
+
+        // 清除所有数据
+        function clearAllData() {
+            if (confirm('确定要清除所有数据吗？这将删除保存的小说内容、阅读进度和设置，此操作不可撤销！')) {
+                // 使用DataManager清除所有数据
+                DataManager.clearAllData();
+                
+                // 重置所有变量
+                novelContent = '';
+                currentPosition = 0;
+                isNovelMode = false;
+                documentContent.innerHTML = '';
+                savedContent = '';
+                
+                // 重置设置
+                settings.charsPerOutput = 5;
+                settings.outputInterval = 200;
+                updateSettingsUI();
+                document.getElementById('presetSelect').value = 'normal';
+                
+                // 重置统计
+                typingStats.startTime = null;
+                typingStats.charactersTyped = 0;
+                
+                // 更新显示
+                updateProgress();
+                updateWordCount();
+                
+                showNotification('所有数据已清除！');
+                toggleSettings();
+            }
+        }
+
+        // 统一的数据管理器
+        const DataManager = {
+            // 保存小说阅读进度
+            saveNovelProgress() {
+                if (!novelContent) return;
+                
+                try {
+                    const existingData = this.loadNovelData() || {};
+                    const novelData = {
+                        ...existingData,
+                        content: novelContent,
+                        currentPosition: currentPosition,
+                        displayedContent: documentContent.innerHTML,
+                        fileName: fileName,
+                        timestamp: Date.now()
+                    };
+                    
+                    localStorage.setItem('novelReaderData', JSON.stringify(novelData));
+                } catch (error) {
+                    console.error('保存小说进度失败:', error);
+                    showNotification('保存进度失败，可能是存储空间不足', 'error');
+                }
+            },
+            
+            // 加载小说数据
+            loadNovelData() {
+                try {
+                    const data = localStorage.getItem('novelReaderData');
+                    return data ? JSON.parse(data) : null;
+                } catch (e) {
+                    console.warn('无法加载小说数据:', e);
+                    return null;
+                }
+            },
+            
+            // 保存设置
+            saveSettings() {
+                try {
+                    localStorage.setItem('novelReaderSettings', JSON.stringify(settings));
+                } catch (error) {
+                    console.error('保存设置失败:', error);
+                    showNotification('保存设置失败，可能是存储空间不足', 'error');
+                }
+            },
+            
+            // 加载设置
+            loadSettings() {
+                try {
+                    const data = localStorage.getItem('novelReaderSettings');
+                    return data ? JSON.parse(data) : null;
+                } catch (e) {
+                    console.warn('无法加载设置:', e);
+                    return null;
+                }
+            },
+            
+            // 清除所有数据
+            clearAllData() {
+                localStorage.removeItem('novelReaderData');
+                localStorage.removeItem('novelReaderSettings');
+            }
+        };
+
+        // 从localStorage加载小说数据 - 重构使用DataManager
+        function loadNovelData() {
+            const novelData = DataManager.loadNovelData();
+            if (novelData && novelData.content) {
+                // 恢复小说内容和进度
+                novelContent = novelData.content || '';
+                currentPosition = novelData.currentPosition || 0;
+                
+                // 恢复显示的内容
+                if (novelData.displayedContent) {
+                    documentContent.innerHTML = novelData.displayedContent;
+                    savedContent = novelData.displayedContent;
+                }
+                
+                // 如果有小说内容，显示恢复通知
+                if (novelContent) {
+                    fileName = novelData.fileName || '未知文件';
+                    showNotification(`已恢复小说"${fileName}"的阅读进度`);
+                    
+                    // 更新进度显示
+                    updateProgress();
+                    updateWordCount();
+                    
+                    console.log(`恢复小说数据: ${novelContent.length} 字符, 当前位置: ${currentPosition}`);
+                    return true;
+                }
+            }
+            return false;
         }
 
         // 输出多个字符的函数
@@ -1159,14 +1391,21 @@
             }
             
             const charsToOutput = Math.min(settings.charsPerOutput, novelContent.length - currentPosition);
-            const newChars = novelContent.substr(currentPosition, charsToOutput);
+            const newChars = novelContent.substring(currentPosition, currentPosition + charsToOutput);
             
             console.log(`输出字符: ${charsToOutput}个, 设置值: ${settings.charsPerOutput}, 内容: "${newChars}"`);
             
-            documentContent.textContent += newChars;
+            // 将换行符转换为HTML格式，保持原始格式
+            const formattedChars = newChars.replace(/\n/g, '<br>');
+            
+            // 使用innerHTML而不是textContent来保持格式
+            documentContent.innerHTML += formattedChars;
             currentPosition += charsToOutput;
             typingStats.charactersTyped += charsToOutput;
-            savedContent = documentContent.textContent;
+            savedContent = documentContent.innerHTML;
+            
+            // 保存当前进度到localStorage
+            DataManager.saveNovelProgress();
             
             // 设置光标到末尾
             setCursorToEnd();
@@ -1190,18 +1429,17 @@
         window.addEventListener('load', function() {
             documentContent.focus();
             
-            // 从localStorage加载设置
-            const savedSettings = localStorage.getItem('novelReaderSettings');
+            // 使用DataManager加载设置
+            const savedSettings = DataManager.loadSettings();
             if (savedSettings) {
-                try {
-                    settings = { ...settings, ...JSON.parse(savedSettings) };
-                    console.log('加载设置:', settings);
-                } catch (e) {
-                    console.warn('无法加载保存的设置，使用默认设置');
-                }
+                settings = { ...settings, ...savedSettings };
+                console.log('加载设置:', settings);
             } else {
-                console.log('没有保存的设置，使用默认设置:', settings);
+                console.warn('无法加载保存的设置，使用默认设置');
             }
+            
+            // 从localStorage加载小说数据
+            loadNovelData();
             
             console.log('Word小说阅读器已加载完成');
         });
