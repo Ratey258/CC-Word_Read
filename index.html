@@ -592,7 +592,7 @@
     </div>
 
     <!-- 隐藏的文件输入框 -->
-    <input type="file" id="novelFile" style="display: none;" accept=".txt" onchange="loadNovel(this)">
+    <input type="file" id="novelFile" style="display: none;" accept=".txt,.md,.docx" onchange="loadNovel(this)">
 
     <!-- 设置面板 -->
     <div class="settings-overlay" id="settingsOverlay">
@@ -653,6 +653,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/mammoth/mammoth.browser.min.js"></script>
     <script>
         let novelContent = '';
         let currentPosition = 0;
@@ -703,10 +704,10 @@
             if (!file) return;
 
             // 检查文件类型
-            const allowedTypes = ['.txt', '.md', '.text'];
+            const allowedTypes = ['.txt', '.md', '.text', '.docx'];
             const fileExtension = file.name.toLowerCase().split('.').pop();
             if (!allowedTypes.includes('.' + fileExtension)) {
-                showNotification('请选择文本文件（.txt、.md）！', 'error');
+                showNotification('请选择文本文件（.txt、.md、.docx）！', 'error');
                 return;
             }
 
@@ -718,51 +719,101 @@
 
             const reader = new FileReader();
             
-            reader.onload = function(e) {
-                try {
-                    novelContent = e.target.result;
-                    
-                    if (!novelContent || novelContent.trim().length === 0) {
-                        showNotification('文件内容为空！', 'error');
-                        return;
-                    }
-                    
-                    currentPosition = 0;
-                    
-                    // 清理内容，移除多余的空白字符
-                    novelContent = novelContent.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-                    novelContent = novelContent.replace(/\n{3,}/g, '\n\n'); // 最多保留两个连续换行
-                    
-                    // 保存小说内容和文件名
-                    fileName = file.name;
-                    currentPosition = 0;
-                    
-                    // 使用DataManager保存数据
-                    DataManager.saveNovelProgress();
-                    
-                    // 显示成功通知
-                    showNotification(`小说"${file.name}"导入成功！`);
-                    
-                    // 自动开启小说模式
-                    setTimeout(() => {
-                        if (!isNovelMode) {
-                            toggleMode();
+            if (fileExtension === 'docx') {
+                reader.onload = async function(e) {
+                    try {
+                        const arrayBuffer = e.target.result;
+                        const result = await mammoth.extractRawText({ arrayBuffer });
+                        novelContent = (result && result.value) ? result.value : '';
+                        
+                        if (!novelContent || novelContent.trim().length === 0) {
+                            showNotification('文件内容为空！', 'error');
+                            return;
                         }
-                    }, 500);
-                    
-                    console.log(`小说加载完成，共 ${novelContent.length} 个字符`);
-                } catch (error) {
-                    showNotification('文件读取失败：' + error.message, 'error');
-                    console.error('文件读取错误:', error);
-                }
-            };
-            
-            reader.onerror = function(error) {
-                showNotification('文件读取失败！', 'error');
-                console.error('FileReader错误:', error);
-            };
-            
-            reader.readAsText(file, 'UTF-8');
+                        
+                        currentPosition = 0;
+                        
+                        // 清理内容，移除多余的空白字符（与 txt/md 路径保持一致）
+                        novelContent = novelContent.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+                        novelContent = novelContent.replace(/\n{3,}/g, '\n\n');
+                        
+                        // 保存小说内容和文件名
+                        fileName = file.name;
+                        currentPosition = 0;
+                        
+                        // 使用DataManager保存数据
+                        DataManager.saveNovelProgress();
+                        
+                        // 显示成功通知
+                        showNotification(`小说"${file.name}"导入成功！`);
+                        
+                        // 自动开启小说模式
+                        setTimeout(() => {
+                            if (!isNovelMode) {
+                                toggleMode();
+                            }
+                        }, 500);
+                        
+                        console.log(`小说加载完成，共 ${novelContent.length} 个字符`);
+                    } catch (error) {
+                        showNotification('文件读取失败：' + error.message, 'error');
+                        console.error('DOCX 解析错误:', error);
+                    }
+                };
+                
+                reader.onerror = function(error) {
+                    showNotification('文件读取失败！', 'error');
+                    console.error('FileReader错误:', error);
+                };
+                
+                reader.readAsArrayBuffer(file);
+            } else {
+                reader.onload = function(e) {
+                    try {
+                        novelContent = e.target.result;
+                        
+                        if (!novelContent || novelContent.trim().length === 0) {
+                            showNotification('文件内容为空！', 'error');
+                            return;
+                        }
+                        
+                        currentPosition = 0;
+                        
+                        // 清理内容，移除多余的空白字符
+                        novelContent = novelContent.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+                        novelContent = novelContent.replace(/\n{3,}/g, '\n\n'); // 最多保留两个连续换行
+                        
+                        // 保存小说内容和文件名
+                        fileName = file.name;
+                        currentPosition = 0;
+                        
+                        // 使用DataManager保存数据
+                        DataManager.saveNovelProgress();
+                        
+                        // 显示成功通知
+                        showNotification(`小说"${file.name}"导入成功！`);
+                        
+                        // 自动开启小说模式
+                        setTimeout(() => {
+                            if (!isNovelMode) {
+                                toggleMode();
+                            }
+                        }, 500);
+                        
+                        console.log(`小说加载完成，共 ${novelContent.length} 个字符`);
+                    } catch (error) {
+                        showNotification('文件读取失败：' + error.message, 'error');
+                        console.error('文件读取错误:', error);
+                    }
+                };
+                
+                reader.onerror = function(error) {
+                    showNotification('文件读取失败！', 'error');
+                    console.error('FileReader错误:', error);
+                };
+                
+                reader.readAsText(file, 'UTF-8');
+            }
         }
 
         // 切换伪装模式
