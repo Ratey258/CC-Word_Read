@@ -113,8 +113,8 @@
 
 .ribbon__group-content {
   display: flex;
-  gap: 2px;
-  padding: 3px 5px;
+  gap: 3px;
+  padding: 3px 6px;
   flex: 1;
   align-items: flex-start;
 }
@@ -157,8 +157,8 @@
 }
 
 .ribbon-icon--small {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
 }
 
 /* 图标悬停效果 */
@@ -230,13 +230,13 @@
 
 /* 小按钮 */
 .ribbon__button-small {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 2px;
-  border-radius: 3px;
+  border-radius: 2px;
   transition: all 100ms ease-out;
   border: 1px solid transparent;
   background-color: transparent;
@@ -300,6 +300,11 @@
   gap: 1px;
 }
 
+/* 按钮行之间的间距 */
+.ribbon__button-column .ribbon__button-row + .ribbon__button-row {
+  margin-top: 2px;
+}
+
 .ribbon__button-column {
   display: flex;
   flex-direction: column;
@@ -308,11 +313,11 @@
 
 /* 选择器组件 */
 .ribbon__selector {
-  height: 22px;
+  height: 20px;
   min-width: 100px;
-  padding: 0 20px 0 6px;
+  padding: 0 18px 0 5px;
   border: 1px solid #E1E1E1;
-  border-radius: 3px;
+  border-radius: 2px;
   background-color: var(--word-white);
   font-size: 11px;
   display: flex;
@@ -354,8 +359,8 @@
 
 /* 字体选择器 */
 .ribbon__font-selector {
-  min-width: 140px;
-  max-width: 140px;
+  min-width: 130px;
+  max-width: 130px;
 }
 
 .ribbon__font-selector .ribbon__selector__value {
@@ -364,8 +369,8 @@
 
 /* 字号选择器 */
 .ribbon__fontsize-selector {
-  min-width: 42px;
-  max-width: 42px;
+  min-width: 40px;
+  max-width: 40px;
   text-align: center;
   padding: 0 18px 0 6px;
 }

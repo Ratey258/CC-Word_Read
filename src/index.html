@@ -144,7 +144,10 @@
                     <!-- 粘贴(大按钮) - Word 原版样式 -->
                     <button class="ribbon__button-large" title="粘贴 (Ctrl+V)">
                         <svg class="ribbon-icon ribbon-icon--large" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M8.5 2A1.5 1.5 0 007 3.5V4H5.5A1.5 1.5 0 004 5.5v11A1.5 1.5 0 005.5 18h9a1.5 1.5 0 001.5-1.5v-11A1.5 1.5 0 0014.5 4H13v-.5A1.5 1.5 0 0011.5 2h-3zM8 3.5a.5.5 0 01.5-.5h3a.5.5 0 01.5.5V5H8V3.5zM5 5.5a.5.5 0 01.5-.5H7v1.5a.5.5 0 00.5.5h5a.5.5 0 00.5-.5V5h1.5a.5.5 0 01.5.5v11a.5.5 0 01-.5.5h-9a.5.5 0 01-.5-.5v-11z"/>
+                            <!-- 剪贴板外框 -->
+                            <path d="M6 3.5A1.5 1.5 0 017.5 2h5A1.5 1.5 0 0114 3.5V4h1.5A1.5 1.5 0 0117 5.5v12a1.5 1.5 0 01-1.5 1.5h-11A1.5 1.5 0 013 17.5v-12A1.5 1.5 0 014.5 4H6v-.5zM7.5 3a.5.5 0 00-.5.5V5h6V3.5a.5.5 0 00-.5-.5h-5zM4.5 5a.5.5 0 00-.5.5v12a.5.5 0 00.5.5h11a.5.5 0 00.5-.5v-12a.5.5 0 00-.5-.5H14v1a.5.5 0 01-.5.5h-7A.5.5 0 016 6V5H4.5z"/>
+                            <!-- 内容线条 -->
+                            <path d="M6 9h8v1H6V9zm0 3h8v1H6v-1zm0 3h5v1H6v-1z"/>
                         </svg>
                         <span class="ribbon__button-large__label">粘贴</span>
                         <svg class="ribbon__button-large__dropdown" viewBox="0 0 12 12" fill="currentColor">
@@ -157,20 +160,26 @@
                         <div class="ribbon__button-row">
                             <button class="ribbon__button-small" title="剪切 (Ctrl+X)">
                                 <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M7.146 3.146a.5.5 0 01.708 0L10 5.293l2.146-2.147a.5.5 0 01.708.708L10.707 6l2.147 2.146a.5.5 0 01-.708.708L10 6.707 7.854 8.854a.5.5 0 01-.708-.708L9.293 6 7.146 3.854a.5.5 0 010-.708zM4.5 15a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm0-1a.5.5 0 110-1 .5.5 0 010 1zm11 1a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm0-1a.5.5 0 110-1 .5.5 0 010 1z"/>
+                                    <!-- 剪刀图标 - 更清晰的设计 -->
+                                    <path d="M5 3a2 2 0 100 4 2 2 0 000-4zm0 3a1 1 0 110-2 1 1 0 010 2zm0 5a2 2 0 100 4 2 2 0 000-4zm0 3a1 1 0 110-2 1 1 0 010 2z"/>
+                                    <path d="M15 3a2 2 0 100 4 2 2 0 000-4zm0 3a1 1 0 110-2 1 1 0 010 2zm0 5a2 2 0 100 4 2 2 0 000-4zm0 3a1 1 0 110-2 1 1 0 010 2z"/>
+                                    <path stroke="currentColor" stroke-width="1.2" stroke-linecap="round" d="M6.5 5L13 12m-6.5 3L13 8"/>
                                 </svg>
                                 <span>剪切</span>
                             </button>
                             <button class="ribbon__button-small" title="复制 (Ctrl+C)">
                                 <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M5.5 2A1.5 1.5 0 004 3.5v9A1.5 1.5 0 005.5 14h6a1.5 1.5 0 001.5-1.5v-1h1.5A1.5 1.5 0 0016 10V3.5A1.5 1.5 0 0014.5 2h-6A1.5 1.5 0 007 3.5v1H5.5zM8 3.5a.5.5 0 01.5-.5h6a.5.5 0 01.5.5V10a.5.5 0 01-.5.5H13v-6A1.5 1.5 0 0011.5 3H8v.5zm-3 0a.5.5 0 01.5-.5h6a.5.5 0 01.5.5v9a.5.5 0 01-.5.5h-6a.5.5 0 01-.5-.5v-9z"/>
+                                    <!-- 双层文档图标 - 更清晰 -->
+                                    <path d="M6 3.5A1.5 1.5 0 017.5 2h7A1.5 1.5 0 0116 3.5v9a1.5 1.5 0 01-1.5 1.5H13v1.5A1.5 1.5 0 0111.5 17h-7A1.5 1.5 0 013 15.5v-9A1.5 1.5 0 014.5 5H6V3.5zM7.5 3a.5.5 0 00-.5.5V5h4.5A1.5 1.5 0 0113 6.5V12h1.5a.5.5 0 00.5-.5v-9a.5.5 0 00-.5-.5h-7zM4.5 6a.5.5 0 00-.5.5v9a.5.5 0 00.5.5h7a.5.5 0 00.5-.5v-9a.5.5 0 00-.5-.5h-7z"/>
                                 </svg>
                                 <span>复制</span>
                             </button>
                         </div>
                         <button class="ribbon__button-small" title="格式刷">
                             <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M6 3.5A1.5 1.5 0 017.5 2h5A1.5 1.5 0 0114 3.5V9a.5.5 0 01-.5.5h-7A.5.5 0 016 9V3.5zM7 4v4h6V4H7zm2 6h2v7a1 1 0 01-2 0v-7z"/>
+                                <!-- 画刷图标 - 更明显的设计 -->
+                                <path d="M5 2.5A1.5 1.5 0 016.5 1h7A1.5 1.5 0 0115 2.5V8a.5.5 0 01-.5.5h-9A.5.5 0 015 8V2.5zM6.5 2a.5.5 0 00-.5.5V7h8V2.5a.5.5 0 00-.5-.5h-7z"/>
+                                <path d="M8.5 9h3v1.5h-1v7a1 1 0 01-1 1 1 1 0 01-1-1v-7h-1V9z"/>
                             </svg>
                             <span>格式刷</span>
                         </button>
@@ -221,37 +230,47 @@
                         <div class="ribbon__button-row">
                             <button class="ribbon__button-small ribbon__toggle-button" title="加粗 (Ctrl+B)" data-format="bold">
                                 <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M5.5 3A.5.5 0 016 3.5v13a.5.5 0 01-.5.5h-.75a.5.5 0 01-.5-.5v-13A.5.5 0 015 3h.5zm2.25 0h3.5A3.25 3.25 0 0114 6.25a3 3 0 01-1.63 2.66A3.25 3.25 0 0113.5 12a3.25 3.25 0 01-3.25 3.25h-3.5A.75.75 0 016 14.5v-11a.75.75 0 01.75-.75zm.25 5.5h3A1.75 1.75 0 0012.75 6.75 1.75 1.75 0 0011 5H8v3.5zm0 5.5h3.5a1.75 1.75 0 001.75-1.75A1.75 1.75 0 0011.5 10.5H8V14z"/>
+                                    <!-- 加粗 B - 更粗的笔画 -->
+                                    <path d="M5 3h6.5A3.5 3.5 0 0115 6.5a3.2 3.2 0 01-1.5 2.7A3.5 3.5 0 0112 16H5V3zm2 1.5v4.2h4a2 2 0 000-4H7zm0 5.7V14.5h5a2 2 0 000-4H7z" stroke-width="0.5"/>
                                 </svg>
                                 <span>加粗</span>
                             </button>
                             <button class="ribbon__button-small ribbon__toggle-button" title="倾斜 (Ctrl+I)" data-format="italic">
                                 <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M9 3h6v1.5H9V3zm0 12.5h6V17H9v-1.5zM11.5 5h1l-2 10h-1l2-10z"/>
+                                    <!-- 斜体 I - 优化设计 -->
+                                    <path d="M8 3h6v2H8V3zm0 12h6v2H8v-2zM10.5 6h2l-2 8h-2l2-8z"/>
                                 </svg>
                                 <span>倾斜</span>
                             </button>
                             <button class="ribbon__button-small ribbon__toggle-button" title="下划线 (Ctrl+U)" data-format="underline">
                                 <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M6 3v7a4 4 0 008 0V3h1.5v7a5.5 5.5 0 01-11 0V3H6zm-3 14.5v1h14v-1H3z"/>
+                                    <!-- 下划线 U - 更清晰 -->
+                                    <path d="M5.5 3v7.5a4.5 4.5 0 009 0V3H16v7.5a6 6 0 01-12 0V3h1.5z"/>
+                                    <path d="M3 16.5h14v1.5H3v-1.5z"/>
                                 </svg>
                                 <span>下划线</span>
                             </button>
                             <button class="ribbon__button-small ribbon__toggle-button" title="删除线" data-format="strikethrough">
                                 <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M3 10.5v1h14v-1H3zm4.5-3c0-.83.67-1.5 1.5-1.5h2c.83 0 1.5.67 1.5 1.5v.5h1.5v-.5A3 3 0 0011 4.5H9A3 3 0 006 7.5v.5h1.5v-.5zm0 6c0 .83.67 1.5 1.5 1.5h2c.83 0 1.5-.67 1.5-1.5V13h1.5v.5a3 3 0 01-3 3H9a3 3 0 01-3-3V13h1.5v.5z"/>
+                                    <!-- 删除线 S - 优化设计 -->
+                                    <path d="M3 9.5h14v1.5H3V9.5z"/>
+                                    <path d="M6.5 4.5C6.5 3.67 7.17 3 8 3h4c.83 0 1.5.67 1.5 1.5v1h1.5v-1A3 3 0 0012 1.5H8A3 3 0 005 4.5v1h1.5v-1zm0 10c0 .83.67 1.5 1.5 1.5h4c.83 0 1.5-.67 1.5-1.5v-1h1.5v1a3 3 0 01-3 3H8a3 3 0 01-3-3v-1h1.5v1z"/>
                                 </svg>
                                 <span>删除线</span>
                             </button>
                             <button class="ribbon__button-small ribbon__toggle-button" title="下标 (Ctrl+=)" data-format="subscript">
                                 <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M5 5h1.5l2 5 2-5H12l-2.75 6.5h-1.5L5 5zm10 10h-2.5v-1h2v-.5h-1.5v-1h1.5v-.5h-2v-1H15a.5.5 0 01.5.5v3a.5.5 0 01-.5.5z"/>
+                                    <!-- 下标 x₂ - 优化设计 -->
+                                    <path d="M4 4h2l2.5 6 2.5-6h2l-3.5 8h-1.5L4 4z"/>
+                                    <path d="M15 13h-2.5v-1h2v-.5h-1.5v-1h1.5v-.5h-2v-1H15a.5.5 0 01.5.5v3a.5.5 0 01-.5.5z"/>
                                 </svg>
                                 <span>下标</span>
                             </button>
                             <button class="ribbon__button-small ribbon__toggle-button" title="上标 (Ctrl+Shift+=)" data-format="superscript">
                                 <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M5 7h1.5l2 5 2-5H12l-2.75 6.5h-1.5L5 7zm10-2h-2.5V4h2v-.5h-1.5V2.5h1.5V2h-2V1H15a.5.5 0 01.5.5v3a.5.5 0 01-.5.5z"/>
+                                    <!-- 上标 x² - 优化设计 -->
+                                    <path d="M4 6h2l2.5 6 2.5-6h2l-3.5 8h-1.5L4 6z"/>
+                                    <path d="M15 7h-2.5V6h2v-.5h-1.5V4.5h1.5V4h-2V3H15a.5.5 0 01.5.5v3a.5.5 0 01-.5.5z"/>
                                 </svg>
                                 <span>上标</span>
                             </button>
@@ -291,7 +310,11 @@
                         <div class="ribbon__button-row">
                             <button class="ribbon__button-small ribbon__dropdown-button" title="项目符号">
                                 <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M3 4.5a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm0 6a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm0 6a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM6.5 3a.5.5 0 000 1h11a.5.5 0 000-1h-11zm0 6a.5.5 0 000 1h11a.5.5 0 000-1h-11zm0 6a.5.5 0 000 1h11a.5.5 0 000-1h-11z"/>
+                                    <!-- 项目符号 - 更清晰的圆点 -->
+                                    <circle cx="3" cy="4" r="1.5"/>
+                                    <circle cx="3" cy="10" r="1.5"/>
+                                    <circle cx="3" cy="16" r="1.5"/>
+                                    <path d="M7 3.5h11v1H7v-1zm0 6h11v1H7v-1zm0 6h11v1H7v-1z"/>
                                 </svg>
                                 <svg class="ribbon__dropdown-arrow" viewBox="0 0 12 12" fill="currentColor">
                                     <path d="M2 4l4 4 4-4H2z"/>
@@ -299,7 +322,11 @@
                             </button>
                             <button class="ribbon__button-small ribbon__dropdown-button" title="编号">
                                 <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M2.5 3h1V1.5h-.75V1H4v3H2.5V3zm0 6h1.25c0-.69-.3-1-1-1h-.5v-.5h.5c.5 0 .75.25.75.75V9c0 .55-.45 1-1 1h-.5V9h.5c.28 0 .5-.22.5-.5H2.5V8zm0 6h1.5v-.5h-1v-.5h1v-.5h-1V13h1.5v-.5H2v2.5h.5V15zM6.5 3a.5.5 0 000 1h11a.5.5 0 000-1h-11zm0 6a.5.5 0 000 1h11a.5.5 0 000-1h-11zm0 6a.5.5 0 000 1h11a.5.5 0 000-1h-11z"/>
+                                    <!-- 编号列表 - 更清晰的数字 -->
+                                    <text x="1.5" y="5" font-size="5" font-weight="500">1.</text>
+                                    <text x="1.5" y="11" font-size="5" font-weight="500">2.</text>
+                                    <text x="1.5" y="17" font-size="5" font-weight="500">3.</text>
+                                    <path d="M7 3.5h11v1H7v-1zm0 6h11v1H7v-1zm0 6h11v1H7v-1z"/>
                                 </svg>
                                 <svg class="ribbon__dropdown-arrow" viewBox="0 0 12 12" fill="currentColor">
                                     <path d="M2 4l4 4 4-4H2z"/>
@@ -307,12 +334,16 @@
                             </button>
                             <button class="ribbon__button-small" title="减少缩进 (Ctrl+Shift+M)">
                                 <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M2 3.5a.5.5 0 01.5-.5h15a.5.5 0 010 1h-15a.5.5 0 01-.5-.5zm5 3a.5.5 0 01.5-.5h10a.5.5 0 010 1h-10a.5.5 0 01-.5-.5zm0 3a.5.5 0 01.5-.5h10a.5.5 0 010 1h-10a.5.5 0 01-.5-.5zm0 3a.5.5 0 01.5-.5h10a.5.5 0 010 1h-10a.5.5 0 01-.5-.5zm0 3a.5.5 0 01.5-.5h10a.5.5 0 010 1h-10a.5.5 0 01-.5-.5zM4.854 10.354a.5.5 0 010-.708l2-2a.5.5 0 10-.708-.708l-2 2a.5.5 0 000 .708l2 2a.5.5 0 00.708-.708l-2-2z"/>
+                                    <!-- 减少缩进 - 优化箭头 -->
+                                    <path d="M2 3h16v1.5H2V3zm5 4h11v1.5H7V7zm0 4h11v1.5H7v-1.5zm0 4h11v1.5H7v-1.5z"/>
+                                    <path d="M5.5 10l-3-2.5v5L5.5 10z"/>
                                 </svg>
                             </button>
                             <button class="ribbon__button-small" title="增加缩进 (Tab)">
                                 <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M2 3.5a.5.5 0 01.5-.5h15a.5.5 0 010 1h-15a.5.5 0 01-.5-.5zm5 3a.5.5 0 01.5-.5h10a.5.5 0 010 1h-10a.5.5 0 01-.5-.5zm0 3a.5.5 0 01.5-.5h10a.5.5 0 010 1h-10a.5.5 0 01-.5-.5zm0 3a.5.5 0 01.5-.5h10a.5.5 0 010 1h-10a.5.5 0 01-.5-.5zm0 3a.5.5 0 01.5-.5h10a.5.5 0 010 1h-10a.5.5 0 01-.5-.5zM2.146 10.354a.5.5 0 000-.708l2-2a.5.5 0 11.708.708l-2 2 2 2a.5.5 0 11-.708.708l-2-2z" transform="scale(-1, 1) translate(-20, 0)"/>
+                                    <!-- 增加缩进 - 优化箭头 -->
+                                    <path d="M2 3h16v1.5H2V3zm5 4h11v1.5H7V7zm0 4h11v1.5H7v-1.5zm0 4h11v1.5H7v-1.5z"/>
+                                    <path d="M2 10l3-2.5v5L2 10z"/>
                                 </svg>
                             </button>
                             <button class="ribbon__button-small" title="排序">
