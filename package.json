@@ -1,0 +1,38 @@
+{
+  "name": "cc-word-read",
+  "version": "2.0.0",
+  "description": "像素级还原Word界面的小说阅读器 - Windows桌面版",
+  "author": "CC-Word_Read Team",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "tauri": "tauri",
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "build:debug": "tauri build --debug"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.0.2",
+    "@tauri-apps/plugin-dialog": "^2.0.1",
+    "@tauri-apps/plugin-fs": "^2.0.1"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.0.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/CC-Word_Read.git"
+  },
+  "keywords": [
+    "tauri",
+    "word",
+    "novel-reader",
+    "windows",
+    "desktop-app"
+  ],
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}
+

@@ -1,0 +1,39 @@
+[package]
+name = "cc-word-read"
+version = "2.0.0"
+description = "像素级还原Word界面的小说阅读器"
+authors = ["CC-Word_Read Team"]
+license = "MIT"
+repository = "https://github.com/your-username/CC-Word_Read"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "cc_word_read_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.0", features = [] }
+
+[dependencies]
+tauri = { version = "2.0", features = [] }
+tauri-plugin-dialog = "2.0"
+tauri-plugin-fs = "2.0"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-updater = "2.0"
+
+# Windows specific optimizations
+[profile.release]
+panic = "abort"
+codegen-units = 1
+lto = true
+opt-level = "z"
+strip = true
+
+[profile.dev]
+incremental = true
+

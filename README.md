@@ -103,38 +103,53 @@ npx http-server -p 8080
 - 输入拼音时会输出对应字符数的小说内容
 - 无需切换即可自然使用
 
-## 🚀 Tauri桌面版（v2.0开发中）
+## 🚀 Tauri桌面版（v2.0 已搭建完成！）
 
-### 即将推出 - Windows专用版
+### ✨ Windows专用桌面版
 - ✅ 真正的Windows桌面应用
 - ✅ 体积仅3-5MB
 - ✅ 更好的性能和安全性
 - ✅ 完美集成Windows 10/11
 - ✅ 使用原生WebView2引擎
 
-### Windows系统要求
+### 📦 系统要求
 - Windows 10 (1809+) 或 Windows 11
+- Node.js 18+
+- Rust 1.75+
+- Visual Studio Build Tools
 - WebView2运行时（系统自带）
 
-### 体验开发版
+### 🚀 快速开始
+
+#### 方法1：一键初始化（推荐）
 ```powershell
 # 克隆项目
 git clone https://github.com/your-username/CC-Word_Read.git
 cd CC-Word_Read
 
-# 安装依赖（需要Rust环境）
-npm install
-npm install @tauri-apps/cli @tauri-apps/api
+# 运行初始化脚本
+.\setup.ps1
 
-# 初始化Tauri
-npm run tauri init
-
-# 开发模式
-npm run tauri dev
-
-# 构建Windows版本
-npm run tauri build
+# 启动开发模式
+npm run dev
 ```
+
+#### 方法2：手动安装
+```powershell
+# 安装依赖
+npm install
+
+# 开发模式（首次运行需5-10分钟编译）
+npm run dev
+
+# 构建Windows安装包
+npm run build
+```
+
+### 📖 详细文档
+- 🚀 **快速开始**: [README_TAURI.md](README_TAURI.md)
+- 📚 **完整搭建说明**: [TAURI_SETUP.md](TAURI_SETUP.md)
+- 🔧 **开发文档**: [开发文档.md](开发文档.md)
 
 ## 📚 完整文档
 

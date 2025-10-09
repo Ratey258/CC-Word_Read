@@ -1,0 +1,29 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Word",
+  "version": "2.0.0",
+  "identifier": "com.cc.wordread",
+  "build": {
+    "frontendDist": "../src"
+  },
+  "bundle": {
+    "active": false
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "文档1 - Word",
+        "width": 1200,
+        "height": 800,
+        "minWidth": 800,
+        "minHeight": 600,
+        "resizable": true,
+        "decorations": false,
+        "center": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com data:; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com; img-src 'self' data: https:;"
+    }
+  }
+}
