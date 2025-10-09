@@ -1,100 +1,91 @@
-/* ========================================
-   Word 2022 精确配色方案
-   所有颜色值来自真实Word测量
-   ======================================== */
+/* Word 2022 主题配色 */
 
 :root {
-  /* ===== 标题栏 (Title Bar) ===== */
+  /* 标题栏 */
   --word-titlebar-bg: #F3F2F1;
   --word-titlebar-text: #323130;
   --word-titlebar-hover: #E1DFDD;
   --word-titlebar-active: #D2D0CE;
   
-  /* ===== 蓝色系 (Primary Blues) ===== */
-  --word-blue-primary: #0078D4;      /* 主色调 */
-  --word-blue-hover: #106EBE;        /* 悬停状态 */
-  --word-blue-active: #005A9E;       /* 激活状态 */
-  --word-blue-light: #DEECF9;        /* 浅蓝背景 */
-  --word-blue-border: #0078D4;       /* 蓝色边框 */
+  /* 蓝色系 */
+  --word-blue-primary: #0078D4;
+  --word-blue-hover: #106EBE;
+  --word-blue-active: #005A9E;
+  --word-blue-light: #DEECF9;
+  --word-blue-border: #0078D4;
   
-  /* ===== 灰色系 (Grays) ===== */
-  --word-gray-bg: #F3F2F1;           /* 主背景色 */
-  --word-gray-canvas: #E7E7E7;       /* 画布背景 */
-  --word-gray-hover: #F3F2F1;        /* 悬停灰色 */
-  --word-gray-active: #E1DFDD;       /* 激活灰色 */
-  --word-gray-border: #D1D1D1;       /* 边框灰色 */
-  --word-gray-separator: #E1DFDD;    /* 分隔线 */
+  /* 灰色系 */
+  --word-gray-bg: #FFFFFF;  /* Ribbon背景改为纯白 */
+  --word-gray-canvas: #E7E7E7;
+  --word-gray-hover: #F3F2F1;
+  --word-gray-active: #E1DFDD;
+  --word-gray-border: #E1E1E1;  /* 更浅的边框色 */
+  --word-gray-separator: #E1DFDD;
   
-  /* ===== 文字颜色 (Text Colors) ===== */
-  --word-text-primary: #323130;      /* 主要文字 */
-  --word-text-secondary: #605E5C;    /* 次要文字 */
-  --word-text-disabled: #A19F9D;     /* 禁用文字 */
-  --word-text-white: #FFFFFF;        /* 白色文字 */
+  /* 文字颜色 */
+  --word-text-primary: #323130;
+  --word-text-secondary: #605E5C;
+  --word-text-disabled: #A19F9D;
+  --word-text-white: #FFFFFF;
   
-  /* ===== 白色系 (Whites) ===== */
-  --word-white: #FFFFFF;             /* 纯白 */
-  --word-white-bg: #FAFAFA;          /* 白色背景 */
+  /* 白色系 */
+  --word-white: #FFFFFF;
+  --word-white-bg: #FAFAFA;
   
-  /* ===== 强调色 (Accent Colors) ===== */
-  --word-red-close: #E81123;         /* 关闭按钮 */
-  --word-red-hover: #F1707A;         /* 关闭悬停 */
-  --word-green: #107C10;             /* 成功/保存 */
-  --word-orange: #FF8C00;            /* 警告 */
-  --word-yellow-highlight: #FFFF00;  /* 高亮 */
+  /* 强调色 */
+  --word-red-close: #E81123;
+  --word-red-hover: #F1707A;
+  --word-green: #107C10;
+  --word-orange: #FF8C00;
+  --word-yellow-highlight: #FFFF00;
   
-  /* ===== 阴影 (Shadows) ===== */
+  /* 阴影 */
   --word-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
-  --word-shadow-md: 0 2px 6px rgba(0, 0, 0, 0.1);
-  --word-shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.12);
-  --word-page-shadow: 0 0 8px rgba(0, 0, 0, 0.08);
+  --word-shadow-md: 0 2px 4px rgba(0, 0, 0, 0.08);
+  --word-shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.12);
+  --word-page-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), 0 0 1px rgba(0, 0, 0, 0.1);
   
-  /* ===== 精确尺寸 (Precise Dimensions) ===== */
+  /* 尺寸 */
   --titlebar-height: 30px;
   --ribbon-tab-height: 24px;
   --ribbon-toolbar-height: 90px;
-  --ribbon-total-height: 114px;      /* tab(24) + toolbar(90) */
+  --ribbon-total-height: 114px;
   --statusbar-height: 22px;
-  
   --button-large-width: 36px;
   --button-large-height: 64px;
   --button-small-size: 20px;
   --button-medium-size: 24px;
-  
   --icon-small: 16px;
   --icon-medium: 20px;
   --icon-large: 32px;
-  
   --spacing-xs: 2px;
   --spacing-sm: 4px;
   --spacing-md: 8px;
   --spacing-lg: 12px;
   --spacing-xl: 16px;
-  
   --border-radius-sm: 2px;
   --border-radius-md: 4px;
   
-  /* ===== 字体 (Typography) ===== */
+  /* 字体 */
   --font-family-ui: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Microsoft YaHei', sans-serif;
   --font-family-icons: 'Segoe MDL2 Assets', 'Segoe UI Symbol', sans-serif;
   --font-family-document: 'Calibri', '宋体', serif;
-  
   --font-size-xs: 10px;
   --font-size-sm: 11px;
   --font-size-md: 12px;
   --font-size-lg: 13px;
   --font-size-xl: 14px;
-  
   --font-weight-normal: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
   
-  /* ===== 过渡动画 (Transitions) ===== */
-  --transition-fast: 100ms ease;
-  --transition-normal: 200ms ease;
-  --transition-slow: 300ms ease;
+  /* 过渡动画 */
+  --transition-fast: 100ms ease-out;
+  --transition-normal: 150ms ease-out;
+  --transition-slow: 250ms ease-out;
   
-  /* ===== Z-Index层级 (Z-Index Layers) ===== */
+  /* Z-Index层级 */
   --z-titlebar: 1000;
   --z-ribbon-tabs: 999;
   --z-ribbon-toolbar: 998;
@@ -103,7 +94,7 @@
   --z-tooltip: 1002;
 }
 
-/* ===== 全局重置 (Global Reset) ===== */
+/* 全局重置 */
 * {
   margin: 0;
   padding: 0;
@@ -121,7 +112,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ===== 按钮基础样式 (Button Base Styles) ===== */
+/* 按钮基础样式 */
 button {
   font-family: inherit;
   font-size: inherit;
@@ -136,7 +127,6 @@ button::-moz-focus-inner {
   border: 0;
 }
 
-/* ===== 通用按钮悬停效果 (Button Hover Effects) ===== */
 .button-hover:hover {
   background-color: var(--word-gray-hover);
 }
@@ -145,7 +135,7 @@ button::-moz-focus-inner {
   background-color: var(--word-gray-active);
 }
 
-/* ===== 滚动条样式 (Scrollbar Styles) ===== */
+/* 滚动条样式 */
 ::-webkit-scrollbar {
   width: 12px;
   height: 12px;
@@ -165,25 +155,20 @@ button::-moz-focus-inner {
   background: var(--word-text-secondary);
 }
 
-/* ===== 焦点样式 (Focus Styles) ===== */
+/* 焦点样式 */
 :focus-visible {
   outline: 2px solid var(--word-blue-primary);
   outline-offset: -2px;
 }
 
-/* ===== 禁用文本选择 (Disable Text Selection) ===== */
+/* 文本选择控制 */
 .no-select {
   user-select: none;
   -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
 }
 
-/* ===== 允许文本选择 (Allow Text Selection) ===== */
 .allow-select {
   user-select: text;
   -webkit-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
 }
 

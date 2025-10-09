@@ -1,23 +1,20 @@
-/* ========================================
-   状态栏 (Status Bar)
-   高度: 22px
-   ======================================== */
+/* 状态栏 */
 
 .status-bar {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  height: var(--statusbar-height);
+  height: 24px;
   background-color: var(--word-white);
-  border-top: 1px solid #D1D1D1;
+  border-top: 1px solid #E1E1E1;
   display: flex;
   align-items: center;
-  padding: 0 4px;
+  padding: 0 6px;
   font-size: 11px;
-  color: var(--word-text-secondary);
+  color: #605E5C;
   z-index: var(--z-statusbar);
-  gap: 1px;
+  gap: 2px;
 }
 
 /* ===== SVG图标 ===== */
@@ -33,11 +30,12 @@
 .status-bar__item {
   display: flex;
   align-items: center;
-  gap: 3px;
-  padding: 0 6px;
+  gap: 4px;
+  padding: 0 8px;
   height: 100%;
   cursor: pointer;
-  transition: background-color var(--transition-fast);
+  transition: background-color 100ms ease-out;
+  border-radius: 3px;
 }
 
 .status-bar__item:hover {
@@ -171,13 +169,14 @@
 }
 
 .status-bar__view-button {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 2px;
-  transition: background-color var(--transition-fast);
+  border-radius: 3px;
+  transition: all 100ms ease-out;
+  border: 1px solid transparent;
 }
 
 .status-bar__view-button:hover {
@@ -185,7 +184,7 @@
 }
 
 .status-bar__view-button--active {
-  background-color: #DEECF9;
+  background-color: #E6F2FA;
   border: 1px solid #0078D4;
 }
 

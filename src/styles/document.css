@@ -1,22 +1,19 @@
-/* ========================================
-   文档编辑区
-   ======================================== */
+/* 文档编辑区 */
 
-/* ===== 主容器 ===== */
+/* 主容器 */
 .document-container {
   position: fixed;
   top: calc(var(--titlebar-height) + var(--ribbon-total-height));
   bottom: var(--statusbar-height);
   left: 0;
   right: 0;
-  background-color: #D2D0CE;
+  background-color: #E7E7E7;
   overflow-y: auto;
   overflow-x: hidden;
 }
 
-/* ===== 标尺 (已移除) ===== */
 
-/* ===== 文档区域 ===== */
+/* 文档区域 */
 .document-area {
   padding: 40px 60px;
   display: flex;
@@ -25,14 +22,14 @@
   min-height: 100%;
 }
 
-/* ===== A4 页面 ===== */
+/* A4 页面 */
 .document-page {
   width: 21cm;  /* A4 宽度 */
   min-height: 29.7cm;  /* A4 高度 */
   background-color: var(--word-white);
   padding: 2.54cm;  /* 默认页边距 */
   margin-bottom: 20px;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), 0 0 1px rgba(0, 0, 0, 0.1);
   position: relative;
 }
 
@@ -41,13 +38,13 @@
   margin-bottom: 0;
 }
 
-/* ===== 页面内容 ===== */
+/* 页面内容 */
 .document-content {
   width: 100%;
   min-height: 24.62cm;  /* A4高度 - 页边距 */
   font-family: var(--font-family-document);
-  font-size: 11pt;
-  line-height: 1.5;
+  font-size: 14pt;  /* 增大字体以提升阅读舒适度 */
+  line-height: 1.6;  /* 稍微增加行高 */
   color: var(--word-text-primary);
   outline: none;
   border: none;
