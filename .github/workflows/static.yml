@@ -1,16 +1,18 @@
 # Simple workflow for deploying static content to GitHub Pages
+# ⚠️ 当前已禁用自动部署 - 仅保留手动触发
 name: Deploy static content to Pages
 
 on:
+  # 🚫 已暂时屏蔽自动部署
   # Runs on pushes targeting the default branch
-  push:
-    branches: ["main"]
-    paths:
-      - 'index.html'
-      - '*.css'
-      - '*.js'
-      - '示例小说.txt'
-      # 只在这些文件变更时触发部署
+  # push:
+  #   branches: ["main"]
+  #   paths:
+  #     - 'index.html'
+  #     - '*.css'
+  #     - '*.js'
+  #     - '示例小说.txt'
+  #     # 只在这些文件变更时触发部署
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
