@@ -48,8 +48,8 @@
   /* 尺寸 */
   --titlebar-height: 30px;
   --ribbon-tab-height: 24px;
-  --ribbon-toolbar-height: 90px;
-  --ribbon-total-height: 114px;
+  --ribbon-toolbar-height: 94px;  /* 增加工具栏高度 */
+  --ribbon-total-height: 118px;  /* 相应增加总高度 */
   --statusbar-height: 22px;
   --button-large-width: 36px;
   --button-large-height: 64px;

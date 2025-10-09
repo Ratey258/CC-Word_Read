@@ -79,8 +79,8 @@
   background-color: #FFFFFF;
   border-bottom: 1px solid var(--word-gray-border);
   display: flex;
-  align-items: flex-start;
-  padding: 5px 10px 3px 10px;
+  align-items: stretch;  /* 拉伸对齐 */
+  padding: 3px 10px 0 10px;  /* 顶部3px，底部0，左右10px */
   gap: 5px;
   overflow-x: auto;
   overflow-y: hidden;
@@ -96,27 +96,32 @@
   flex-direction: column;
   min-width: fit-content;
   position: relative;
-  height: 86px;  /* 稍微调整高度 */
+  height: 100%;  /* 使用100%高度自动适应 */
+  justify-content: space-between;  /* 内容和标签之间空间分布 */
 }
 
 .ribbon__group-label {
   font-size: 10px;
   color: #605E5C;
   text-align: center;
-  padding: 4px 0 3px 0;
-  margin-top: auto;
+  padding: 3px 2px 2px 2px;  /* 调整内边距：上3px 下2px 左右2px */
   border-top: 1px solid transparent;
-  height: 20px;  /* 固定标签高度 */
-  line-height: 13px;
+  height: 20px;  /* 固定标签高度为20px */
+  line-height: 15px;  /* 行高确保文字居中 */
   font-weight: 400;
+  white-space: nowrap;  /* 防止换行 */
+  overflow: visible;  /* 确保文字可见 */
+  flex-shrink: 0;  /* 防止标签被压缩 */
 }
 
 .ribbon__group-content {
   display: flex;
   gap: 3px;
-  padding: 3px 6px;
+  padding: 4px 6px 2px 6px;  /* 顶部4px，底部2px，左右6px */
   flex: 1;
-  align-items: flex-start;
+  align-items: flex-start;  /* 顶部对齐 */
+  min-height: 0;  /* 允许内容缩小 */
+  flex-shrink: 1;  /* 允许内容收缩 */
 }
 
 /* 分组之间的分隔线 */
@@ -124,8 +129,8 @@
   content: '';
   position: absolute;
   right: -3px;
-  top: 10px;
-  bottom: 22px;
+  top: 6px;  /* 距顶部6px */
+  bottom: 22px;  /* 距底部22px，为标签留出空间 */
   width: 1px;
   background-color: #E1E1E1;
 }
@@ -175,13 +180,12 @@
 /* 大按钮 */
 .ribbon__button-large {
   width: 40px;
-  min-height: 66px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 2px;
-  padding: 3px 5px 4px 5px;
+  justify-content: flex-start;  /* 顶部对齐 */
+  gap: 3px;  /* 图标和文字间距 */
+  padding: 6px 5px 4px 5px;  /* 调整内边距 */
   border-radius: 3px;
   position: relative;
   transition: all 100ms ease-out;
@@ -210,10 +214,14 @@
 .ribbon__button-large__label {
   font-size: 10px;
   text-align: center;
-  line-height: 1.05;
+  line-height: 1.2;  /* 增加行高 */
   max-width: 100%;
   word-wrap: break-word;
   color: var(--word-text-primary);
+  margin-top: 2px;  /* 增加顶部边距 */
+  overflow: visible;  /* 确保文字不被裁剪 */
+  white-space: normal;  /* 允许换行 */
+  padding: 0 2px;  /* 左右留出小边距 */
 }
 
 .ribbon__button-large__dropdown {
@@ -298,6 +306,7 @@
 .ribbon__button-row {
   display: flex;
   gap: 1px;
+  align-items: center;  /* 水平居中对齐 */
 }
 
 /* 按钮行之间的间距 */
@@ -308,7 +317,8 @@
 .ribbon__button-column {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 2px;  /* 增加间距 */
+  justify-content: flex-start;  /* 改为顶部对齐 */
 }
 
 /* 选择器组件 */
