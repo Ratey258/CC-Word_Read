@@ -1,0 +1,469 @@
+/* ========================================
+   Ribbon 功能区
+   标签栏高度: 24px
+   工具栏高度: 92px
+   总高度: 116px
+   ======================================== */
+
+/* ===== Ribbon 容器 ===== */
+.ribbon {
+  position: fixed;
+  top: var(--titlebar-height);
+  left: 0;
+  right: 0;
+  z-index: var(--z-ribbon-tabs);
+  background-color: var(--word-gray-bg);
+}
+
+/* ===== 标签栏 ===== */
+.ribbon__tabs {
+  height: var(--ribbon-tab-height);
+  background-color: var(--word-gray-bg);
+  border-bottom: 1px solid var(--word-gray-border);
+  display: flex;
+  align-items: flex-end;
+  padding: 0 var(--spacing-sm);
+}
+
+.ribbon__tab {
+  padding: 4px 16px;
+  font-size: var(--font-size-sm);
+  color: var(--word-text-primary);
+  border: none;
+  background: none;
+  cursor: pointer;
+  position: relative;
+  transition: background-color var(--transition-fast);
+  border-bottom: 2px solid transparent;
+}
+
+.ribbon__tab:hover {
+  background-color: var(--word-gray-hover);
+}
+
+.ribbon__tab--active {
+  background-color: var(--word-white);
+  border-bottom-color: var(--word-blue-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.ribbon__tab--file {
+  background-color: var(--word-blue-primary);
+  color: var(--word-white);
+  border-radius: 2px 2px 0 0;
+  margin-right: var(--spacing-xs);
+}
+
+.ribbon__tab--file:hover {
+  background-color: var(--word-blue-hover);
+}
+
+/* OfficePLUS 标识 */
+.ribbon__officeplus {
+  padding: 4px 12px;
+  font-size: 11px;
+  color: var(--word-text-secondary);
+  font-weight: var(--font-weight-normal);
+  display: flex;
+  align-items: center;
+  margin-right: var(--spacing-xs);
+  letter-spacing: 0.3px;
+}
+
+/* ===== 工具栏 ===== */
+.ribbon__toolbar {
+  height: var(--ribbon-toolbar-height);
+  background-color: var(--word-gray-bg);
+  border-bottom: 1px solid var(--word-gray-border);
+  display: flex;
+  align-items: flex-start;
+  padding: var(--spacing-sm) var(--spacing-md);
+  gap: var(--spacing-md);
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.ribbon__toolbar::-webkit-scrollbar {
+  height: 4px;
+}
+
+/* ===== 工具栏分组 ===== */
+.ribbon__group {
+  display: flex;
+  flex-direction: column;
+  min-width: fit-content;
+  position: relative;
+}
+
+.ribbon__group-label {
+  font-size: var(--font-size-xs);
+  color: var(--word-text-secondary);
+  text-align: center;
+  padding: var(--spacing-xs) 0;
+  margin-top: auto;
+  border-top: 1px solid transparent;
+}
+
+.ribbon__group-content {
+  display: flex;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm);
+  flex: 1;
+}
+
+/* 分组之间的分隔线 */
+.ribbon__group::after {
+  content: '';
+  position: absolute;
+  right: calc(var(--spacing-md) / -2);
+  top: var(--spacing-sm);
+  bottom: 20px;
+  width: 1px;
+  background-color: var(--word-gray-separator);
+}
+
+.ribbon__group:last-child::after {
+  display: none;
+}
+
+/* ===== SVG图标样式 ===== */
+.ribbon-icon {
+  fill: currentColor;
+  color: var(--word-text-primary);
+}
+
+.ribbon-icon--large {
+  width: 32px;
+  height: 32px;
+}
+
+.ribbon-icon--small {
+  width: 16px;
+  height: 16px;
+}
+
+/* ===== 大按钮 ===== */
+.ribbon__button-large {
+  width: var(--button-large-width);
+  min-height: var(--button-large-height);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+  position: relative;
+  transition: background-color var(--transition-fast);
+}
+
+.ribbon__button-large:hover {
+  background-color: var(--word-gray-hover);
+}
+
+.ribbon__button-large:active {
+  background-color: var(--word-gray-active);
+}
+
+.ribbon__button-large .ms-Icon {
+  font-size: var(--icon-large);
+  color: var(--word-text-primary);
+}
+
+.ribbon__button-large__label {
+  font-size: var(--font-size-xs);
+  text-align: center;
+  line-height: 1.2;
+  max-width: 100%;
+  word-wrap: break-word;
+  color: var(--word-text-primary);
+}
+
+.ribbon__button-large__dropdown {
+  width: 8px;
+  height: 8px;
+  margin-top: -4px;
+  fill: currentColor;
+}
+
+/* ===== 小按钮 ===== */
+.ribbon__button-small {
+  width: var(--button-small-size);
+  height: var(--button-small-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius-sm);
+  transition: background-color var(--transition-fast);
+}
+
+.ribbon__button-small:hover {
+  background-color: var(--word-gray-hover);
+}
+
+.ribbon__button-small:active {
+  background-color: var(--word-gray-active);
+}
+
+.ribbon__button-small .ms-Icon {
+  font-size: var(--icon-medium);
+}
+
+/* ===== 按钮行布局 ===== */
+.ribbon__button-row {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.ribbon__button-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+/* ===== 选择器组件 ===== */
+.ribbon__selector {
+  height: 20px;
+  min-width: 100px;
+  padding: 0 20px 0 6px;
+  border: 1px solid var(--word-gray-border);
+  border-radius: 2px;
+  background-color: var(--word-white);
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.ribbon__selector:hover {
+  border-color: var(--word-text-secondary);
+  background-color: var(--word-white-bg);
+}
+
+.ribbon__selector:focus {
+  border-color: var(--word-blue-primary);
+  box-shadow: 0 0 0 1px var(--word-blue-primary);
+}
+
+.ribbon__selector__value {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-family-ui);
+}
+
+.ribbon__selector__arrow {
+  width: 8px;
+  height: 8px;
+  position: absolute;
+  right: 4px;
+  pointer-events: none;
+  fill: var(--word-text-secondary);
+}
+
+/* 字体选择器 */
+.ribbon__font-selector {
+  min-width: 130px;
+  max-width: 130px;
+}
+
+.ribbon__font-selector .ribbon__selector__value {
+  font-family: inherit;
+}
+
+/* 字号选择器 */
+.ribbon__fontsize-selector {
+  min-width: 45px;
+  max-width: 45px;
+  text-align: center;
+}
+
+.ribbon__fontsize-selector .ribbon__selector__value {
+  text-align: center;
+}
+
+/* ===== 颜色按钮 ===== */
+.ribbon__color-button {
+  position: relative;
+  padding-bottom: 6px !important;
+}
+
+.ribbon__color-bar {
+  position: absolute;
+  bottom: 2px;
+  left: 2px;
+  right: 2px;
+  height: 3px;
+  border-radius: 1px;
+  display: none; /* 隐藏颜色指示器 */
+}
+
+/* ===== 样式画廊 ===== */
+.ribbon__group--styles .ribbon__group-content {
+  padding: 4px;
+}
+
+.ribbon__styles-gallery {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+
+.ribbon__style-button {
+  min-width: 65px;
+  height: 20px;
+  padding: 2px 6px;
+  background-color: var(--word-white);
+  border: 1px solid var(--word-gray-border);
+  border-radius: 2px;
+  font-size: 11px;
+  text-align: left;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  font-family: var(--font-family-ui);
+}
+
+.ribbon__style-button:hover {
+  background-color: var(--word-blue-light);
+  border-color: var(--word-blue-primary);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.ribbon__style-button:active {
+  background-color: var(--word-blue-primary);
+  color: var(--word-white);
+}
+
+.ribbon__style-button--normal {
+  font-size: 11px;
+  font-weight: var(--font-weight-normal);
+  color: var(--word-text-primary);
+}
+
+.ribbon__style-button--no-space {
+  font-size: 11px;
+  font-weight: var(--font-weight-normal);
+  color: var(--word-text-primary);
+}
+
+.ribbon__style-button--heading1 {
+  font-size: 13px;
+  font-weight: var(--font-weight-bold);
+  color: #2E75B5;
+  font-family: '微软雅黑', 'Microsoft YaHei', sans-serif;
+}
+
+.ribbon__style-button--heading2 {
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
+  color: #2E75B5;
+  font-family: '微软雅黑', 'Microsoft YaHei', sans-serif;
+}
+
+/* 更多样式按钮 */
+.ribbon__style-more {
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--word-gray-border);
+  border-radius: 2px;
+  background-color: var(--word-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.ribbon__style-more svg {
+  width: 10px;
+  height: 10px;
+  fill: var(--word-text-secondary);
+}
+
+.ribbon__style-more:hover {
+  background-color: var(--word-blue-light);
+  border-color: var(--word-blue-primary);
+}
+
+.ribbon__style-more:hover svg {
+  fill: var(--word-blue-primary);
+}
+
+/* ===== 特殊状态 ===== */
+.ribbon__button--active {
+  background-color: var(--word-blue-light);
+  border: 1px solid var(--word-blue-primary);
+}
+
+.ribbon__button--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ===== 特色功能按钮 ===== */
+.ribbon__button-feature {
+  background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
+  border: 1px solid #e0e0e0;
+}
+
+.ribbon__button-feature:hover {
+  background: linear-gradient(135deg, #e8f4fd 0%, #f0f9ff 100%);
+  border-color: var(--word-blue-primary);
+}
+
+/* PDF工具组特殊样式 */
+.ribbon__group--pdf .ribbon__button-large {
+  border: 1px solid rgba(209, 52, 56, 0.2);
+}
+
+.ribbon__group--pdf .ribbon__button-large:hover {
+  background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
+  border-color: #d13438;
+}
+
+/* ===== 工具提示 ===== */
+.ribbon__button[title]:hover::before {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: rgba(50, 49, 48, 0.9);
+  color: var(--word-white);
+  font-size: var(--font-size-xs);
+  border-radius: var(--border-radius-sm);
+  white-space: nowrap;
+  z-index: var(--z-tooltip);
+  margin-bottom: var(--spacing-sm);
+  pointer-events: none;
+}
+
+/* ===== 响应式 ===== */
+@media (max-width: 1200px) {
+  .ribbon__group-label {
+    font-size: 9px;
+  }
+  
+  .ribbon__button-large {
+    width: 32px;
+  }
+}
+
+@media (max-width: 900px) {
+  .ribbon__toolbar {
+    overflow-x: scroll;
+  }
+  
+  .ribbon__group {
+    min-width: auto;
+  }
+}
+

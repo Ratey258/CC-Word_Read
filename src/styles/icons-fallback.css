@@ -1,0 +1,115 @@
+/* ========================================
+   图标备用方案 - 使用Unicode字符
+   当Fluent UI Icons无法加载时使用
+   ======================================== */
+
+/* 通用图标样式 */
+.ms-Icon {
+  display: inline-block;
+  font-style: normal;
+  font-weight: normal;
+  speak: none;
+  text-align: center;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== 快速访问工具栏图标 ===== */
+.ms-Icon--Save::before { content: "💾"; font-size: 0.9em; }
+.ms-Icon--Undo::before { content: "↶"; font-size: 1.1em; }
+.ms-Icon--Redo::before { content: "↷"; font-size: 1.1em; }
+.ms-Icon--ChevronDown::before { content: "▼"; font-size: 0.6em; }
+.ms-Icon--Share::before { content: "↗"; font-size: 1em; }
+
+/* ===== 剪贴板组 ===== */
+.ms-Icon--Paste::before { content: "📋"; font-size: 0.9em; }
+.ms-Icon--Cut::before { content: "✂️"; font-size: 0.9em; }
+.ms-Icon--Copy::before { content: "📄"; font-size: 0.9em; }
+.ms-Icon--Brush::before { content: "🖌️"; font-size: 0.9em; }
+
+/* ===== 字体组 ===== */
+.ms-Icon--Bold::before { content: "B"; font-weight: bold; }
+.ms-Icon--Italic::before { content: "I"; font-style: italic; }
+.ms-Icon--Underline::before { content: "U"; text-decoration: underline; }
+.ms-Icon--Strikethrough::before { content: "S"; text-decoration: line-through; }
+.ms-Icon--Subscript::before { content: "x₂"; font-size: 0.8em; }
+.ms-Icon--Superscript::before { content: "x²"; font-size: 0.8em; }
+.ms-Icon--Highlight::before { content: "🖍"; }
+.ms-Icon--FontColor::before { content: "A"; color: #d13438; }
+.ms-Icon--FontIncrease::before { content: "A⁺"; }
+.ms-Icon--FontDecrease::before { content: "A⁻"; }
+
+/* ===== 段落组 ===== */
+.ms-Icon--BulletedList::before { content: "•"; font-size: 1.5em; }
+.ms-Icon--NumberedList::before { content: "123"; font-size: 0.7em; }
+.ms-Icon--DecreaseIndentLegacy::before { content: "◂"; }
+.ms-Icon--IncreaseIndentLegacy::before { content: "▸"; }
+.ms-Icon--Sort::before { content: "⇅"; }
+
+/* 对齐 */
+.ms-Icon--AlignLeft::before { 
+  content: "≡";
+  letter-spacing: -2px;
+}
+.ms-Icon--AlignCenter::before { 
+  content: "≡"; 
+  letter-spacing: 0;
+}
+.ms-Icon--AlignRight::before { 
+  content: "≡";
+  letter-spacing: 2px;
+}
+.ms-Icon--AlignJustify::before { content: "≣"; }
+.ms-Icon--LineSpacing::before { content: "⇳"; }
+.ms-Icon--BackgroundColor::before { content: "▒"; }
+.ms-Icon--BordersAll::before { content: "▦"; }
+
+/* ===== 编辑组 ===== */
+.ms-Icon--Search::before { content: "🔍"; font-size: 0.9em; }
+.ms-Icon--Replace::before { content: "⇄"; font-size: 1.2em; }
+.ms-Icon--SelectAll::before { content: "⊡"; font-size: 1.2em; }
+
+/* ===== 状态栏图标 ===== */
+.ms-Icon--Page::before { content: "📄"; font-size: 0.85em; }
+.ms-Icon--Dictionary::before { content: "📖"; font-size: 0.85em; }
+.ms-Icon--LocaleLanguage::before { content: "🌐"; font-size: 0.85em; }
+.ms-Icon--ZoomIn::before { content: "+"; font-weight: bold; font-size: 1.3em; }
+.ms-Icon--ZoomOut::before { content: "−"; font-weight: bold; font-size: 1.3em; }
+.ms-Icon--WebAppBuilderFragment::before { content: "☷"; font-size: 0.9em; }
+
+/* ===== 调整图标尺寸 ===== */
+.ribbon__button-large .ms-Icon {
+  font-size: 2em;
+}
+
+.ribbon__button-small .ms-Icon {
+  font-size: 1.2em;
+}
+
+.title-bar__quick-button .ms-Icon {
+  font-size: 1em;
+}
+
+.status-bar__item .ms-Icon {
+  font-size: 1em;
+}
+
+/* ===== 特殊调整 ===== */
+/* 粘贴按钮的下拉箭头 */
+.ribbon__button-large__dropdown {
+  font-size: 0.5em !important;
+  margin-top: -4px;
+}
+
+/* 字体选择器箭头 */
+.ribbon__selector__arrow {
+  font-size: 0.6em !important;
+}
+
+/* 缩放按钮 */
+.status-bar__zoom-button .ms-Icon {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+

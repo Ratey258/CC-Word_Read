@@ -3,676 +3,537 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Word - 文档1</title>
-    <!-- Tauri CSP Meta Tag -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com data:; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com; img-src 'self' data: https:;">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f3f2f1;
-            overflow: hidden;
-            user-select: none; /* 防止意外选择界面元素 */
-        }
-
-        .title-bar {
-            background-color: #2b579a;
-            color: white;
-            padding: 6px 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 13px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-        }
-
-        .title-bar .app-icon {
-            width: 16px;
-            height: 16px;
-            background-color: white;
-            border-radius: 2px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #2b579a;
-            font-size: 10px;
-            font-weight: bold;
-        }
-
-        .title-controls {
-            margin-left: auto;
-            display: flex;
-        }
-
-        .title-controls button {
-            background: none;
-            border: none;
-            color: white;
-            width: 46px;
-            height: 32px;
-            cursor: pointer;
-            font-size: 10px;
-            font-family: 'Segoe UI Symbol', 'Segoe UI', sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.15s ease;
-            position: relative;
-        }
-
-        .title-controls button:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .title-controls button:active {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .title-controls .close-btn:hover {
-            background-color: #e81123;
-        }
-
-        .title-controls .close-btn:active {
-            background-color: #c50e1f;
-        }
-
-        /* Windows 风格图标使用CSS绘制 */
-        .minimize-btn::after {
-            content: '';
-            position: absolute;
-            width: 10px;
-            height: 1px;
-            background-color: currentColor;
-            bottom: 50%;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .maximize-btn::after {
-            content: '';
-            position: absolute;
-            width: 9px;
-            height: 9px;
-            border: 1px solid currentColor;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .close-btn::after {
-            content: '×';
-            font-size: 20px;
-            font-weight: normal;
-            line-height: 1;
-        }
-
-        .menu-bar {
-            background-color: #f8f9fa;
-            border-bottom: 1px solid #d1d1d1;
-            padding: 0;
-            display: flex;
-            font-size: 13px;
-            position: fixed;
-            top: 37px; /* title-bar height */
-            left: 0;
-            right: 0;
-            z-index: 999;
-        }
-
-        .menu-item {
-            padding: 8px 12px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: #323130;
-            border-bottom: 2px solid transparent;
-            transition: background-color 0.2s ease;
-        }
-
-        .menu-item:hover {
-            background-color: #e5e5e5;
-        }
-
-        .menu-item.active {
-            border-bottom-color: #0078d4;
-            background-color: #ffffff;
-        }
-
-        .quick-access {
-            background-color: #f8f9fa;
-            padding: 6px 12px;
-            border-bottom: 1px solid #d1d1d1;
-            display: flex;
-            align-items: center;
-            gap: 3px;
-            position: fixed;
-            top: 78px; /* title-bar + menu-bar height */
-            left: 0;
-            right: 0;
-            z-index: 998;
-        }
-
-        .quick-btn {
-            background: none;
-            border: none;
-            padding: 4px;
-            cursor: pointer;
-            border-radius: 2px;
-            color: #605e5c;
-            transition: background-color 0.2s ease;
-        }
-
-        .quick-btn:hover {
-            background-color: #e5e5e5;
-        }
-
-        .quick-btn i {
-            font-size: 12px;
-        }
-
-        .quick-btn.primary {
-            background: #0078d4;
-            color: white;
-            border: 1px solid #106ebe;
-        }
-
-        .quick-btn.primary:hover {
-            background: #106ebe;
-            color: white;
-        }
-
-        .main-container {
-            display: flex;
-            height: calc(100vh - 142px); /* 120px顶部 + 22px底部 */
-            background-color: #f3f2f1;
-            margin-top: 120px; /* 为固定的顶部导航留出空间 */
-            margin-bottom: 22px; /* 为固定的底部状态栏留出空间 */
-        }
-
-        .document-area {
-            flex: 1;
-            background-color: #e5e5e5;
-            padding: 40px 60px;
-            overflow-y: auto;
-            display: flex;
-            justify-content: center;
-        }
-
-        .document-page {
-            width: 8.5in;
-            min-height: 11in;
-            background-color: #ffffff;
-            padding: 1in;
-            box-shadow: 0 0 10px rgba(0,0,0,0.15);
-            position: relative;
-        }
-
-        .document-content {
-            min-height: 100%;
-            border: none;
-            outline: none;
-            font-family: 'Calibri', sans-serif;
-            font-size: 11pt;
-            line-height: 1.15;
-            color: #000000;
-            background: transparent;
-            resize: none;
-            width: 100%;
-            user-select: text; /* 允许选择文档内容 */
-        }
-
-        /* 保持文档内容的隐蔽性，不添加明显的视觉反馈 */
-
-        /* 光标闪烁效果 */
-        .document-content.typing::after {
-            content: '|';
-            animation: cursor-blink 1s infinite;
-            opacity: 0.7;
-        }
-
-        @keyframes cursor-blink {
-            0%, 50% { opacity: 0.7; }
-            51%, 100% { opacity: 0; }
-        }
-
-        .status-bar {
-            background-color: #f3f2f1;
-            border-top: 1px solid #d1d1d1;
-            padding: 4px 16px;
-            font-size: 11px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: #605e5c;
-            height: 22px;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 997;
-        }
-
-
-        .status-indicator {
-            font-size: 9px;
-            color: #0078d4;
-            font-weight: 500;
-            padding: 2px 6px;
-            border-radius: 10px;
-            background: rgba(0, 120, 212, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .status-indicator.active {
-            color: #107c10;
-            background: rgba(16, 124, 16, 0.1);
-            animation: pulse-subtle 2s infinite;
-        }
-
-        .status-indicator.completed {
-            color: #8764b8;
-            background: rgba(135, 100, 184, 0.1);
-        }
-
-        @keyframes pulse-subtle {
-            0% { background: rgba(16, 124, 16, 0.1); }
-            50% { background: rgba(16, 124, 16, 0.2); }
-            100% { background: rgba(16, 124, 16, 0.1); }
-        }
-
-        .hidden-input {
-            position: absolute;
-            left: -9999px;
-            opacity: 0;
-        }
-
-        /* 设置面板样式 */
-        .settings-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.3);
-            z-index: 1000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .settings-panel {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            width: 480px;
-            max-height: 70vh;
-            overflow-y: auto;
-        }
-
-        .settings-header {
-            padding: 20px 24px;
-            border-bottom: 1px solid #e1e1e1;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .settings-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #323130;
-            margin: 0;
-        }
-
-        .settings-close {
-            background: none;
-            border: none;
-            font-size: 20px;
-            color: #605e5c;
-            cursor: pointer;
-            padding: 4px;
-            border-radius: 4px;
-            transition: background-color 0.2s ease;
-        }
-
-        .settings-close:hover {
-            background-color: #f3f2f1;
-        }
-
-        .settings-content {
-            padding: 24px;
-        }
-
-        .setting-group {
-            margin-bottom: 24px;
-        }
-
-        .setting-label {
-            display: block;
-            font-size: 14px;
-            font-weight: 600;
-            color: #323130;
-            margin-bottom: 8px;
-        }
-
-        .setting-description {
-            font-size: 13px;
-            color: #605e5c;
-            margin-bottom: 12px;
-        }
-
-        .setting-input {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid #d1d1d1;
-            border-radius: 4px;
-            font-size: 14px;
-            transition: border-color 0.2s ease;
-        }
-
-        .setting-input:focus {
-            outline: none;
-            border-color: #0078d4;
-            box-shadow: 0 0 0 1px #0078d4;
-        }
-
-        .setting-range {
-            width: 100%;
-            margin: 8px 0;
-        }
-
-        .range-value {
-            display: inline-block;
-            min-width: 40px;
-            text-align: center;
-            background: #f3f2f1;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 13px;
-            color: #323130;
-        }
-
-        .settings-footer {
-            padding: 16px 24px;
-            border-top: 1px solid #e1e1e1;
-            display: flex;
-            justify-content: flex-end;
-            gap: 8px;
-        }
-
-        .settings-btn {
-            padding: 8px 16px;
-            border: 1px solid #d1d1d1;
-            border-radius: 4px;
-            background: white;
-            color: #323130;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s ease;
-        }
-
-        .settings-btn:hover {
-            background-color: #f3f2f1;
-        }
-
-        .settings-btn.primary {
-            background: #0078d4;
-            border-color: #0078d4;
-            color: white;
-        }
-
-        .settings-btn.primary:hover {
-            background: #106ebe;
-            border-color: #106ebe;
-        }
-
-        .page-break {
-            page-break-after: always;
-            margin-top: 1in;
-        }
-
-        /* 页面加载动画 */
-        .fade-in {
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* 字数更新动画 */
-        .word-count-updated {
-            animation: wordCountPulse 0.3s ease-out;
-        }
-
-        @keyframes wordCountPulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); color: #107c10; }
-            100% { transform: scale(1); }
-        }
-
-        /* 通知样式 */
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #107c10;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 4px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            z-index: 10000;
-            font-size: 14px;
-            opacity: 0;
-            transform: translateX(100%);
-            transition: all 0.3s ease-out;
-        }
-
-        .notification.show {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .notification.success {
-            background: #107c10;
-        }
-
-        .notification.error {
-            background: #d13438;
-        }
-
-        /* 隐藏滚动条但保持功能 */
-        .document-area::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .document-area::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .document-area::-webkit-scrollbar-thumb {
-            background: rgba(0, 0, 0, 0.1);
-            border-radius: 4px;
-        }
-
-        .document-area::-webkit-scrollbar-thumb:hover {
-            background: rgba(0, 0, 0, 0.2);
-        }
-
-        /* 进度条 */
-        .progress-indicator {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            height: 2px;
-            background: rgba(0, 120, 212, 0.3);
-            transition: width 0.3s ease;
-            border-radius: 1px;
-        }
-    </style>
+    <title>文档1 - Word</title>
+    
+    <!-- Fluent UI Icons (Microsoft 官方图标库 - 在线环境使用) -->
+    <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/assets/icons/css/fabric-icons.min.css" media="none" onload="if(media!='all')media='all'">
+    
+    <!-- Word 样式 -->
+    <link rel="stylesheet" href="styles/word-theme.css">
+    <link rel="stylesheet" href="styles/titlebar-enhanced.css">
+    <link rel="stylesheet" href="styles/ribbon.css">
+    <link rel="stylesheet" href="styles/document.css">
+    <link rel="stylesheet" href="styles/statusbar.css">
+    
+    <!-- 图标备用方案 (本地环境使用) -->
+    <link rel="stylesheet" href="styles/icons-fallback.css">
 </head>
 <body>
-    <!-- 标题栏 - 支持Tauri拖动 -->
+    <!-- ========== 标题栏 ========== -->
     <div class="title-bar" data-tauri-drag-region>
-        <div class="app-icon">W</div>
-        <span>文档1 - Word</span>
-        <div class="title-controls">
-            <button class="minimize-btn" id="minimize-btn" title="最小化"></button>
-            <button class="maximize-btn" id="maximize-btn" title="最大化"></button>
-            <button class="close-btn" id="close-btn" title="关闭"></button>
+        <!-- 左侧区域 -->
+        <div class="title-bar__left">
+            <!-- Word图标 -->
+            <div class="title-bar__icon">
+                <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="20" height="20" rx="2" fill="#2B579A"/>
+                    <path d="M5 5h2.5l1.5 6.5L10.5 5H13l-2.5 10h-2L6.5 8.5 5 15H3l2-10z" fill="#FFFFFF"/>
+                </svg>
+            </div>
+            
+            <!-- 快速访问工具栏 -->
+            <div class="title-bar__quick-access">
+                <button class="title-bar__quick-button" title="保存 (Ctrl+S)">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M13.5 1H4v3h8V1h1.5zM4 14h8v-4H4v4zm9.5-13L16 3.5V15a1 1 0 01-1 1H1a1 1 0 01-1-1V1a1 1 0 011-1h12.5z"/>
+                    </svg>
+                </button>
+                <button class="title-bar__quick-button" title="撤销 (Ctrl+Z)">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M2.5 8a5.5 5.5 0 019.8-3.3l1.1-1.1A7 7 0 002 8h.5zM1 7l2 2 2-2H1z"/>
+                    </svg>
+                </button>
+                <button class="title-bar__quick-button" title="重做 (Ctrl+Y)">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M13.5 8a5.5 5.5 0 00-9.8-3.3L2.6 3.6A7 7 0 0114 8h-.5zM15 7l-2 2-2-2h4z"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- 自动保存开关 -->
+            <div class="title-bar__autosave title-bar__autosave--on" title="自动保存">
+                <div class="title-bar__autosave-toggle"></div>
+                <span>自动保存</span>
+            </div>
         </div>
-    </div>
-
-    <!-- 菜单栏 -->
-    <div class="menu-bar">
-        <button class="menu-item">文件</button>
-        <button class="menu-item active">开始</button>
-        <button class="menu-item">插入</button>
-        <button class="menu-item">设计</button>
-        <button class="menu-item">布局</button>
-        <button class="menu-item">引用</button>
-        <button class="menu-item">邮件</button>
-        <button class="menu-item">审阅</button>
-        <button class="menu-item">视图</button>
-        <button class="menu-item" onclick="document.getElementById('novelFile').click()">导入</button>
-        <button class="menu-item" onclick="toggleSettings()">设置</button>
-    </div>
-
-    <!-- 快速访问工具栏 -->
-    <div class="quick-access">
-        <button class="quick-btn" onclick="document.getElementById('novelFile').click()" title="打开">
-            <i class="fas fa-folder-open"></i>
-        </button>
-        <button class="quick-btn" title="保存">
-            <i class="fas fa-save"></i>
-        </button>
-        <button class="quick-btn" title="撤销">
-            <i class="fas fa-undo"></i>
-        </button>
-        <button class="quick-btn" title="重做">
-            <i class="fas fa-redo"></i>
-        </button>
-        <span style="margin: 0 10px; color: #d1d1d1;">|</span>
-        <button class="quick-btn" title="粗体">
-            <i class="fas fa-bold"></i>
-        </button>
-        <button class="quick-btn" title="斜体">
-            <i class="fas fa-italic"></i>
-        </button>
-        <button class="quick-btn" title="下划线">
-            <i class="fas fa-underline"></i>
-        </button>
         
-        <!-- 右侧控制区域 -->
-        <div style="margin-left: auto; display: flex; align-items: center; gap: 8px;">
-            <!-- 控制按钮已移除，界面更加简洁 -->
+        <!-- 中间标题 -->
+        <div class="title-bar__center">
+            <div class="title-bar__title">文档1</div>
+            <div class="title-bar__separator">-</div>
+            <div class="title-bar__app">Word</div>
+        </div>
+        
+        <!-- 搜索框 -->
+        <div class="title-bar__search">
+            <svg class="title-bar__search-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+            </svg>
+            <input type="text" class="title-bar__search-input" placeholder="搜索">
+        </div>
+        
+        <!-- 右侧工具 -->
+        <div class="title-bar__right">
+            <button class="title-bar__comment-button" title="批注">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M2 2a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H6l-4 4V2z"/>
+                </svg>
+            </button>
+            <button class="title-bar__share-button" title="共享">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M13.5 1a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm-.646 4.854l.646.646a.5.5 0 01-.708.708l-1.5-1.5a.5.5 0 01.708-.708l.146.146V1.5a.5.5 0 011 0v3.646zM12 8a3 3 0 00-2-2.828V3a1 1 0 10-2 0v2.172A3 3 0 006 8v5a3 3 0 006 0V8z"/>
+                </svg>
+                <span>共享</span>
+            </button>
+        </div>
+        
+        <!-- 右上角按钮组 -->
+        <div class="title-bar__top-right">
+            <!-- 无障碍警告 -->
+            <button class="title-bar__accessibility-warning" title="一些阅读者可能会在阅读此文档时遇到困难">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M8.982 1.566a1.13 1.13 0 00-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 01-1.1 0L7.1 5.995A.905.905 0 018 5zm.002 6a1 1 0 110 2 1 1 0 010-2z"/>
+                </svg>
+            </button>
+            <!-- 共享给我 -->
+            <div class="title-bar__shared-indicator" title="共享给我">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M11 6a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path d="M0 8a8 8 0 1116 0A8 8 0 010 8zm8-7a7 7 0 00-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 008 1z"/>
+                </svg>
+            </div>
+            <!-- 功能区显示选项 -->
+            <button class="title-bar__ribbon-toggle" title="功能区显示选项">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+                    <path d="M2 3h8v1H2V3zm0 2.5h8v1H2v-1zm0 2.5h8v1H2V8z"/>
+                </svg>
+            </button>
+            <button class="title-bar__help-button" title="帮助">?</button>
+        </div>
+        
+        <!-- 窗口控制按钮 -->
+        <div class="title-bar__controls">
+            <button class="title-bar__control-button title-bar__control-button--minimize" id="minimize-btn" title="最小化"></button>
+            <button class="title-bar__control-button title-bar__control-button--maximize" id="maximize-btn" title="最大化"></button>
+            <button class="title-bar__control-button title-bar__control-button--close" id="close-btn" title="关闭"></button>
         </div>
     </div>
 
-    <!-- 主要内容区域 -->
-    <div class="main-container">
-        <!-- 文档区域 -->
-        <div class="document-area">
-            <div class="document-page fade-in">
-                <div 
-                    class="document-content" 
-                    contenteditable="true" 
-                    id="documentContent"
-                    placeholder="在此处键入..."
-                ></div>
-                <div class="progress-indicator" id="progressIndicator" style="width: 0%"></div>
+    <!-- ========== Ribbon 功能区 ========== -->
+    <div class="ribbon">
+        <!-- 标签栏 -->
+        <div class="ribbon__tabs">
+            <button class="ribbon__tab ribbon__tab--file">文件</button>
+            <div class="ribbon__officeplus">OfficePLUS</div>
+            <button class="ribbon__tab ribbon__tab--active">开始</button>
+            <button class="ribbon__tab">插入</button>
+            <button class="ribbon__tab">设计</button>
+            <button class="ribbon__tab">布局</button>
+            <button class="ribbon__tab">引用</button>
+            <button class="ribbon__tab">邮件</button>
+            <button class="ribbon__tab">审阅</button>
+            <button class="ribbon__tab">视图</button>
+            <button class="ribbon__tab" onclick="document.getElementById('novelFile').click()">📖导入</button>
+        </div>
+
+        <!-- 工具栏 -->
+        <div class="ribbon__toolbar">
+            <!-- 剪贴板组 -->
+            <div class="ribbon__group">
+                <div class="ribbon__group-content">
+                    <!-- 粘贴(大按钮) -->
+                    <button class="ribbon__button-large" title="粘贴 (Ctrl+V)">
+                        <svg class="ribbon-icon ribbon-icon--large" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M10 2h4v12H2V2h4V1a1 1 0 011-1h2a1 1 0 011 1v1zM6 2h4V1H6v1zm-2 3h8v8H4V5zm1 1v6h6V6H5z"/>
+                        </svg>
+                        <span class="ribbon__button-large__label">粘贴</span>
+                        <svg class="ribbon__button-large__dropdown" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 01.753 1.659l-4.796 5.48a1 1 0 01-1.506 0z"/>
+                        </svg>
+                    </button>
+                    
+                    <!-- 剪切、复制(小按钮列) -->
+                    <div class="ribbon__button-column">
+                        <div class="ribbon__button-row">
+                            <button class="ribbon__button-small" title="剪切 (Ctrl+X)">
+                                <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 16 16" fill="currentColor">
+                                    <path d="M4.146 2.146a.5.5 0 01.708 0L8 5.293l3.146-3.147a.5.5 0 01.708.708L8.707 6l3.147 3.146a.5.5 0 01-.708.708L8 6.707l-3.146 3.147a.5.5 0 01-.708-.708L7.293 6 4.146 2.854a.5.5 0 010-.708zM2.5 12.5A1.5 1.5 0 114 11a1.5 1.5 0 01-1.5 1.5zm0-1a.5.5 0 100-1 .5.5 0 000 1zm11 1A1.5 1.5 0 1112 11a1.5 1.5 0 011.5 1.5zm0-1a.5.5 0 100-1 .5.5 0 000 1z"/>
+                                </svg>
+                            </button>
+                            <button class="ribbon__button-small" title="复制 (Ctrl+C)">
+                                <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 16 16" fill="currentColor">
+                                    <path d="M4 2a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H6a2 2 0 01-2-2V2zm2-1a1 1 0 00-1 1v8a1 1 0 001 1h8a1 1 0 001-1V2a1 1 0 00-1-1H6zM2 5a1 1 0 00-1 1v8a1 1 0 001 1h8a1 1 0 001-1v-1h1v1a2 2 0 01-2 2H2a2 2 0 01-2-2V6a2 2 0 012-2h1v1H2z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <button class="ribbon__button-small" title="格式刷">
+                            <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M3.5 0a.5.5 0 01.5.5V1h8V.5a.5.5 0 011 0V8a.5.5 0 01-.5.5h-10A.5.5 0 012 8V.5a.5.5 0 011 0V1h.5V.5zM5 2v5h6V2H5zM0 9.5A1.5 1.5 0 011.5 8h13A1.5 1.5 0 0116 9.5v1a1.5 1.5 0 01-1.5 1.5h-13A1.5 1.5 0 010 10.5v-1z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="ribbon__group-label">剪贴板</div>
+            </div>
+
+            <!-- 字体组 -->
+            <div class="ribbon__group">
+                <div class="ribbon__group-content">
+                    <div class="ribbon__button-column">
+                        <!-- 字体选择器 -->
+                        <div class="ribbon__button-row">
+                            <button class="ribbon__selector ribbon__font-selector">
+                                <span class="ribbon__selector__value">宋体 (中文正文)</span>
+                                <svg class="ribbon__selector__arrow" viewBox="0 0 16 16" fill="currentColor">
+                                    <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 01.753 1.659l-4.796 5.48a1 1 0 01-1.506 0z"/>
+                                </svg>
+                            </button>
+                            <button class="ribbon__selector ribbon__fontsize-selector">
+                                <span class="ribbon__selector__value">11</span>
+                                <svg class="ribbon__selector__arrow" viewBox="0 0 16 16" fill="currentColor">
+                                    <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 01.753 1.659l-4.796 5.48a1 1 0 01-1.506 0z"/>
+                                </svg>
+                            </button>
+                            <button class="ribbon__button-small" title="增大字号">
+                                <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 16 16" fill="currentColor">
+                                    <path d="M.5 5a.5.5 0 000 1h2v8.5a.5.5 0 001 0V6h2a.5.5 0 000-1h-5zM9 0a.5.5 0 01.5.5v3h3a.5.5 0 010 1h-3v3a.5.5 0 01-1 0v-3h-3a.5.5 0 010-1h3v-3A.5.5 0 019 0z"/>
+                                </svg>
+                            </button>
+                            <button class="ribbon__button-small" title="减小字号">
+                                <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 16 16" fill="currentColor">
+                                    <path d="M.5 5a.5.5 0 000 1h2v8.5a.5.5 0 001 0V6h2a.5.5 0 000-1h-5zM5.5 3.5a.5.5 0 01.5-.5h3a.5.5 0 010 1H6a.5.5 0 01-.5-.5z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <!-- 字体样式按钮 -->
+                        <div class="ribbon__button-row">
+                            <button class="ribbon__button-small" title="加粗 (Ctrl+B)">
+                                <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 16 16" fill="currentColor">
+                                    <path d="M8.21 13c2.106 0 3.412-1.087 3.412-2.823 0-1.306-.984-2.283-2.324-2.386v-.055a2.176 2.176 0 001.852-2.14c0-1.51-1.162-2.46-3.014-2.46H3.843V13H8.21zM5.908 4.674h1.696c.963 0 1.517.451 1.517 1.244 0 .834-.629 1.32-1.73 1.32H5.908V4.673zm0 6.788V8.598h1.73c1.217 0 1.88.492 1.88 1.415 0 .943-.643 1.449-1.832 1.449H5.907z"/>
+                                </svg>
+                            </button>
+                            <button class="ribbon__button-small" title="倾斜 (Ctrl+I)">
+                                <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 16 16" fill="currentColor">
+                                    <path d="M7.991 11.674L9.53 4.455c.123-.595.246-.71 1.347-.807l.11-.52H7.211l-.11.52c1.06.096 1.128.212 1.005.807L6.57 11.674c-.123.595-.246.71-1.346.806l-.11.52h3.774l.11-.52c-1.06-.095-1.129-.211-1.006-.806z"/>
+                                </svg>
+                            </button>
+                            <button class="ribbon__button-small" title="下划线 (Ctrl+U)">
+                                <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 16 16" fill="currentColor">
+                                    <path d="M5.313 3.136h-1.23V9.54c0 2.105 1.47 3.623 3.917 3.623s3.917-1.518 3.917-3.623V3.136h-1.23v6.323c0 1.49-.978 2.57-2.687 2.57-1.709 0-2.687-1.08-2.687-2.57V3.136zM12.5 15h-9v-1h9v1z"/>
+                                </svg>
+                            </button>
+                            <button class="ribbon__button-small" title="删除线">
+                                <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 16 16" fill="currentColor">
+                                    <path d="M6.333 5.686c0 .31.083.581.27.814H5.166a2.776 2.776 0 01-.099-.76c0-1.627 1.436-2.768 3.48-2.768 1.969 0 3.39 1.175 3.445 2.85h-1.23c-.11-1.08-.964-1.743-2.25-1.743-1.23 0-2.18.602-2.18 1.607zm2.194 7.478c-2.153 0-3.589-1.107-3.705-2.81h1.23c.144 1.06 1.129 1.703 2.544 1.703 1.34 0 2.31-.705 2.31-1.675 0-.827-.547-1.374-1.914-1.675L8.046 8.5H1v-1h14v1h-3.504c.468.437.675.994.675 1.697 0 1.826-1.436 2.967-3.644 2.967z"/>
+                                </svg>
+                            </button>
+                            <button class="ribbon__button-small" title="下标">
+                                <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 16 16" fill="currentColor">
+                                    <path d="M3.5 8a.5.5 0 01.5.5v4a.5.5 0 01-1 0v-4a.5.5 0 01.5-.5zm6.354-5.854a.5.5 0 010 .708L6.207 6.5l3.647 3.646a.5.5 0 01-.708.708L5.5 7.207 1.854 10.854a.5.5 0 01-.708-.708L4.793 6.5 1.146 2.854a.5.5 0 11.708-.708L5.5 5.793l3.646-3.647a.5.5 0 01.708 0z"/>
+                                    <path d="M10.5 12h2a.5.5 0 010 1h-2.5a.5.5 0 01-.5-.5v-.5a.5.5 0 01.5-.5h1.5v-.5h-1a.5.5 0 010-1h.5a.5.5 0 01.5.5v1z"/>
+                                </svg>
+                            </button>
+                            <button class="ribbon__button-small" title="上标">
+                                <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 16 16" fill="currentColor">
+                                    <path d="M6.354 2.146a.5.5 0 010 .708L3.207 6l3.147 3.146a.5.5 0 01-.708.708L2.5 6.707.854 8.354a.5.5 0 11-.708-.708L3.293 6 .146 2.854a.5.5 0 11.708-.708L2.5 5.293l1.646-1.647a.5.5 0 01.708 0z"/>
+                                    <path d="M10 4h2a.5.5 0 010 1h-2.5a.5.5 0 01-.5-.5V4a.5.5 0 01.5-.5h1.5v-.5h-1a.5.5 0 010-1h.5a.5.5 0 01.5.5v1z"/>
+                                </svg>
+                            </button>
+                            <button class="ribbon__button-small ribbon__color-button" title="突出显示颜色">
+                                <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 16 16" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M11.096.644a2 2 0 012.791.036l1.433 1.433a2 2 0 01.036 2.791l-1.4 1.433a.75.75 0 01-1.06.036L10.5 4.94a.75.75 0 010-1.06l1.433-1.4a.75.75 0 01.163-.124zM4.25 6.5l5.5-5.5 2.25 2.25-5.5 5.5h-2.25v-2.25z"/>
+                                    <path d="M4 8l-2.5 2.5a1 1 0 00-.293.707V14.5h3.293a1 1 0 00.707-.293L8 11.5 4 8z"/>
+                                </svg>
+                                <span class="ribbon__color-bar" style="background-color: #FFFF00;"></span>
+                            </button>
+                            <button class="ribbon__button-small" title="字体颜色">
+                                <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 16 16" fill="currentColor">
+                                    <path d="M6.354 5.5H4.639l-.66 2.2H2.5l2.2-6.5h1.6l2.2 6.5H7.014l-.66-2.2zm-.974-1.2l-.77-2.583h-.05l-.77 2.583h1.59z"/>
+                                </svg>
+                                <span class="ribbon__color-bar" style="background-color: #FF0000;"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="ribbon__group-label">字体</div>
+            </div>
+
+            <!-- 段落组 -->
+            <div class="ribbon__group">
+                <div class="ribbon__group-content">
+                    <div class="ribbon__button-column">
+                        <!-- 列表和缩进 -->
+                        <div class="ribbon__button-row">
+                            <button class="ribbon__button-small" title="项目符号">
+                                <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 16 16" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5 11.5a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9a.5.5 0 01-.5-.5zm0-4a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9a.5.5 0 01-.5-.5zm0-4a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9a.5.5 0 01-.5-.5zm-3 1a1 1 0 100-2 1 1 0 000 2zm0 4a1 1 0 100-2 1 1 0 000 2zm0 4a1 1 0 100-2 1 1 0 000 2z"/>
+                                </svg>
+                            </button>
+                            <button class="ribbon__button-small" title="编号">
+                                <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 16 16" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5 11.5a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9a.5.5 0 01-.5-.5zm0-4a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9a.5.5 0 01-.5-.5zm0-4a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9a.5.5 0 01-.5-.5z"/>
+                                    <path d="M1.713 11.865v-.474H2c.217 0 .363-.137.363-.317 0-.185-.158-.31-.361-.31-.223 0-.367.152-.373.31h-.59c.016-.467.373-.787.986-.787.588-.002.954.291.957.703a.595.595 0 01-.492.594v.033a.615.615 0 01.569.631c.003.533-.502.8-1.051.8-.656 0-1-.37-1.008-.794h.582c.008.178.186.306.422.309.254 0 .424-.145.422-.35-.002-.195-.155-.348-.414-.348h-.3zm-.004-4.699h-.604v-.035c0-.408.295-.844.958-.844.583 0 .96.326.96.756 0 .389-.257.617-.476.848l-.537.572v.03h1.054V9H1.143v-.395l.957-.99c.138-.142.293-.304.293-.508 0-.18-.147-.32-.342-.32a.33.33 0 00-.342.338v.041zM2.564 5h-.635V2.924h-.031l-.598.42v-.567l.629-.443h.635V5z"/>
+                                </svg>
+                            </button>
+                            <button class="ribbon__button-small" title="减少缩进">
+                                <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 16 16" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M3 8a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9A.5.5 0 013 8zm0 4a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9a.5.5 0 01-.5-.5zm-3-8a.5.5 0 01.5-.5h15a.5.5 0 010 1H.5A.5.5 0 010 4zm0 8a.5.5 0 01.5-.5h15a.5.5 0 010 1H.5A.5.5 0 010 12zm.854-9.646a.5.5 0 010 .707L.207 3.5l.647.646a.5.5 0 11-.708.708l-1-1a.5.5 0 010-.708l1-1a.5.5 0 01.708 0z"/>
+                                </svg>
+                            </button>
+                            <button class="ribbon__button-small" title="增加缩进">
+                                <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 16 16" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M3 8a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9A.5.5 0 013 8zm0 4a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9a.5.5 0 01-.5-.5zm-3-8a.5.5 0 01.5-.5h15a.5.5 0 010 1H.5A.5.5 0 010 4zm0 8a.5.5 0 01.5-.5h15a.5.5 0 010 1H.5A.5.5 0 010 12zm.646-6.354l1 1a.5.5 0 010 .708l-1 1a.5.5 0 01-.708-.708L.793 7 .146 6.354a.5.5 0 01.5-.708z"/>
+                                </svg>
+                            </button>
+                            <button class="ribbon__button-small" title="排序">
+                                <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 16 16" fill="currentColor">
+                                    <path d="M3.5 2.5a.5.5 0 00-1 0v8.793l-1.146-1.147a.5.5 0 00-.708.708l2 1.999.007.007a.497.497 0 00.7-.006l2-2a.5.5 0 00-.707-.708L3.5 11.293V2.5zm3.5 1a.5.5 0 01.5-.5h7a.5.5 0 010 1h-7a.5.5 0 01-.5-.5zM7.5 6a.5.5 0 000 1h5a.5.5 0 000-1h-5zm0 3a.5.5 0 000 1h3a.5.5 0 000-1h-3zm0 3a.5.5 0 000 1h1a.5.5 0 000-1h-1z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <!-- 对齐方式 -->
+                        <div class="ribbon__button-row">
+                            <button class="ribbon__button-small" title="左对齐 (Ctrl+L)">
+                                <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 16 16" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M2 12.5a.5.5 0 01.5-.5h7a.5.5 0 010 1h-7a.5.5 0 01-.5-.5zm0-3a.5.5 0 01.5-.5h11a.5.5 0 010 1h-11a.5.5 0 01-.5-.5zm0-3a.5.5 0 01.5-.5h7a.5.5 0 010 1h-7a.5.5 0 01-.5-.5zm0-3a.5.5 0 01.5-.5h11a.5.5 0 010 1h-11a.5.5 0 01-.5-.5z"/>
+                                </svg>
+                            </button>
+                            <button class="ribbon__button-small" title="居中 (Ctrl+E)">
+                                <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 16 16" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M4 12.5a.5.5 0 01.5-.5h7a.5.5 0 010 1h-7a.5.5 0 01-.5-.5zm-2-3a.5.5 0 01.5-.5h11a.5.5 0 010 1h-11a.5.5 0 01-.5-.5zm2-3a.5.5 0 01.5-.5h7a.5.5 0 010 1h-7a.5.5 0 01-.5-.5zm-2-3a.5.5 0 01.5-.5h11a.5.5 0 010 1h-11a.5.5 0 01-.5-.5z"/>
+                                </svg>
+                            </button>
+                            <button class="ribbon__button-small" title="右对齐 (Ctrl+R)">
+                                <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 16 16" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M6 12.5a.5.5 0 01.5-.5h7a.5.5 0 010 1h-7a.5.5 0 01-.5-.5zm-4-3a.5.5 0 01.5-.5h11a.5.5 0 010 1h-11a.5.5 0 01-.5-.5zm4-3a.5.5 0 01.5-.5h7a.5.5 0 010 1h-7a.5.5 0 01-.5-.5zm-4-3a.5.5 0 01.5-.5h11a.5.5 0 010 1h-11a.5.5 0 01-.5-.5z"/>
+                                </svg>
+                            </button>
+                            <button class="ribbon__button-small" title="两端对齐 (Ctrl+J)">
+                                <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 16 16" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M2 12.5a.5.5 0 01.5-.5h11a.5.5 0 010 1h-11a.5.5 0 01-.5-.5zm0-3a.5.5 0 01.5-.5h11a.5.5 0 010 1h-11a.5.5 0 01-.5-.5zm0-3a.5.5 0 01.5-.5h11a.5.5 0 010 1h-11a.5.5 0 01-.5-.5zm0-3a.5.5 0 01.5-.5h11a.5.5 0 010 1h-11a.5.5 0 01-.5-.5z"/>
+                                </svg>
+                            </button>
+                            <button class="ribbon__button-small" title="行距">
+                                <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 16 16" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M7 .5a.5.5 0 01.5.5v13a.5.5 0 01-1 0V1a.5.5 0 01.5-.5zM1 .5a.5.5 0 01.5.5v13a.5.5 0 01-1 0V1a.5.5 0 01.5-.5zm12 0a.5.5 0 01.5.5v13a.5.5 0 01-1 0V1a.5.5 0 01.5-.5zM9.854 5.646a.5.5 0 010 .708L8.207 8l1.647 1.646a.5.5 0 01-.708.708l-2-2a.5.5 0 010-.708l2-2a.5.5 0 01.708 0z"/>
+                                </svg>
+                            </button>
+                            <button class="ribbon__button-small" title="底纹">
+                                <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 16 16" fill="currentColor">
+                                    <path d="M0 2a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H2a2 2 0 01-2-2V2zm5 10H2v2h3v-2zm0-1v-2H2v2h3zm1 1v2h2v-2H6zm2-1v-2H6v2h2zm1 1v2h2v-2H9zm2-1v-2H9v2h2zm1 1v2h2v-2h-2zm2-1v-2h-2v2h2zM2 8v2h3V8H2zm0-1V5h3v2H2zm4 0V5h2v2H6zm2-4v2h2V3H8zM6 3v2h2V3H6zm-4 0v2h3V3H2zm9 0v2h2V3h-2zm2 4h2V5h-2v2zm0 1v2h2V8h-2z"/>
+                                </svg>
+                            </button>
+                            <button class="ribbon__button-small" title="边框">
+                                <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 16 16" fill="currentColor">
+                                    <path d="M0 0h16v1H0V0zm0 15h16v1H0v-1zM0 1h1v14H0V1zm15 0h1v14h-1V1z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="ribbon__group-label">段落</div>
+            </div>
+
+            <!-- 样式组 -->
+            <div class="ribbon__group ribbon__group--styles">
+                <div class="ribbon__group-content">
+                    <div class="ribbon__styles-gallery">
+                        <button class="ribbon__style-button ribbon__style-button--normal" title="正文">
+                            正文
+                        </button>
+                        <button class="ribbon__style-button ribbon__style-button--no-space" title="无间隔">
+                            无间隔
+                        </button>
+                        <button class="ribbon__style-button ribbon__style-button--heading1" title="标题 1">
+                            标题 1
+                        </button>
+                        <button class="ribbon__style-button ribbon__style-button--heading2" title="标题 2">
+                            标题 2
+                        </button>
+                        <button class="ribbon__style-more" title="更多样式">
+                            <svg viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 01.753 1.659l-4.796 5.48a1 1 0 01-1.506 0z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="ribbon__group-label">样式</div>
+            </div>
+
+            <!-- 编辑组 -->
+            <div class="ribbon__group">
+                <div class="ribbon__group-content">
+                    <button class="ribbon__button-large" title="查找">
+                        <svg class="ribbon-icon ribbon-icon--large" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                        </svg>
+                        <span class="ribbon__button-large__label">查找</span>
+                    </button>
+                    <div class="ribbon__button-column">
+                        <button class="ribbon__button-small" title="替换">
+                            <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M14 0a2 2 0 012 2v8a2 2 0 01-2 2H8.414l-2.121 2.121A1 1 0 014.707 14L7.828 11H2a2 2 0 01-2-2V2a2 2 0 012-2h12z"/>
+                            </svg>
+                        </button>
+                        <button class="ribbon__button-small" title="选择">
+                            <svg class="ribbon-icon ribbon-icon--small" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M0 2a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H2a2 2 0 01-2-2V2zm15 2h-4v3h4V4zm0 4h-4v3h4V8zm0 4h-4v3h3a1 1 0 001-1v-2zm-5 3v-3H6v3h4zm-5 0v-3H1v2a1 1 0 001 1h3zm-4-4h4V8H1v3zm0-4h4V4H1v3zm5-3v3h4V4H6zm4 4H6v3h4V8z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="ribbon__group-label">编辑</div>
+            </div>
+
+            <!-- 论文辅助 -->
+            <div class="ribbon__group">
+                <div class="ribbon__group-content">
+                    <button class="ribbon__button-large ribbon__button-feature" title="论文写作">
+                        <svg class="ribbon-icon ribbon-icon--large" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M12.854.146a.5.5 0 00-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 000-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 01.5.5v.5h.5a.5.5 0 01.5.5v.5h.5a.5.5 0 01.5.5v.5h.5a.5.5 0 01.5.5v.207l6.5-6.5z"/>
+                            <path d="M3 9v6h6V9H3zm1 1v4H1.5v-4H4z"/>
+                        </svg>
+                        <span class="ribbon__button-large__label">论文写作</span>
+                    </button>
+                    <button class="ribbon__button-large ribbon__button-feature" title="论文查重">
+                        <svg class="ribbon-icon ribbon-icon--large" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M14 14V4.5L9.5 0H4a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2zM9.5 3A1.5 1.5 0 0011 4.5h2V14a1 1 0 01-1 1H4a1 1 0 01-1-1V2a1 1 0 011-1h5.5v2z"/>
+                        </svg>
+                        <span class="ribbon__button-large__label">论文查重</span>
+                    </button>
+                </div>
+                <div class="ribbon__group-label">论文辅助</div>
+            </div>
+
+            <!-- PDF工具栏 -->
+            <div class="ribbon__group ribbon__group--pdf">
+                <div class="ribbon__group-content">
+                    <button class="ribbon__button-large ribbon__button-feature" title="PDF工具">
+                        <svg class="ribbon-icon ribbon-icon--large" viewBox="0 0 16 16" fill="currentColor" style="color: #d13438;">
+                            <path d="M14 14V4.5L9.5 0H4a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2zM9.5 3A1.5 1.5 0 0011 4.5h2V14a1 1 0 01-1 1H4a1 1 0 01-1-1V2a1 1 0 011-1h5.5v2z"/>
+                            <path d="M4.603 14.087a.81.81 0 01-.438-.42c-.195-.388-.13-.776.08-1.102.198-.307.526-.568.897-.787a7.68 7.68 0 011.482-.645 19.697 19.697 0 001.062-2.227 7.269 7.269 0 01-.43-1.295c-.086-.4-.119-.796-.046-1.136.075-.354.274-.672.65-.823.192-.077.4-.12.602-.077a.7.7 0 01.477.365c.088.164.12.356.127.538.007.188-.012.396-.047.614-.084.51-.27 1.134-.52 1.794a10.954 10.954 0 00.98 1.686 5.753 5.753 0 011.334.05c.364.066.734.195.96.465.12.144.193.32.2.518.007.192-.047.382-.138.563a1.04 1.04 0 01-.354.416.856.856 0 01-.51.138c-.331-.014-.654-.196-.933-.417a5.712 5.712 0 01-.911-.95 11.651 11.651 0 00-1.997.406 11.307 11.307 0 01-1.02 1.51c-.292.35-.609.656-.927.787a.793.793 0 01-.58.029zm1.379-1.901c-.166.076-.32.156-.459.238-.328.194-.541.383-.647.547-.094.145-.096.25-.04.361.01.022.02.036.026.044a.266.266 0 00.035-.012c.137-.056.355-.235.635-.572a8.18 8.18 0 00.45-.606z"/>
+                        </svg>
+                        <span class="ribbon__button-large__label">转PDF</span>
+                    </button>
+                </div>
+                <div class="ribbon__group-label">PDF工具栏</div>
+            </div>
+
+            <!-- 加载宏 -->
+            <div class="ribbon__group">
+                <div class="ribbon__group-content">
+                    <button class="ribbon__button-large" title="加载宏">
+                        <svg class="ribbon-icon ribbon-icon--large" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M8 15A7 7 0 118 1a7 7 0 010 14zm0 1A8 8 0 108 0a8 8 0 000 16z"/>
+                            <path d="M8 4a.5.5 0 01.5.5v3h3a.5.5 0 010 1h-3v3a.5.5 0 01-1 0v-3h-3a.5.5 0 010-1h3v-3A.5.5 0 018 4z"/>
+                        </svg>
+                        <span class="ribbon__button-large__label">加载宏</span>
+                    </button>
+                </div>
+                <div class="ribbon__group-label">加载宏</div>
             </div>
         </div>
     </div>
 
-    <!-- 隐藏的文件输入框 -->
+    <!-- ========== 文档编辑区 ========== -->
+    <div class="document-container">
+        <div class="document-area">
+            <div class="document-page">
+                <div class="document-content" 
+                     contenteditable="true" 
+                     id="documentContent"
+                     data-placeholder="在此处键入...">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== 状态栏 ========== -->
+    <div class="status-bar">
+        <!-- 页码信息 -->
+        <div class="status-bar__item status-bar__page-info">
+            <svg class="status-bar__icon" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M14 14V4.5L9.5 0H4a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2zM9.5 3A1.5 1.5 0 0011 4.5h2V14a1 1 0 01-1 1H4a1 1 0 01-1-1V2a1 1 0 011-1h5.5v2z"/>
+            </svg>
+            <span>第 <span id="currentPage">1</span> 页，共 <span id="totalPages">1</span> 页</span>
+        </div>
+
+        <!-- 字数统计 -->
+        <div class="status-bar__item status-bar__word-count">
+            <svg class="status-bar__icon" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M0 3a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H2a2 2 0 01-2-2V3zm12 1a1 1 0 00-1-1H2a1 1 0 00-1 1v10a1 1 0 001 1h9a1 1 0 001-1V4z"/>
+                <path d="M4 5h2v1H4V5zm0 2h2v1H4V7zm0 2h2v1H4V9zm0 2h2v1H4v-1zm3-7h5v1H7V4zm0 2h5v1H7V6zm0 2h5v1H7V8zm0 2h3v1H7v-1z"/>
+            </svg>
+            <span>字数: <span class="status-bar__word-count__number" id="wordCount">0</span></span>
+        </div>
+
+        <!-- 语言 -->
+        <div class="status-bar__item status-bar__language">
+            <svg class="status-bar__icon" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M8 0a8 8 0 100 16A8 8 0 008 0zm4.5 7.5a.5.5 0 00.5-.5c0-2.21-1.79-4-4-4s-4 1.79-4 4c0 .28.22.5.5.5h7z"/>
+                <path d="M3.5 8h9a.5.5 0 000-1h-9a.5.5 0 000 1zm0 2h9a.5.5 0 000-1h-9a.5.5 0 000 1zm0 2h9a.5.5 0 000-1h-9a.5.5 0 000 1z"/>
+            </svg>
+            <span>中文（简体，中国）</span>
+        </div>
+
+        <!-- 右侧区域 -->
+        <div class="status-bar__right">
+            <!-- 视图切换 -->
+            <div class="status-bar__view-buttons">
+                <button class="status-bar__view-button status-bar__view-button--active" title="页面视图">
+                    <svg class="status-bar__icon" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M14 14V4.5L9.5 0H4a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2zM9.5 3A1.5 1.5 0 0011 4.5h2V14a1 1 0 01-1 1H4a1 1 0 01-1-1V2a1 1 0 011-1h5.5v2z"/>
+                    </svg>
+                </button>
+                <button class="status-bar__view-button" title="Web版式视图">
+                    <svg class="status-bar__icon" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M0 2a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H2a2 2 0 01-2-2V2zm15 0V4H1V2a1 1 0 011-1h12a1 1 0 011 1zM1 5h14v9a1 1 0 01-1 1H2a1 1 0 01-1-1V5z"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- 缩放控制 -->
+            <div class="status-bar__zoom">
+                <button class="status-bar__zoom-button" title="缩小">
+                    <svg class="status-bar__icon" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M4 8a.5.5 0 01.5-.5h7a.5.5 0 010 1h-7A.5.5 0 014 8z"/>
+                    </svg>
+                </button>
+                <div class="status-bar__zoom-slider" title="缩放">
+                    <div class="status-bar__zoom-slider-track"></div>
+                    <div class="status-bar__zoom-slider-thumb"></div>
+                </div>
+                <button class="status-bar__zoom-button" title="放大">
+                    <svg class="status-bar__icon" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M8 4a.5.5 0 01.5.5v3h3a.5.5 0 010 1h-3v3a.5.5 0 01-1 0v-3h-3a.5.5 0 010-1h3v-3A.5.5 0 018 4z"/>
+                    </svg>
+                </button>
+                <span class="status-bar__zoom-value" id="zoomValue">100%</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 隐藏的文件输入 -->
     <input type="file" id="novelFile" style="display: none;" accept=".txt,.md,.docx" onchange="loadNovel(this)">
 
-    <!-- 设置面板 -->
-    <div class="settings-overlay" id="settingsOverlay">
-        <div class="settings-panel">
-            <div class="settings-header">
-                <h2 class="settings-title">小说阅读设置</h2>
-                <button class="settings-close" onclick="toggleSettings()">&times;</button>
-            </div>
-            <div class="settings-content">
-                <div class="setting-group">
-                    <label class="setting-label">每次输出字符数量</label>
-                    <div class="setting-description">控制每次显示的小说文字数量，影响阅读节奏</div>
-                    <input type="range" class="setting-range" id="charsPerOutput" min="1" max="50" value="5" 
-                           oninput="updateRangeValue('charsPerOutput', 'charsValue')">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
-                        <span>1字符</span>
-                        <span class="range-value" id="charsValue">5</span>
-                        <span>50字符</span>
-                    </div>
-                </div>
-                
-                <div class="setting-group">
-                    <label class="setting-label">输出间隔时间 (毫秒)</label>
-                    <div class="setting-description">控制每次输出之间的间隔时间，数值越大速度越慢</div>
-                    <input type="range" class="setting-range" id="outputInterval" min="50" max="1000" value="200" 
-                           oninput="updateRangeValue('outputInterval', 'intervalValue')">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
-                        <span>50ms</span>
-                        <span class="range-value" id="intervalValue">200</span>
-                        <span>1000ms</span>
-                    </div>
-                </div>
-
-                <div class="setting-group">
-                    <label class="setting-label">预设方案</label>
-                    <div class="setting-description">选择预设的输出速度方案</div>
-                    <select class="setting-input" id="presetSelect" onchange="applyPreset()">
-                        <option value="custom">自定义</option>
-                        <option value="slow">慢速阅读 (1字符/500ms)</option>
-                        <option value="normal">正常阅读 (5字符/200ms)</option>
-                        <option value="fast">快速阅读 (10字符/100ms)</option>
-                        <option value="ultrafast">极速阅读 (20字符/50ms)</option>
-                    </select>
-                </div>
-            </div>
-            <div class="settings-footer">
-                <button class="settings-btn" onclick="resetSettings()">重置默认</button>
-                <button class="settings-btn" onclick="clearAllData()" style="background-color: #dc3545; color: white;">清除所有数据</button>
-                <button class="settings-btn primary" onclick="saveSettings()">保存设置</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 状态栏 -->
-    <div class="status-bar">
-        <div>第 1 页，共 1 页 | 字数: <span id="wordCount">0</span></div>
-        <div>中文（简体，中国） | 100%</div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- 必要的JavaScript库 -->
     <script src="https://unpkg.com/mammoth/mammoth.browser.min.js"></script>
     
-    <!-- Tauri API -->
+    <!-- Tauri API (如果在Tauri环境中) -->
     <script type="module">
-        // 检查是否在Tauri环境中运行
         const isTauri = typeof window.__TAURI__ !== 'undefined';
         window.isTauriApp = isTauri;
         
         if (isTauri) {
             console.log('Running in Tauri environment');
             
-            // 动态导入Tauri API
             import('https://unpkg.com/@tauri-apps/api@2.0.2/window')
                 .then(({ getCurrentWindow }) => {
                     const appWindow = getCurrentWindow();
                     window.tauriWindow = appWindow;
                     
-                    // 设置窗口控制按钮
                     document.getElementById('minimize-btn')?.addEventListener('click', () => {
                         appWindow.minimize();
                     });
@@ -688,892 +549,12 @@
                     document.getElementById('close-btn')?.addEventListener('click', () => {
                         appWindow.close();
                     });
-                    
-                    console.log('Tauri window controls initialized');
                 })
-                .catch(err => console.error('Failed to load Tauri window API:', err));
-            
-            // 加载文件系统API
-            import('https://unpkg.com/@tauri-apps/plugin-dialog@2.0.1')
-                .then(({ open }) => {
-                    window.tauriDialog = { open };
-                })
-                .catch(err => console.warn('Tauri dialog not available:', err));
-            
-            import('https://unpkg.com/@tauri-apps/plugin-fs@2.0.1')
-                .then((fs) => {
-                    window.tauriFs = fs;
-                })
-                .catch(err => console.warn('Tauri fs not available:', err));
-        } else {
-            console.log('Running in web browser mode');
+                .catch(err => console.error('Tauri API error:', err));
         }
     </script>
-    
-    <script>
-        let novelContent = '';
-        let currentPosition = 0;
-        let isNovelMode = false;
-        let typingStats = {
-            startTime: null,
-            charactersTyped: 0
-        };
-        
-        // 设置相关变量
-        let settings = {
-            charsPerOutput: 5,
-            outputInterval: 200
-        };
-        let settingsVisible = false;
-        let fileName = ''; // 存储当前小说文件名
 
-        // 获取DOM元素
-        const documentContent = document.getElementById('documentContent');
-        const wordCount = document.getElementById('wordCount');
-
-        // 显示通知
-        function showNotification(message, type = 'success') {
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.textContent = message;
-            document.body.appendChild(notification);
-
-            // 显示动画
-            setTimeout(() => {
-                notification.classList.add('show');
-            }, 10);
-
-            // 3秒后自动隐藏
-            setTimeout(() => {
-                notification.classList.remove('show');
-                setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.parentNode.removeChild(notification);
-                    }
-                }, 300);
-            }, 3000);
-        }
-
-        // 加载小说文件
-        function loadNovel(input) {
-            const file = input.files[0];
-            if (!file) return;
-
-            // 检查文件类型
-            const allowedTypes = ['.txt', '.md', '.text', '.docx'];
-            const fileExtension = file.name.toLowerCase().split('.').pop();
-            if (!allowedTypes.includes('.' + fileExtension)) {
-                showNotification('请选择文本文件（.txt、.md、.docx）！', 'error');
-                return;
-            }
-
-            // 检查文件大小（限制为10MB）
-            if (file.size > 10 * 1024 * 1024) {
-                showNotification('文件过大！请选择小于10MB的文件。', 'error');
-                return;
-            }
-
-            const reader = new FileReader();
-            
-            if (fileExtension === 'docx') {
-                reader.onload = async function(e) {
-                    try {
-                        const arrayBuffer = e.target.result;
-                        const result = await mammoth.extractRawText({ arrayBuffer });
-                        novelContent = (result && result.value) ? result.value : '';
-                        
-                        if (!novelContent || novelContent.trim().length === 0) {
-                            showNotification('文件内容为空！', 'error');
-                            return;
-                        }
-                        
-                        currentPosition = 0;
-                        
-                        // 清理内容，移除多余的空白字符（与 txt/md 路径保持一致）
-                        novelContent = novelContent.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-                        novelContent = novelContent.replace(/\n{3,}/g, '\n\n');
-                        
-                        // 保存小说内容和文件名
-                        fileName = file.name;
-                        currentPosition = 0;
-                        
-                        // 使用DataManager保存数据
-                        DataManager.saveNovelProgress();
-                        
-                        // 显示成功通知
-                        showNotification(`小说"${file.name}"导入成功！`);
-                        
-                        // 自动开启小说模式
-                        setTimeout(() => {
-                            if (!isNovelMode) {
-                                toggleMode();
-                            }
-                        }, 500);
-                        
-                        console.log(`小说加载完成，共 ${novelContent.length} 个字符`);
-                    } catch (error) {
-                        showNotification('文件读取失败：' + error.message, 'error');
-                        console.error('DOCX 解析错误:', error);
-                    }
-                };
-                
-                reader.onerror = function(error) {
-                    showNotification('文件读取失败！', 'error');
-                    console.error('FileReader错误:', error);
-                };
-                
-                reader.readAsArrayBuffer(file);
-            } else {
-                reader.onload = function(e) {
-                    try {
-                        novelContent = e.target.result;
-                        
-                        if (!novelContent || novelContent.trim().length === 0) {
-                            showNotification('文件内容为空！', 'error');
-                            return;
-                        }
-                        
-                        currentPosition = 0;
-                        
-                        // 清理内容，移除多余的空白字符
-                        novelContent = novelContent.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-                        novelContent = novelContent.replace(/\n{3,}/g, '\n\n'); // 最多保留两个连续换行
-                        
-                        // 保存小说内容和文件名
-                        fileName = file.name;
-                        currentPosition = 0;
-                        
-                        // 使用DataManager保存数据
-                        DataManager.saveNovelProgress();
-                        
-                        // 显示成功通知
-                        showNotification(`小说"${file.name}"导入成功！`);
-                        
-                        // 自动开启小说模式
-                        setTimeout(() => {
-                            if (!isNovelMode) {
-                                toggleMode();
-                            }
-                        }, 500);
-                        
-                        console.log(`小说加载完成，共 ${novelContent.length} 个字符`);
-                    } catch (error) {
-                        showNotification('文件读取失败：' + error.message, 'error');
-                        console.error('文件读取错误:', error);
-                    }
-                };
-                
-                reader.onerror = function(error) {
-                    showNotification('文件读取失败！', 'error');
-                    console.error('FileReader错误:', error);
-                };
-                
-                reader.readAsText(file, 'UTF-8');
-            }
-        }
-
-        // 切换伪装模式
-        function toggleMode() {
-            if (!novelContent) {
-                return;
-            }
-
-            isNovelMode = !isNovelMode;
-            
-            if (isNovelMode) {
-                documentContent.focus();
-                typingStats.startTime = Date.now();
-                typingStats.charactersTyped = 0;
-                savedContent = documentContent.innerHTML; // 初始化保存的HTML内容
-                
-                // 启用光标控制系统
-                cursorControlEnabled = true;
-                
-                // 启动性能监控
-                startTypingSpeedMonitor();
-                
-                // 确保光标在文本末尾
-                setCursorToEnd();
-                
-                console.log('小说模式已启动，光标控制已激活');
-            } else {
-                // 停止光标监控
-                stopCursorMonitoring();
-                cursorControlEnabled = false;
-                
-                // 停止性能监控
-                stopTypingSpeedMonitor();
-                
-                console.log('小说模式已停止，光标控制已停用');
-            }
-        }
-
-        // 重置阅读进度
-        function resetProgress() {
-            currentPosition = 0;
-            documentContent.innerHTML = '';
-            savedContent = '';
-            updateProgress();
-            updateWordCount();
-            
-            // 显示重置通知
-            showNotification('阅读进度已重置');
-            
-            // 重置后将光标设置到开始位置
-            documentContent.focus();
-            setCursorToEnd();
-        }
-
-        // 更新进度显示
-        function updateProgress() {
-            // 进度更新逻辑已简化，只更新必要的内部状态
-            console.log(`阅读进度: ${currentPosition}/${novelContent.length}`);
-        }
-
-        // 更新字数统计
-        function updateWordCount() {
-            // 使用textContent来获取纯文本长度，避免HTML标签影响计数
-            const text = documentContent.textContent || '';
-            const newCount = text.length;
-            const oldCount = parseInt(wordCount.textContent) || 0;
-            
-            wordCount.textContent = newCount;
-            
-            // 添加更新动画
-            if (newCount !== oldCount && newCount > 0) {
-                wordCount.classList.add('word-count-updated');
-                setTimeout(() => {
-                    wordCount.classList.remove('word-count-updated');
-                }, 300);
-            }
-        }
-
-        // 优化的光标位置控制系统
-        let cursorControlEnabled = true;
-        let lastCursorPosition = 0;
-        
-        // 设置光标到文本末尾的优化函数
-        function setCursorToEnd(forceDelay = false) {
-            if (!cursorControlEnabled || !isNovelMode) return;
-            
-            const delay = forceDelay ? 100 : 10;
-            
-            setTimeout(() => {
-                try {
-                    // 确保元素有焦点
-                    if (document.activeElement !== documentContent) {
-                        documentContent.focus();
-                    }
-                    
-                    const range = document.createRange();
-                    const selection = window.getSelection();
-                    
-                    // 处理包含HTML元素的情况
-                    if (documentContent.childNodes.length > 0) {
-                        // 找到最后一个文本节点或元素
-                        const lastNode = documentContent.childNodes[documentContent.childNodes.length - 1];
-                        if (lastNode.nodeType === Node.TEXT_NODE) {
-                            // 最后是文本节点
-                            range.setStart(lastNode, lastNode.textContent.length);
-                        } else {
-                            // 最后是元素节点（如<br>），在其后面设置光标
-                            range.setStartAfter(lastNode);
-                        }
-                    } else {
-                        // 空内容时
-                        range.setStart(documentContent, 0);
-                    }
-                    
-                    range.collapse(true);
-                    selection.removeAllRanges();
-                    selection.addRange(range);
-                    
-                    lastCursorPosition = documentContent.textContent.length;
-                    
-                } catch (error) {
-                    console.warn('设置光标位置失败:', error);
-                    // 回退到简单的焦点设置
-                    documentContent.focus();
-                    try {
-                        const range = document.createRange();
-                        const selection = window.getSelection();
-                        range.selectNodeContents(documentContent);
-                        range.collapse(false);
-                        selection.removeAllRanges();
-                        selection.addRange(range);
-                    } catch (e2) {
-                        // 最后的回退
-                        documentContent.focus();
-                    }
-                }
-            }, delay);
-        }
-        
-        // 监控光标位置的函数
-        function monitorCursorPosition() {
-            if (!isNovelMode || !cursorControlEnabled) return;
-            
-            try {
-                const selection = window.getSelection();
-                if (selection.rangeCount > 0) {
-                    const range = selection.getRangeAt(0);
-                    const textLength = documentContent.textContent.length;
-                    
-                    // 检查光标是否在文档末尾附近
-                    let isAtEnd = false;
-                    
-                    // 如果有子节点，检查光标是否在最后一个节点
-                    if (documentContent.childNodes.length > 0) {
-                        const lastNode = documentContent.childNodes[documentContent.childNodes.length - 1];
-                        const container = range.startContainer;
-                        
-                        if (container === lastNode || container === documentContent) {
-                            // 获取光标位置相对于整个文档的偏移
-                            const docRange = document.createRange();
-                            docRange.setStart(documentContent, 0);
-                            docRange.setEnd(range.startContainer, range.startOffset);
-                            const currentOffset = docRange.toString().length;
-                            
-                            isAtEnd = Math.abs(currentOffset - textLength) <= 1;
-                        }
-                    } else {
-                        // 空文档
-                        isAtEnd = range.startContainer === documentContent && range.startOffset === 0;
-                    }
-                    
-                    // 如果光标不在末尾，强制移动到末尾
-                    if (!isAtEnd) {
-                        setCursorToEnd(true);
-                    }
-                }
-            } catch (error) {
-                // 忽略错误，继续监控
-            }
-        }
-        
-        // 定期监控光标位置（特别是在输入法使用期间）
-        let cursorMonitorInterval = null;
-        
-        function startCursorMonitoring() {
-            if (cursorMonitorInterval) return;
-            cursorMonitorInterval = setInterval(monitorCursorPosition, 50);
-        }
-        
-        function stopCursorMonitoring() {
-            if (cursorMonitorInterval) {
-                clearInterval(cursorMonitorInterval);
-                cursorMonitorInterval = null;
-            }
-        }
-
-        // 更新打字速度（简化版）
-        function updateTypingSpeed() {
-            // 简化处理，不显示具体速度
-        }
-
-        // 处理键盘输入
-        documentContent.addEventListener('keydown', function(e) {
-            if (!isNovelMode || !novelContent) {
-                return; // 正常模式或没有小说内容时正常输入
-            }
-
-            // 如果正在进行中文输入，跳过处理
-            if (isComposing) {
-                return;
-            }
-
-            e.preventDefault(); // 阻止默认输入行为
-            
-            if (e.key === 'Backspace') {
-                // 处理退格
-                const content = documentContent.textContent;
-                if (content.length > 0) {
-                    // 获取纯文本内容并删除最后一个字符
-                    const newText = content.slice(0, -1);
-                    // 转换为HTML格式
-                    documentContent.innerHTML = newText.replace(/\n/g, '<br>');
-                    currentPosition = Math.max(0, currentPosition - 1);
-                    savedContent = documentContent.innerHTML; // 更新保存的HTML内容
-                    
-                    // 设置光标到末尾
-                    setCursorToEnd();
-                }
-            } else if (e.key === 'Enter') {
-                // 处理回车 - 显示小说的多个字符
-                outputMultipleChars();
-                
-                // 自动滚动到底部
-                documentContent.scrollTop = documentContent.scrollHeight;
-            } else if (!e.ctrlKey && !e.altKey && !e.metaKey && 
-                       e.key !== 'Tab' && e.key !== 'Escape' && e.key !== 'F1' && 
-                       e.key !== 'F2' && e.key !== 'F3' && e.key !== 'F4' && 
-                       e.key !== 'F5' && e.key !== 'F6' && e.key !== 'F7' && 
-                       e.key !== 'F8' && e.key !== 'F9' && e.key !== 'F10' && 
-                       e.key !== 'F11' && e.key !== 'F12' && e.key !== 'CapsLock' && 
-                       e.key !== 'Shift' && e.key !== 'Control' && e.key !== 'Alt') {
-                // 处理所有其他按键输入（包括中文、英文、数字、符号等）
-                // 不管用户按什么键，都显示小说的多个字符
-                outputMultipleChars();
-                
-                // 自动滚动到底部
-                documentContent.scrollTop = documentContent.scrollHeight;
-            }
-
-            // 使用节流优化更新频率
-            throttleUpdate();
-
-            // 检查是否读完
-            if (currentPosition >= novelContent.length) {
-                const statusText = document.querySelector('.status-indicator');
-                if (statusText) {
-                    statusText.textContent = '完成';
-                    statusText.className = 'status-indicator completed';
-                }
-            }
-        });
-
-        // 处理中文输入法 - 强化版本
-        let isComposing = false;
-        let savedContent = '';
-        let compositionStartPosition = 0;
-        
-        documentContent.addEventListener('compositionstart', function(e) {
-            if (isNovelMode) {
-                isComposing = true;
-                cursorControlEnabled = false; // 暂时禁用光标控制
-                
-                // 保存当前内容和位置
-                savedContent = documentContent.innerHTML;
-                compositionStartPosition = savedContent.length;
-                
-                // 开始监控光标位置
-                startCursorMonitoring();
-                
-                console.log('中文输入开始，保存状态');
-            }
-        });
-        
-        documentContent.addEventListener('compositionupdate', function(e) {
-            if (isNovelMode) {
-                // 在输入过程中，允许输入法正常工作
-                // 但定期尝试将光标保持在正确位置
-                setTimeout(() => {
-                    try {
-                        const selection = window.getSelection();
-                        if (selection.rangeCount > 0) {
-                            const range = selection.getRangeAt(0);
-                            // 只有当光标明显偏离时才强制调整
-                            if (range.startOffset < compositionStartPosition - 5) {
-                                setCursorToEnd(true);
-                            }
-                        }
-                    } catch (error) {
-                        // 忽略错误
-                    }
-                }, 10);
-            }
-        });
-        
-        documentContent.addEventListener('compositionend', function(e) {
-            if (isNovelMode) {
-                isComposing = false;
-                cursorControlEnabled = true; // 重新启用光标控制
-                
-                // 停止监控
-                stopCursorMonitoring();
-                
-                // 恢复到输入前的内容，然后添加小说的多个字符
-                documentContent.innerHTML = savedContent;
-                
-                outputMultipleChars();
-                
-                // 自动滚动到底部
-                documentContent.scrollTop = documentContent.scrollHeight;
-                
-                console.log('中文输入结束，恢复状态');
-            }
-        });
-
-        // 处理input事件，防止中文输入过程中的临时文本影响显示
-        documentContent.addEventListener('input', function(e) {
-            if (isNovelMode && !isComposing) {
-                // 如果不是在中文输入过程中，恢复正确的内容
-                // input事件无法preventDefault，所以直接恢复内容
-                if (savedContent !== undefined) {
-                    documentContent.innerHTML = savedContent;
-                    
-                    // 设置光标到末尾
-                    setCursorToEnd();
-                }
-            }
-        });
-
-        // 防止粘贴时破坏功能
-        documentContent.addEventListener('paste', function(e) {
-            if (isNovelMode) {
-                e.preventDefault();
-            }
-        });
-        
-        // 统一的光标位置恢复机制
-        function ensureCursorAtEnd() {
-            if (isNovelMode && cursorControlEnabled) {
-                setCursorToEnd(true);
-            }
-        }
-        
-        // 整合的事件监听器
-        ['focus', 'click'].forEach(eventType => {
-            documentContent.addEventListener(eventType, () => {
-                setTimeout(ensureCursorAtEnd, 20);
-            });
-        });
-        
-        // 监听选区变化事件
-        document.addEventListener('selectionchange', function(e) {
-            if (isNovelMode && cursorControlEnabled && !isComposing) {
-                setTimeout(monitorCursorPosition, 10);
-            }
-        });
-
-        // 防止拖拽时破坏功能
-        documentContent.addEventListener('drop', function(e) {
-            if (isNovelMode) {
-                e.preventDefault();
-            }
-        });
-
-        // 性能优化：节流更新函数
-        let updateTimer = null;
-        function throttleUpdate() {
-            if (updateTimer) return; // 如果已有待更新，跳过
-            
-            updateTimer = setTimeout(() => {
-                updateProgress();
-                updateWordCount();
-                updateTypingSpeed();
-                updateTimer = null;
-            }, 100); // 限制更新频率为100ms
-        }
-
-        // 定期更新打字速度（只在小说模式时）
-        let typingSpeedInterval = null;
-        function startTypingSpeedMonitor() {
-            if (!typingSpeedInterval) {
-                typingSpeedInterval = setInterval(() => {
-                    if (isNovelMode) {
-                        updateTypingSpeed();
-                    }
-                }, 1000);
-            }
-        }
-        
-        function stopTypingSpeedMonitor() {
-            if (typingSpeedInterval) {
-                clearInterval(typingSpeedInterval);
-                typingSpeedInterval = null;
-            }
-        }
-
-        // 设置相关函数
-        function toggleSettings() {
-            const overlay = document.getElementById('settingsOverlay');
-            settingsVisible = !settingsVisible;
-            overlay.style.display = settingsVisible ? 'flex' : 'none';
-            
-            if (settingsVisible) {
-                updateSettingsUI();
-            }
-        }
-        
-        // 点击遮罩层关闭设置
-        document.getElementById('settingsOverlay').addEventListener('click', function(e) {
-            if (e.target === this) {
-                toggleSettings();
-            }
-        });
-
-        function updateRangeValue(rangeId, valueId) {
-            const range = document.getElementById(rangeId);
-            const valueSpan = document.getElementById(valueId);
-            valueSpan.textContent = range.value;
-            
-            // 更新预设选择为"自定义"
-            document.getElementById('presetSelect').value = 'custom';
-        }
-
-        function applyPreset() {
-            const preset = document.getElementById('presetSelect').value;
-            const charsRange = document.getElementById('charsPerOutput');
-            const intervalRange = document.getElementById('outputInterval');
-            
-            switch(preset) {
-                case 'slow':
-                    charsRange.value = 1;
-                    intervalRange.value = 500;
-                    break;
-                case 'normal':
-                    charsRange.value = 5;
-                    intervalRange.value = 200;
-                    break;
-                case 'fast':
-                    charsRange.value = 10;
-                    intervalRange.value = 100;
-                    break;
-                case 'ultrafast':
-                    charsRange.value = 20;
-                    intervalRange.value = 50;
-                    break;
-            }
-            
-            if (preset !== 'custom') {
-                updateRangeValue('charsPerOutput', 'charsValue');
-                updateRangeValue('outputInterval', 'intervalValue');
-            }
-        }
-
-        function updateSettingsUI() {
-            const charsRange = document.getElementById('charsPerOutput');
-            const intervalRange = document.getElementById('outputInterval');
-            
-            charsRange.value = settings.charsPerOutput;
-            intervalRange.value = settings.outputInterval;
-            
-            updateRangeValue('charsPerOutput', 'charsValue');
-            updateRangeValue('outputInterval', 'intervalValue');
-        }
-
-        function saveSettings() {
-            settings.charsPerOutput = parseInt(document.getElementById('charsPerOutput').value);
-            settings.outputInterval = parseInt(document.getElementById('outputInterval').value);
-            
-            console.log('保存设置:', settings);
-            
-            // 保存设置
-            DataManager.saveSettings();
-            
-            showNotification('设置已保存！');
-            toggleSettings();
-        }
-
-        function resetSettings() {
-            settings.charsPerOutput = 5;
-            settings.outputInterval = 200;
-            
-            updateSettingsUI();
-            document.getElementById('presetSelect').value = 'normal';
-            
-            showNotification('设置已重置为默认值！');
-        }
-
-        // 清除所有数据
-        function clearAllData() {
-            if (confirm('确定要清除所有数据吗？这将删除保存的小说内容、阅读进度和设置，此操作不可撤销！')) {
-                // 使用DataManager清除所有数据
-                DataManager.clearAllData();
-                
-                // 重置所有变量
-                novelContent = '';
-                currentPosition = 0;
-                isNovelMode = false;
-                documentContent.innerHTML = '';
-                savedContent = '';
-                
-                // 重置设置
-                settings.charsPerOutput = 5;
-                settings.outputInterval = 200;
-                updateSettingsUI();
-                document.getElementById('presetSelect').value = 'normal';
-                
-                // 重置统计
-                typingStats.startTime = null;
-                typingStats.charactersTyped = 0;
-                
-                // 更新显示
-                updateProgress();
-                updateWordCount();
-                
-                showNotification('所有数据已清除！');
-                toggleSettings();
-            }
-        }
-
-        // 统一的数据管理器
-        const DataManager = {
-            // 保存小说阅读进度
-            saveNovelProgress() {
-                if (!novelContent) return;
-                
-                try {
-                    const existingData = this.loadNovelData() || {};
-                    const novelData = {
-                        ...existingData,
-                        content: novelContent,
-                        currentPosition: currentPosition,
-                        displayedContent: documentContent.innerHTML,
-                        fileName: fileName,
-                        timestamp: Date.now()
-                    };
-                    
-                    localStorage.setItem('novelReaderData', JSON.stringify(novelData));
-                } catch (error) {
-                    console.error('保存小说进度失败:', error);
-                    showNotification('保存进度失败，可能是存储空间不足', 'error');
-                }
-            },
-            
-            // 加载小说数据
-            loadNovelData() {
-                try {
-                    const data = localStorage.getItem('novelReaderData');
-                    return data ? JSON.parse(data) : null;
-                } catch (e) {
-                    console.warn('无法加载小说数据:', e);
-                    return null;
-                }
-            },
-            
-            // 保存设置
-            saveSettings() {
-                try {
-                    localStorage.setItem('novelReaderSettings', JSON.stringify(settings));
-                } catch (error) {
-                    console.error('保存设置失败:', error);
-                    showNotification('保存设置失败，可能是存储空间不足', 'error');
-                }
-            },
-            
-            // 加载设置
-            loadSettings() {
-                try {
-                    const data = localStorage.getItem('novelReaderSettings');
-                    return data ? JSON.parse(data) : null;
-                } catch (e) {
-                    console.warn('无法加载设置:', e);
-                    return null;
-                }
-            },
-            
-            // 清除所有数据
-            clearAllData() {
-                localStorage.removeItem('novelReaderData');
-                localStorage.removeItem('novelReaderSettings');
-            }
-        };
-
-        // 从localStorage加载小说数据 - 重构使用DataManager
-        function loadNovelData() {
-            const novelData = DataManager.loadNovelData();
-            if (novelData && novelData.content) {
-                // 恢复小说内容和进度
-                novelContent = novelData.content || '';
-                currentPosition = novelData.currentPosition || 0;
-                
-                // 恢复显示的内容
-                if (novelData.displayedContent) {
-                    documentContent.innerHTML = novelData.displayedContent;
-                    savedContent = novelData.displayedContent;
-                }
-                
-                // 如果有小说内容，显示恢复通知
-                if (novelContent) {
-                    fileName = novelData.fileName || '未知文件';
-                    showNotification(`已恢复小说"${fileName}"的阅读进度`);
-                    
-                    // 更新进度显示
-                    updateProgress();
-                    updateWordCount();
-                    
-                    console.log(`恢复小说数据: ${novelContent.length} 字符, 当前位置: ${currentPosition}`);
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        // 输出多个字符的函数
-        function outputMultipleChars() {
-            if (!isNovelMode || !novelContent || currentPosition >= novelContent.length) {
-                return;
-            }
-            
-            const charsToOutput = Math.min(settings.charsPerOutput, novelContent.length - currentPosition);
-            const newChars = novelContent.substring(currentPosition, currentPosition + charsToOutput);
-            
-            console.log(`输出字符: ${charsToOutput}个, 设置值: ${settings.charsPerOutput}, 内容: "${newChars}"`);
-            
-            // 将换行符转换为HTML格式，保持原始格式
-            const formattedChars = newChars.replace(/\n/g, '<br>');
-            
-            // 使用innerHTML而不是textContent来保持格式
-            documentContent.innerHTML += formattedChars;
-            currentPosition += charsToOutput;
-            typingStats.charactersTyped += charsToOutput;
-            savedContent = documentContent.innerHTML;
-            
-            // 保存当前进度到localStorage
-            DataManager.saveNovelProgress();
-            
-            // 设置光标到末尾
-            setCursorToEnd();
-            
-            // 更新统计
-            updateProgress();
-            updateWordCount();
-            updateTypingSpeed();
-            
-            // 检查是否读完
-            if (currentPosition >= novelContent.length) {
-                const statusText = document.querySelector('.status-indicator');
-                if (statusText) {
-                    statusText.textContent = '完成';
-                    statusText.className = 'status-indicator completed';
-                }
-            }
-        }
-
-        // 页面加载完成后的初始化
-        window.addEventListener('load', function() {
-            documentContent.focus();
-            
-            // 使用DataManager加载设置
-            const savedSettings = DataManager.loadSettings();
-            if (savedSettings) {
-                settings = { ...settings, ...savedSettings };
-                console.log('加载设置:', settings);
-            } else {
-                console.warn('无法加载保存的设置，使用默认设置');
-            }
-            
-            // 从localStorage加载小说数据
-            loadNovelData();
-            
-            console.log('Word小说阅读器已加载完成');
-        });
-
-        // 添加一些Word的快捷键模拟
-        document.addEventListener('keydown', function(e) {
-            if (e.ctrlKey) {
-                switch(e.key) {
-                    case 's':
-                        e.preventDefault();
-                        // 模拟保存
-                        console.log('保存模拟');
-                        break;
-                    case 'z':
-                        if (isNovelMode) {
-                            e.preventDefault(); // 在小说模式下禁用撤销
-                        }
-                        break;
-                    case 'r':
-                        if (novelContent) {
-                            e.preventDefault();
-                            resetProgress(); // Ctrl+R 重置进度
-                        }
-                        break;
-                }
-            }
-        });
-    </script>
+    <!-- 主要应用逻辑 -->
+    <script src="app.js"></script>
 </body>
 </html>

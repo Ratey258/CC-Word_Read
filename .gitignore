@@ -25,6 +25,7 @@ desktop.ini
 # Build artifacts
 dist/
 build/
+.playwright-mcp
 
 # Environment
 .env
