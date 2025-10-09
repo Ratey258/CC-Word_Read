@@ -1,0 +1,82 @@
+/**
+ * 全局类型定义
+ */
+
+/**
+ * Tauri API 全局声明
+ */
+declare global {
+  interface Window {
+    __TAURI__?: {
+      invoke: <T = unknown>(cmd: string, args?: Record<string, unknown>) => Promise<T>
+      convertFileSrc: (filePath: string, protocol?: string) => string
+    }
+  }
+
+  const __TAURI__: Window['__TAURI__']
+}
+
+/**
+ * 环境变量类型
+ */
+interface ImportMetaEnv {
+  readonly VITE_APP_TITLE: string
+  readonly VITE_APP_VERSION: string
+  readonly TAURI_DEBUG: string
+  readonly TAURI_PLATFORM: string
+  readonly TAURI_ARCH: string
+  readonly TAURI_FAMILY: string
+  readonly TAURI_PLATFORM_VERSION: string
+  readonly TAURI_PLATFORM_TYPE: string
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv
+}
+
+/**
+ * 通用回调函数
+ */
+export type Callback<T = void> = (data: T) => void
+
+/**
+ * 异步回调函数
+ */
+export type AsyncCallback<T = void> = (data: T) => Promise<void>
+
+/**
+ * 可选字段
+ */
+export type Optional<T> = T | undefined
+
+/**
+ * 可为空字段
+ */
+export type Nullable<T> = T | null
+
+/**
+ * 深度只读
+ */
+export type DeepReadonly<T> = {
+  readonly [P in keyof T]: T[P] extends object ? DeepReadonly<T[P]> : T[P]
+}
+
+/**
+ * 深度部分可选
+ */
+export type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P]
+}
+
+/**
+ * 值类型提取
+ */
+export type ValueOf<T> = T[keyof T]
+
+/**
+ * 数组元素类型提取
+ */
+export type ArrayElement<T> = T extends (infer U)[] ? U : never
+
+export {}
+

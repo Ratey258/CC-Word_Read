@@ -1,0 +1,62 @@
+{
+  "compilerOptions": {
+    // 语言和环境
+    "target": "ES2020",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "useDefineForClassFields": true,
+    
+    // 模块解析
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    
+    // 类型检查
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    
+    // Vue 3 支持
+    "jsx": "preserve",
+    "jsxImportSource": "vue",
+    
+    // 互操作性
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    
+    // 路径别名（与 vite.config.ts 对应）
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@components/*": ["src/components/*"],
+      "@stores/*": ["src/stores/*"],
+      "@utils/*": ["src/utils/*"],
+      "@types/*": ["src/types/*"],
+      "@composables/*": ["src/composables/*"],
+      "@assets/*": ["src/assets/*"]
+    },
+    
+    // 其他选项
+    "forceConsistentCasingInFileNames": true,
+    "skipDefaultLibCheck": true
+  },
+  
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue"
+  ],
+  
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src-tauri"
+  ],
+  
+  "references": [
+    { "path": "./tsconfig.node.json" }
+  ]
+}
