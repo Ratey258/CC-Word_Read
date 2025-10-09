@@ -144,10 +144,11 @@
   line-height: 1.0;
 }
 
-/* SVG图标样式 */
+/* SVG图标样式 - Microsoft Word 原版风格 */
 .ribbon-icon {
   fill: currentColor;
-  color: var(--word-text-primary);
+  color: #424242;
+  transition: color 0.1s ease;
 }
 
 .ribbon-icon--large {
@@ -158,6 +159,17 @@
 .ribbon-icon--small {
   width: 16px;
   height: 16px;
+}
+
+/* 图标悬停效果 */
+.ribbon__button-large:hover .ribbon-icon,
+.ribbon__button-small:hover .ribbon-icon {
+  color: #106EBE;
+}
+
+/* 激活状态的图标颜色 */
+.ribbon__toggle-button.active .ribbon-icon {
+  color: #0078D4;
 }
 
 /* 大按钮 */
@@ -205,10 +217,15 @@
 }
 
 .ribbon__button-large__dropdown {
-  width: 7px;
-  height: 7px;
-  margin-top: -3px;
-  fill: currentColor;
+  width: 8px;
+  height: 8px;
+  margin-top: -2px;
+  fill: #605E5C;
+}
+
+/* 大按钮下拉样式 */
+.ribbon__button-large.ribbon__dropdown-button {
+  padding-bottom: 2px;
 }
 
 /* 小按钮 */
@@ -218,10 +235,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 2px;
   border-radius: 3px;
   transition: all 100ms ease-out;
   border: 1px solid transparent;
   background-color: transparent;
+  position: relative;
 }
 
 .ribbon__button-small:hover {
@@ -238,6 +257,41 @@
 
 .ribbon__button-small .ms-Icon {
   font-size: var(--icon-medium);
+}
+
+/* 小按钮文本标签 - 隐藏，只通过 title 属性显示 */
+.ribbon__button-small span {
+  display: none;  /* Word 中小按钮不显示文本，只有图标 */
+}
+
+/* 切换按钮激活状态 (加粗、斜体等) */
+.ribbon__toggle-button.active {
+  background-color: #D1E5F4;
+  border-color: #0078D4;
+}
+
+.ribbon__toggle-button.active:hover {
+  background-color: #C7DDF2;
+  border-color: #106EBE;
+}
+
+/* 下拉按钮样式 */
+.ribbon__dropdown-button {
+  position: relative;
+  padding-right: 18px !important;
+  width: auto !important;
+  min-width: 22px;
+}
+
+.ribbon__dropdown-arrow {
+  width: 8px;
+  height: 8px;
+  position: absolute;
+  right: 3px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #605E5C;
+  fill: currentColor;
 }
 
 /* 按钮行布局 */
@@ -320,20 +374,30 @@
   text-align: center;
 }
 
-/* 颜色按钮 */
+/* 颜色按钮 - Word 原版样式 */
 .ribbon__color-button {
   position: relative;
-  padding-bottom: 6px !important;
+  padding-bottom: 7px !important;
+  width: auto !important;
+  min-width: 32px;
+  padding-right: 14px !important;
 }
 
 .ribbon__color-bar {
   position: absolute;
   bottom: 2px;
-  left: 2px;
-  right: 2px;
+  left: 3px;
+  right: 14px;
   height: 3px;
   border-radius: 1px;
-  display: none; /* 隐藏颜色指示器 */
+  display: block;
+}
+
+/* 颜色按钮的下拉箭头 */
+.ribbon__color-button .ribbon__dropdown-arrow {
+  width: 6px;
+  height: 6px;
+  right: 2px;
 }
 
 /* 样式画廊 */

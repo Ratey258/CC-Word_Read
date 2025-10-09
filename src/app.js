@@ -20,6 +20,87 @@ const documentContent = document.getElementById('documentContent');
 const wordCountEl = document.getElementById('wordCount');
 
 // ========================================
+// Ribbon 图标交互功能
+// ========================================
+document.addEventListener('DOMContentLoaded', function() {
+    // 初始化切换按钮（加粗、斜体、下划线等）
+    initializeToggleButtons();
+    
+    // 初始化下拉按钮
+    initializeDropdownButtons();
+});
+
+function initializeToggleButtons() {
+    const toggleButtons = document.querySelectorAll('.ribbon__toggle-button');
+    
+    toggleButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            this.classList.toggle('active');
+            
+            // 获取格式类型
+            const format = this.dataset.format || this.dataset.align;
+            if (format) {
+                applyFormat(format, this.classList.contains('active'));
+            }
+        });
+    });
+}
+
+function initializeDropdownButtons() {
+    const dropdownButtons = document.querySelectorAll('.ribbon__dropdown-button');
+    
+    dropdownButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            // 这里可以添加下拉菜单逻辑
+            console.log('Dropdown clicked:', this.title);
+        });
+    });
+}
+
+function applyFormat(format, isActive) {
+    // 根据格式类型应用样式
+    const selection = window.getSelection();
+    if (!selection.rangeCount) return;
+    
+    const range = selection.getRangeAt(0);
+    
+    switch(format) {
+        case 'bold':
+            document.execCommand('bold');
+            break;
+        case 'italic':
+            document.execCommand('italic');
+            break;
+        case 'underline':
+            document.execCommand('underline');
+            break;
+        case 'strikethrough':
+            document.execCommand('strikeThrough');
+            break;
+        case 'subscript':
+            document.execCommand('subscript');
+            break;
+        case 'superscript':
+            document.execCommand('superscript');
+            break;
+        case 'left':
+            document.execCommand('justifyLeft');
+            break;
+        case 'center':
+            document.execCommand('justifyCenter');
+            break;
+        case 'right':
+            document.execCommand('justifyRight');
+            break;
+        case 'justify':
+            document.execCommand('justifyFull');
+            break;
+    }
+}
+
+// ========================================
 // 小说加载功能
 // ========================================
 async function loadNovel(input) {
