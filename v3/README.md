@@ -292,13 +292,20 @@ npm run type-check       # TypeScript 类型检查
 
 ---
 
+## 📚 相关文档
+
+- 📊 **[项目状态](./PROJECT_STATUS.md)** - 实时开发进度、技术栈、构建信息
+- 📈 **[开发进度](../DEVELOPMENT_PROGRESS.md)** - 整体项目进度追踪  
+- 🔄 **[升级计划](../UPGRADE_PLAN.md)** - 技术栈升级详解
+- 📑 **[文档索引](../DOCS_INDEX.md)** - 所有文档统一入口
+
 ## 开发进度
 
-- [x] Phase 1: 基础设施搭建 ✅
-- [ ] Phase 2: 样式迁移 🚧
-- [ ] Phase 3: 组件化重构
-- [ ] Phase 4: 逻辑整合
-- [ ] Phase 5: 测试与优化
-- [ ] Phase 6: 发布
+- [x] Phase 1: 基础设施搭建 ✅ (100%)
+- [x] Phase 2: 样式迁移 ✅ (100%)
+- [x] Phase 3: 组件化重构 🚧 (80%)
+- [ ] Phase 4: 功能集成 (20%)
+- [ ] Phase 5: 测试与优化 (0%)
+- [ ] Phase 6: 收尾与发布 (0%)
 
-查看详细进度: [DEVELOPMENT_PROGRESS.md](../DEVELOPMENT_PROGRESS.md)
+> 💡 查看详细状态和下一步计划: [PROJECT_STATUS.md](./PROJECT_STATUS.md)

@@ -151,14 +151,20 @@ npm run build
 - 📚 **完整搭建说明**: [TAURI_SETUP.md](TAURI_SETUP.md)
 - 🔧 **开发文档**: [开发文档.md](开发文档.md)
 
-## 📚 完整文档
+## 📚 项目文档
 
-查看 [开发文档.md](开发文档.md) 获取：
-- 📐 Word 2022 UI设计规范
-- ⚙️ 核心功能实现详解
-- 🚀 Tauri迁移完整指南
-- 📦 部署与发布流程
-- 🎯 开发路线图
+> 📑 **[完整文档索引](DOCS_INDEX.md)** - 查看所有文档的统一入口
+
+### 🚀 V3 版本（Vue 3 + Tauri 重构版）**[推荐]**
+- 📊 **[项目状态](v3/PROJECT_STATUS.md)** - 最新开发进度和技术栈
+- 📘 **[V3 使用指南](v3/README.md)** - API、架构、开发指南
+- 📈 **[开发进度](DEVELOPMENT_PROGRESS.md)** - 整体进度追踪
+- 🔄 **[升级计划](UPGRADE_PLAN.md)** - 技术升级路线
+
+### 📦 V1/V2 版本（传统版本）
+- 📐 **[设计规范](开发文档.md)** - Word 2022 UI设计规范
+- 🚀 **[Tauri集成](README_TAURI.md)** - Tauri快速开始
+- 🔧 **[环境搭建](TAURI_SETUP.md)** - Tauri完整搭建说明
 
 ## 🤝 贡献
 
@@ -186,12 +192,23 @@ npm run build
 - [ ] 书签功能
 
 ### v2.x (Tauri Windows桌面版)
-- [ ] Tauri框架集成
+- [x] Tauri框架集成 ✅
 - [ ] 自定义窗口控制
 - [ ] Windows安装包（MSI/NSIS）
 - [ ] 代码签名
 - [ ] 自动更新功能
 - [ ] 云端进度同步
+
+### v3.x (Vue 3 + Tauri 现代化重构)
+- [x] Vue 3 + TypeScript 基础架构 ✅
+- [x] 样式系统迁移 ✅
+- [x] 核心组件开发 🚧 (80%)
+- [ ] Tauri 深度集成
+- [ ] 功能完整实现
+- [ ] 测试与优化
+- [ ] 首个稳定版发布
+
+> 🚀 **V3版本正在积极开发中**，详见 [v3/PROJECT_STATUS.md](v3/PROJECT_STATUS.md)
 
 ## ⚠️ 免责声明
 

@@ -1,0 +1,134 @@
+/**
+ * Editor 组件样式
+ * Word 文档编辑区样式
+ */
+
+/* ========== 文档容器 ========== */
+
+.document-container
+{
+  position: fixed;
+  top: calc(var(--titlebar-height) + var(--ribbon-total-height));
+  bottom: var(--statusbar-height);
+  left: 0;
+  right: 0;
+  background-color: #E7E7E7;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+/* ========== 文档页面 ========== */
+
+.document-page
+{
+  width: 21cm; /* A4 宽度 */
+  min-height: 29.7cm; /* A4 高度 */
+  background-color: var(--word-white);
+  padding: 2.54cm; /* 默认页边距 */
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), 0 0 1px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.document-page:last-child
+{
+  margin-bottom: 0;
+}
+
+/* ========== 文档内容 ========== */
+
+.document-content
+{
+  width: 100%;
+  min-height: 24.62cm; /* A4高度 - 页边距 */
+  font-family: var(--font-family-document);
+  font-size: 14pt;
+  line-height: 1.6;
+  color: var(--word-text-primary);
+  outline: none;
+  border: none;
+  resize: none;
+  overflow: visible;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.document-content[contenteditable="true"]
+{
+  cursor: text;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.document-content[contenteditable="true"]:focus
+{
+  outline: none;
+}
+
+/* 光标样式 */
+.document-content::selection
+{
+  background-color: var(--word-blue-light);
+}
+
+/* 空文档提示 */
+.document-content:empty::before
+{
+  content: attr(data-placeholder);
+  color: var(--word-text-disabled);
+  font-style: italic;
+  pointer-events: none;
+}
+
+/* ========== 响应式 ========== */
+
+@media (max-width: 1400px)
+{
+  .document-container
+  {
+    padding: 20px 10px;
+  }
+}
+
+@media (max-width: 900px)
+{
+  .document-page
+  {
+    width: 100%;
+    min-height: auto;
+    padding: 1cm;
+    margin: 0;
+    box-shadow: none;
+  }
+  
+  .document-container
+  {
+    padding: 10px;
+  }
+}
+
+/* ========== 打印样式 ========== */
+
+@media print
+{
+  .document-container
+  {
+    position: static;
+    background: white;
+  }
+  
+  .document-page
+  {
+    margin: 0;
+    box-shadow: none;
+    page-break-after: always;
+  }
+  
+  .document-page:last-child
+  {
+    page-break-after: auto;
+  }
+}

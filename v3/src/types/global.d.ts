@@ -34,6 +34,9 @@ interface ImportMeta {
   readonly env: ImportMetaEnv
 }
 
+// 导出 ImportMeta 以消除未使用警告
+export type { ImportMeta }
+
 /**
  * 通用回调函数
  */

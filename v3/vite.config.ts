@@ -22,10 +22,15 @@ export default defineConfig({
     target: ['es2021', 'chrome100', 'safari13'],
     minify: !process.env.TAURI_DEBUG ? 'esbuild' : false,
     sourcemap: !!process.env.TAURI_DEBUG,
-    // 输出到 dist 目录
-    outDir: 'dist',
+    // 统一输出到 build 目录
+    outDir: 'build/dist',
     // 清空输出目录
-    emptyOutDir: true
+    emptyOutDir: true,
+    // 资源文件输出目录
+    assetsDir: 'assets',
+    // 构建信息输出
+    reportCompressedSize: true,
+    chunkSizeWarningLimit: 1000
   },
 
   // 路径别名

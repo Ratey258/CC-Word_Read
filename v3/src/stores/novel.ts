@@ -38,6 +38,12 @@ export const useNovelStore = defineStore('novel', () =>
     return (currentPosition.value / totalLength.value) * 100
   })
   
+  /** 阅读进度百分比（整数） */
+  const progressPercent = computed(() =>
+  {
+    return Math.round(progress.value)
+  })
+  
   /** 剩余字符数 */
   const remainingChars = computed(() =>
   {
@@ -289,6 +295,7 @@ export const useNovelStore = defineStore('novel', () =>
     // Getters
     totalLength,
     progress,
+    progressPercent,
     remainingChars,
     hasNovel,
     metadata,

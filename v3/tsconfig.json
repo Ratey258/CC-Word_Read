@@ -10,6 +10,9 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     
+    // 编译输出（仅类型检查，不生成 JS 文件）
+    "noEmit": true,
+    
     // 类型检查
     "strict": true,
     "noUnusedLocals": true,
@@ -52,7 +55,9 @@
   
   "exclude": [
     "node_modules",
+    "build",
     "dist",
+    "dist-ssr",
     "src-tauri"
   ],
   

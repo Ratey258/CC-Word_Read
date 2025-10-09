@@ -1,0 +1,176 @@
+/* ========================================
+   图标样式系统
+   ======================================== */
+
+/* 基础图标样式 */
+.icon
+{
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+  fill: currentColor;
+}
+
+/* 图标尺寸 */
+.icon--xs
+{
+  width: 12px;
+  height: 12px;
+}
+
+.icon--sm
+{
+  width: 14px;
+  height: 14px;
+}
+
+.icon--md
+{
+  width: 16px;
+  height: 16px;
+}
+
+.icon--lg
+{
+  width: 20px;
+  height: 20px;
+}
+
+.icon--xl
+{
+  width: 24px;
+  height: 24px;
+}
+
+/* Ribbon 工具栏图标 */
+.ribbon__button-large .icon
+{
+  width: 24px;
+  height: 24px;
+}
+
+.ribbon__button-small .icon
+{
+  width: 16px;
+  height: 16px;
+}
+
+/* 标题栏图标 */
+.title-bar__quick-button .icon
+{
+  width: 14px;
+  height: 14px;
+}
+
+.title-bar__window-controls .icon
+{
+  width: 10px;
+  height: 10px;
+}
+
+.title-bar__ribbon-toggle .icon
+{
+  width: 12px;
+  height: 12px;
+}
+
+/* 状态栏图标 */
+.status-bar__item .icon
+{
+  width: 14px;
+  height: 14px;
+}
+
+.status-bar__zoom-button .icon
+{
+  width: 14px;
+  height: 14px;
+}
+
+/* 搜索框图标 */
+.title-bar__search-icon .icon
+{
+  width: 14px;
+  height: 14px;
+}
+
+/* 编辑器图标 */
+.editor__welcome-icon
+{
+  width: 64px;
+  height: 64px;
+  margin-bottom: 20px;
+  opacity: 0.3;
+}
+
+/* 图标颜色变体 */
+.icon--primary
+{
+  fill: var(--word-accent-primary);
+}
+
+.icon--secondary
+{
+  fill: var(--word-text-secondary);
+}
+
+.icon--success
+{
+  fill: #107c10;
+}
+
+.icon--warning
+{
+  fill: #797673;
+}
+
+.icon--danger
+{
+  fill: #d13438;
+}
+
+/* 图标交互状态 */
+.icon--interactive
+{
+  transition: fill 0.1s ease;
+}
+
+.icon--interactive:hover
+{
+  fill: var(--word-accent-primary);
+}
+
+/* 旋转动画 */
+@keyframes icon-spin
+{
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.icon--spinning
+{
+  animation: icon-spin 1s linear infinite;
+}
+
+/* 图标容器对齐 */
+.icon-wrapper
+{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-wrapper--start
+{
+  justify-content: flex-start;
+}
+
+.icon-wrapper--end
+{
+  justify-content: flex-end;
+}
+
+.icon-wrapper--center
+{
+  justify-content: center;
+}

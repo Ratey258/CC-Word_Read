@@ -312,10 +312,8 @@ const outputChars = useCallback(() => {
 - ✅ **模块化架构** - 清晰的目录结构
 - ✅ **类型安全** - 全量 TypeScript
 - ✅ **代码规范** - ESLint + Prettier
-- ✅ **自动化测试** - Vitest + Playwright
-- ✅ **CI/CD** - GitHub Actions
 - ✅ **性能优化** - 虚拟滚动、懒加载
-- ✅ **文档完善** - JSDoc + Typedoc
+- ✅ **文档完善** - JSDoc + 开发文档
 
 ---
 
@@ -412,17 +410,6 @@ CC-Word_Read/
 │   ├── Cargo.toml
 │   └── tauri.conf.json
 │
-├── tests/                        # 测试文件
-│   ├── unit/                     # 单元测试
-│   │   ├── composables/
-│   │   ├── services/
-│   │   └── utils/
-│   ├── e2e/                      # E2E 测试
-│   │   ├── novel-import.spec.ts
-│   │   ├── reading.spec.ts
-│   │   └── progress.spec.ts
-│   └── fixtures/                 # 测试数据
-│
 ├── docs/                         # 文档
 │   ├── api/                      # API 文档
 │   ├── architecture.md           # 架构说明
@@ -432,16 +419,8 @@ CC-Word_Read/
 │   ├── migrate.js                # 迁移脚本
 │   └── generate-icons.js         # 图标生成
 │
-├── .github/
-│   └── workflows/
-│       ├── ci.yml                # CI 流程
-│       ├── release.yml           # 发布流程
-│       └── test.yml              # 测试流程
-│
 ├── vite.config.ts                # Vite 配置
 ├── tsconfig.json                 # TypeScript 配置
-├── vitest.config.ts              # Vitest 配置
-├── playwright.config.ts          # Playwright 配置
 ├── .eslintrc.cjs                 # ESLint 配置
 ├── .prettierrc                   # Prettier 配置
 └── package.json                  # 项目配置
@@ -613,11 +592,10 @@ npm install @tauri-apps/api@2.0
 3. 业务逻辑封装为 Services
 4. 工具函数独立化
 
-#### Phase 5: 测试与优化 (Week 7-8)
-1. 编写单元测试
-2. E2E 测试覆盖
-3. 性能优化
-4. 文档完善
+#### Phase 5: 优化与完善 (Week 7-8)
+1. 性能优化
+2. 文档完善
+3. 最终调试
 
 ### 4.2 兼容性保证
 
@@ -772,64 +750,6 @@ module.exports = {
 }
 ```
 
-### 5.4 测试配置
-
-```typescript
-// vitest.config.ts
-import { defineConfig } from 'vitest/config';
-import vue from '@vitejs/plugin-vue';
-
-export default defineConfig({
-  plugins: [vue()],
-  test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: ['./tests/setup.ts'],
-    coverage: {
-      provider: 'v8',
-      reporter: ['text', 'json', 'html'],
-      exclude: [
-        'node_modules/',
-        'tests/',
-        '**/*.d.ts',
-        '**/*.config.*'
-      ]
-    }
-  }
-});
-```
-
-```typescript
-// playwright.config.ts
-import { defineConfig, devices } from '@playwright/test';
-
-export default defineConfig({
-  testDir: './tests/e2e',
-  fullyParallel: true,
-  forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
-  reporter: 'html',
-  
-  use: {
-    baseURL: 'http://localhost:1420',
-    trace: 'on-first-retry',
-  },
-  
-  projects: [
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    }
-  ],
-  
-  webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:1420',
-    reuseExistingServer: !process.env.CI,
-  }
-});
-```
 
 ---
 
@@ -869,13 +789,6 @@ export default defineConfig({
     "eslint-plugin-vue": "^9.19.0",
     "prettier": "^3.1.0",
     
-    "vitest": "^1.0.0",
-    "@vue/test-utils": "^2.4.0",
-    "@vitest/ui": "^1.0.0",
-    "jsdom": "^23.0.0",
-    
-    "@playwright/test": "^1.40.0",
-    
     "sass": "^1.69.0",
     "postcss": "^8.4.0",
     "autoprefixer": "^10.4.0"
@@ -891,8 +804,6 @@ export default defineConfig({
 | Pinia | 状态管理 | ^2.1 | ✅ 核心 |
 | TypeScript | 类型系统 | ^5.3 | ✅ 核心 |
 | Vite | 构建工具 | ^5.0 | ✅ 核心 |
-| Vitest | 单元测试 | ^1.0 | ✅ 核心 |
-| Playwright | E2E测试 | ^1.40 | ✅ 核心 |
 | ESLint | 代码检查 | ^8.56 | ✅ 核心 |
 | Mammoth.js | DOCX解析 | ^1.7 | ✅ 功能 |
 | Localforage | 存储增强 | ^1.10 | 🟡 可选 |
@@ -1075,19 +986,7 @@ onMounted(() => {
   - [ ] 语言设置
   - [ ] 缩放控制
 
-### 8.3 测试覆盖验证
-
-- [ ] **单元测试** (目标: 80%+)
-  - [ ] Composables 测试
-  - [ ] Utils 测试
-  - [ ] Services 测试
-  - [ ] Stores 测试
-
-- [ ] **E2E 测试**
-  - [ ] 导入流程
-  - [ ] 阅读流程
-  - [ ] 保存流程
-  - [ ] 快捷键测试
+### 8.3 性能验证
 
 - [ ] **性能测试**
   - [ ] 大文件加载 (50MB)
@@ -1102,7 +1001,7 @@ onMounted(() => {
 ### Week 1-2: 基础设施
 - Day 1-3: 项目初始化、依赖安装、配置文件
 - Day 4-7: 目录结构搭建、类型定义、工具函数迁移
-- Day 8-10: CI/CD 配置、测试环境搭建
+- Day 8-10: 基础架构搭建
 
 ### Week 3-4: 样式迁移
 - Day 11-14: CSS 文件整理、变量提取、模块化
@@ -1118,14 +1017,14 @@ onMounted(() => {
 - Day 35-37: Pinia Stores 创建
 - Day 38-40: Services 封装
 
-### Week 8: 测试与优化
-- Day 41-44: 单元测试编写
-- Day 45-47: E2E 测试
-- Day 48-50: 性能优化、文档完善
+### Week 8: 优化与完善
+- Day 41-44: 性能优化
+- Day 45-47: Bug 修复
+- Day 48-50: 文档完善
 
 ### Week 9: 收尾与发布
-- Day 51-53: Bug 修复
-- Day 54-56: 最终测试
+- Day 51-53: 最终调试
+- Day 54-56: 发布准备
 - Day 57: 发布 v3.0
 
 ---
@@ -1159,10 +1058,9 @@ onMounted(() => {
 
 ### 11.2 质量验收
 - ✅ TypeScript 覆盖率 100%
-- ✅ 单元测试覆盖率 ≥ 80%
-- ✅ E2E 测试核心流程全覆盖
 - ✅ ESLint 0 error
 - ✅ 构建 0 warning
+- ✅ 代码规范统一
 
 ### 11.3 性能验收
 - ✅ 首屏加载 < 1s
@@ -1183,8 +1081,6 @@ onMounted(() => {
 - [Vue 3 文档](https://vuejs.org/)
 - [Pinia 文档](https://pinia.vuejs.org/)
 - [Vite 文档](https://vitejs.dev/)
-- [Vitest 文档](https://vitest.dev/)
-- [Playwright 文档](https://playwright.dev/)
 - [Tauri 文档](https://tauri.app/)
 
 ### 最佳实践
@@ -1213,12 +1109,6 @@ npm run preview          # 预览生产构建
 npm run tauri dev        # Tauri 开发模式
 npm run tauri build      # Tauri 生产构建
 
-# 测试
-npm run test             # 运行单元测试
-npm run test:ui          # Vitest UI
-npm run test:e2e         # E2E 测试
-npm run test:coverage    # 测试覆盖率
-
 # 代码质量
 npm run lint             # ESLint 检查
 npm run lint:fix         # ESLint 自动修复
@@ -1239,8 +1129,6 @@ npm run build:analyze    # 构建产物分析
 /src/services       - 业务服务层
 /src/utils          - 工具函数
 /src/types          - TypeScript 类型定义
-/tests/unit         - 单元测试
-/tests/e2e          - E2E 测试
 ```
 
 ---

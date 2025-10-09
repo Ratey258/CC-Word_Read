@@ -3,10 +3,9 @@
  */
 
 import { ref } from 'vue'
-import { open } from '@tauri-apps/plugin-dialog'
-import { readTextFile } from '@tauri-apps/plugin-fs'
 import { useNovelStore } from '@/stores/novel'
 import { useUIStore } from '@/stores/ui'
+import { useFileSystem } from './useFileSystem'
 import { validateFile, validateNovelContent } from '@/utils/validator'
 import type { Novel, NovelFormat } from '@/types/novel'
 import { nanoid } from 'nanoid'
@@ -15,11 +14,18 @@ export function useFileImporter()
 {
   const novelStore = useNovelStore()
   const uiStore = useUIStore()
+  const fileSystem = useFileSystem()
 
   // ===== State =====
   
   /** 是否正在导入 */
   const isImporting = ref(false)
+
+  /** 是否正在拖拽文件 */
+  const isDragging = ref(false)
+
+  /** 拖拽计数器（用于处理嵌套元素） */
+  let dragCounter = 0
 
   // ===== Methods =====
 
@@ -31,20 +37,20 @@ export function useFileImporter()
     try
     {
       // 打开文件选择对话框
-      const selected = await open({
-        multiple: false,
+      const result = await fileSystem.openFileDialog({
+        title: '选择小说文件',
         filters: [
           {
             name: '支持的文件',
-            extensions: ['txt', 'docx', 'md']
+            extensions: ['txt', 'epub', 'md']
           },
           {
             name: '文本文件',
             extensions: ['txt']
           },
           {
-            name: 'Word 文档',
-            extensions: ['docx']
+            name: 'EPUB 电子书',
+            extensions: ['epub']
           },
           {
             name: 'Markdown',
@@ -53,10 +59,10 @@ export function useFileImporter()
         ]
       })
 
-      if (!selected) return
+      if (!result) return
 
-      // 导入选中的文件
-      await importFileByPath(selected as string)
+      // 导入文件
+      await importFileFromResult(result.name, result.content, result.path)
     }
     catch (error)
     {
@@ -66,10 +72,16 @@ export function useFileImporter()
   }
 
   /**
-   * 通过文件路径导入文件
-   * @param filePath 文件路径
+   * 导入文件内容
+   * @param fileName 文件名
+   * @param content 文件内容
+   * @param _filePath 文件路径（可选，未使用）
    */
-  async function importFileByPath(filePath: string): Promise<void>
+  async function importFileFromResult(
+    fileName: string,
+    content: string,
+    _filePath: string | null = null
+  ): Promise<void>
   {
     if (isImporting.value) return
 
@@ -78,9 +90,6 @@ export function useFileImporter()
 
     try
     {
-      // 读取文件
-      const content = await readTextFile(filePath)
-
       // 验证内容
       const validation = validateNovelContent(content)
       if (!validation.valid)
@@ -89,7 +98,6 @@ export function useFileImporter()
       }
 
       // 提取文件信息
-      const fileName = filePath.split(/[\\/]/).pop() || 'unknown'
       const format = getFileFormat(fileName)
 
       // 创建小说对象
@@ -257,15 +265,57 @@ export function useFileImporter()
     uiStore.hideWelcome()
   }
 
+  /**
+   * 处理拖拽进入
+   */
+  function handleDragEnter(event: DragEvent): void
+  {
+    event.preventDefault()
+    dragCounter++
+    if (dragCounter === 1)
+    {
+      isDragging.value = true
+    }
+  }
+
+  /**
+   * 处理拖拽离开
+   */
+  function handleDragLeave(event: DragEvent): void
+  {
+    event.preventDefault()
+    dragCounter--
+    if (dragCounter === 0)
+    {
+      isDragging.value = false
+    }
+  }
+
+  /**
+   * 处理拖拽放置
+   */
+  async function handleDrop(event: DragEvent): Promise<void>
+  {
+    event.preventDefault()
+    dragCounter = 0
+    isDragging.value = false
+
+    await handleFileDrop(event)
+  }
+
   return {
     // State
     isImporting,
+    isDragging,
 
     // Methods
     importFile,
-    importFileByPath,
+    importFileFromResult,
     handleFileDrop,
-    importSampleNovel
+    importSampleNovel,
+    handleDragEnter,
+    handleDragLeave,
+    handleDrop
   }
 }
 

@@ -9,6 +9,7 @@ export default [
   {
     ignores: [
       'dist/**',
+      'build/**',
       'node_modules/**',
       'src-tauri/**',
       '*.config.ts',
@@ -60,7 +61,12 @@ export default [
         MouseEvent: 'readonly',
         DragEvent: 'readonly',
         CompositionEvent: 'readonly',
+        CustomEvent: 'readonly',
         ScrollIntoViewOptions: 'readonly',
+        // Browser functions
+        confirm: 'readonly',
+        alert: 'readonly',
+        prompt: 'readonly',
         // Node globals
         process: 'readonly',
         __dirname: 'readonly',
@@ -101,6 +107,40 @@ export default [
         ecmaVersion: 'latest',
         parser: tsparser,
         sourceType: 'module'
+      },
+      globals:
+      {
+        // Browser globals
+        window: 'readonly',
+        document: 'readonly',
+        navigator: 'readonly',
+        console: 'readonly',
+        localStorage: 'readonly',
+        sessionStorage: 'readonly',
+        setTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearTimeout: 'readonly',
+        clearInterval: 'readonly',
+        Blob: 'readonly',
+        File: 'readonly',
+        FileReader: 'readonly',
+        URL: 'readonly',
+        HTMLElement: 'readonly',
+        HTMLInputElement: 'readonly',
+        HTMLDivElement: 'readonly',
+        Node: 'readonly',
+        Selection: 'readonly',
+        Range: 'readonly',
+        Element: 'readonly',
+        Event: 'readonly',
+        KeyboardEvent: 'readonly',
+        MouseEvent: 'readonly',
+        DragEvent: 'readonly',
+        CompositionEvent: 'readonly',
+        CustomEvent: 'readonly',
+        confirm: 'readonly',
+        alert: 'readonly',
+        prompt: 'readonly'
       }
     },
     rules:
@@ -109,6 +149,46 @@ export default [
       'vue/no-v-html': 'warn',
       'vue/require-default-prop': 'off',
       'vue/require-explicit-emits': 'warn',
+    }
+  },
+  
+  // JavaScript 文件配置
+  {
+    files: ['**/*.js'],
+    languageOptions:
+    {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals:
+      {
+        // Browser globals
+        window: 'readonly',
+        document: 'readonly',
+        navigator: 'readonly',
+        console: 'readonly',
+        localStorage: 'readonly',
+        sessionStorage: 'readonly',
+        setTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearTimeout: 'readonly',
+        clearInterval: 'readonly',
+        Blob: 'readonly',
+        File: 'readonly',
+        FileReader: 'readonly',
+        URL: 'readonly',
+        HTMLElement: 'readonly',
+        HTMLInputElement: 'readonly',
+        HTMLDivElement: 'readonly',
+        Node: 'readonly',
+        Selection: 'readonly',
+        Range: 'readonly',
+        Element: 'readonly',
+        Event: 'readonly',
+        KeyboardEvent: 'readonly',
+        MouseEvent: 'readonly',
+        DragEvent: 'readonly',
+        CompositionEvent: 'readonly'
+      }
     }
   },
   

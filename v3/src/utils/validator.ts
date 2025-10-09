@@ -48,6 +48,7 @@ export function validateFileFormat(
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   if (!FILE_LIMITS.SUPPORTED_FORMATS.includes(ext as any))
   {
     return {

@@ -1,0 +1,96 @@
+/**
+ * CSS Reset & 基础样式
+ * 重置浏览器默认样式并设置全局基础样式
+ */
+
+/* 全局重置 */
+*,
+*::before,
+*::after
+{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html
+{
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body
+{
+  font-family: var(--font-family-ui);
+  font-size: var(--font-size-md);
+  color: var(--word-text-primary);
+  background-color: var(--word-gray-canvas);
+  overflow: hidden;
+  user-select: none;
+  line-height: 1.5;
+}
+
+/* 按钮重置 */
+button
+{
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  outline: none;
+  transition: background-color var(--transition-normal);
+}
+
+button::-moz-focus-inner
+{
+  border: 0;
+}
+
+/* 输入框重置 */
+input,
+textarea,
+select
+{
+  font-family: inherit;
+  font-size: inherit;
+  border: none;
+  outline: none;
+}
+
+/* 链接重置 */
+a
+{
+  color: inherit;
+  text-decoration: none;
+}
+
+/* 列表重置 */
+ul,
+ol
+{
+  list-style: none;
+}
+
+/* 图片重置 */
+img
+{
+  display: block;
+  max-width: 100%;
+}
+
+/* 表格重置 */
+table
+{
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* 标题重置 */
+h1, h2, h3, h4, h5, h6
+{
+  font-size: inherit;
+  font-weight: inherit;
+}
+

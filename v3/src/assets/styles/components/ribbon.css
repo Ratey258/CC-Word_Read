@@ -1,0 +1,874 @@
+/**
+ * Ribbon 组件样式
+ * Word 2022 功能区样式 - 精确还原
+ */
+
+/* ========== Ribbon 容器 ========== */
+
+.ribbon
+{
+  position: fixed;
+  top: var(--titlebar-height);
+  left: 0;
+  right: 0;
+  z-index: var(--z-ribbon-tabs);
+  background-color: var(--word-gray-bg);
+  transition: all 0.2s ease;
+}
+
+/* 折叠状态 - 只显示标签栏 */
+.ribbon--collapsed .ribbon__toolbar,
+.ribbon--collapsed .file-menu
+{
+  display: none;
+}
+
+.ribbon--collapsed
+{
+  height: var(--ribbon-tab-height);
+}
+
+/* ========== 标签栏 ========== */
+
+.ribbon__tabs
+{
+  height: var(--ribbon-tab-height);
+  background-color: var(--word-white);
+  border-bottom: 1px solid #E1E1E1;
+  display: flex;
+  align-items: flex-end;
+  padding: 0 4px;
+}
+
+.ribbon__tab
+{
+  padding: 3px 12px 2px 12px;
+  font-size: 11px;
+  color: var(--word-text-primary);
+  border: none;
+  background: none;
+  cursor: pointer;
+  position: relative;
+  transition: all 100ms ease-out;
+  border-bottom: 3px solid transparent;
+  height: 24px;
+  display: flex;
+  align-items: center;
+}
+
+.ribbon__tab:hover
+{
+  background-color: #F8F8F8;
+}
+
+.ribbon__tab--active
+{
+  background-color: var(--word-white);
+  border-bottom-color: var(--word-blue-primary);
+  font-weight: 500;
+  color: var(--word-blue-primary);
+}
+
+.ribbon__tab--file
+{
+  background-color: var(--word-blue-primary);
+  color: var(--word-white);
+  border-radius: 3px 3px 0 0;
+  margin-right: 4px;
+  padding: 3px 11px 2px 11px;
+  font-weight: 500;
+}
+
+.ribbon__tab--file:hover
+{
+  background-color: var(--word-blue-hover);
+}
+
+.ribbon__tab--file.ribbon__tab--active
+{
+  background-color: var(--word-blue-hover);
+  color: var(--word-white);
+  border-bottom-color: transparent;
+}
+
+/* OfficePLUS 标识 */
+.ribbon__officeplus
+{
+  padding: 3px 8px;
+  font-size: 11px;
+  color: #605E5C;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  margin-right: 4px;
+  margin-left: 0px;
+  letter-spacing: 0px;
+  height: 24px;
+}
+
+/* ========== 工具栏 ========== */
+
+.ribbon__toolbar
+{
+  height: var(--ribbon-toolbar-height);
+  background-color: #FFFFFF;
+  border-bottom: 1px solid var(--word-gray-border);
+  display: flex;
+  align-items: stretch;
+  padding: 3px 10px 0 10px;
+  gap: 5px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.ribbon__toolbar::-webkit-scrollbar
+{
+  height: 4px;
+}
+
+/* ========== 工具栏分组 ========== */
+
+.ribbon__group
+{
+  display: flex;
+  flex-direction: column;
+  min-width: fit-content;
+  position: relative;
+  height: 100%;
+  justify-content: space-between;
+}
+
+.ribbon__group-label
+{
+  font-size: 10px;
+  color: #605E5C;
+  text-align: center;
+  padding: 3px 2px 2px 2px;
+  border-top: 1px solid transparent;
+  height: 20px;
+  line-height: 15px;
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: visible;
+  flex-shrink: 0;
+}
+
+.ribbon__group-content
+{
+  display: flex;
+  gap: 3px;
+  padding: 4px 6px 2px 6px;
+  flex: 1;
+  align-items: flex-start;
+  min-height: 0;
+  flex-shrink: 1;
+}
+
+/* 分组分隔线 */
+.ribbon__group::after
+{
+  content: '';
+  position: absolute;
+  right: -3px;
+  top: 6px;
+  bottom: 22px;
+  width: 1px;
+  background-color: #E1E1E1;
+}
+
+.ribbon__group:last-child::after
+{
+  display: none;
+}
+
+/* 紧凑型分组 */
+.ribbon__group--compact .ribbon__group-content
+{
+  padding: 3px 4px;
+}
+
+.ribbon__group--compact .ribbon__button-large__label
+{
+  font-size: 9px;
+  line-height: 1.0;
+}
+
+/* ========== 图标样式 ========== */
+
+.icon
+{
+  fill: currentColor;
+  color: #424242;
+  transition: color 0.1s ease;
+}
+
+.ribbon-icon
+{
+  fill: currentColor;
+  color: #424242;
+  transition: color 0.1s ease;
+}
+
+.ribbon-icon--large
+{
+  width: 32px;
+  height: 32px;
+}
+
+.ribbon-icon--small
+{
+  width: 14px;
+  height: 14px;
+}
+
+.ribbon__button-large:hover .ribbon-icon,
+.ribbon__button-small:hover .ribbon-icon,
+.ribbon__button--large:hover .icon,
+.ribbon__button--small:hover .icon
+{
+  color: #106EBE;
+}
+
+.ribbon__toggle-button.active .ribbon-icon,
+.ribbon__toggle-button.active .icon
+{
+  color: #0078D4;
+}
+
+/* ========== 大按钮 ========== */
+
+.ribbon__button-large,
+.ribbon__button--large
+{
+  width: 40px;
+  min-width: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 3px;
+  padding: 6px 5px 4px 5px;
+  border-radius: 3px;
+  position: relative;
+  transition: all 100ms ease-out;
+  border: 1px solid transparent;
+  background-color: transparent;
+  cursor: pointer;
+  font-family: var(--font-family-ui);
+  color: var(--word-text-primary);
+}
+
+.ribbon__button-large:hover,
+.ribbon__button--large:hover:not(:disabled)
+{
+  background-color: #F3F2F1;
+  border-color: #E1E1E1;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.ribbon__button-large:active,
+.ribbon__button--large:active:not(:disabled)
+{
+  background-color: #E1DFDD;
+  border-color: #D1D1D1;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.12);
+  transform: translateY(0.5px);
+}
+
+.ribbon__button-large__label,
+.ribbon__button--large span,
+.ribbon__button--large-label
+{
+  font-size: 10px;
+  text-align: center;
+  line-height: 1.2;
+  max-width: 100%;
+  word-wrap: break-word;
+  color: var(--word-text-primary);
+  margin-top: 2px;
+  overflow: visible;
+  white-space: normal;
+  padding: 0 2px;
+}
+
+.ribbon__button-large .icon,
+.ribbon__button--large .icon
+{
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.ribbon__button-large__dropdown
+{
+  width: 8px;
+  height: 8px;
+  margin-top: -2px;
+  fill: #605E5C;
+}
+
+.ribbon__button-large.ribbon__dropdown-button,
+.ribbon__button--large.ribbon__dropdown-button
+{
+  padding-bottom: 2px;
+}
+
+/* ========== 小按钮 ========== */
+
+.ribbon__button-small,
+.ribbon__button--small
+{
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border-radius: 2px;
+  transition: all 100ms ease-out;
+  border: 1px solid transparent;
+  background-color: transparent;
+  position: relative;
+  cursor: pointer;
+  font-family: var(--font-family-ui);
+  color: var(--word-text-primary);
+}
+
+.ribbon__button-small:hover,
+.ribbon__button--small:hover:not(:disabled)
+{
+  background-color: #F3F2F1;
+  border-color: #E1E1E1;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+}
+
+.ribbon__button-small:active,
+.ribbon__button--small:active:not(:disabled)
+{
+  background-color: #E1DFDD;
+  border-color: #D1D1D1;
+  box-shadow: inset 0 1px 1px rgba(0,0,0,0.12);
+}
+
+.ribbon__button-small span,
+.ribbon__button--small span
+{
+  display: none;
+}
+
+.ribbon__button-small .icon,
+.ribbon__button--small .icon
+{
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+/* 切换按钮激活状态 */
+.ribbon__toggle-button.active
+{
+  background-color: #D1E5F4;
+  border-color: #0078D4;
+}
+
+.ribbon__toggle-button.active:hover
+{
+  background-color: #C7DDF2;
+  border-color: #106EBE;
+}
+
+/* ========== 下拉按钮 ========== */
+
+.ribbon__dropdown-button
+{
+  position: relative;
+  padding-right: 18px !important;
+  width: auto !important;
+  min-width: 22px;
+}
+
+.ribbon__dropdown-arrow
+{
+  width: 8px;
+  height: 8px;
+  position: absolute;
+  right: 3px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #605E5C;
+  fill: currentColor;
+}
+
+/* ========== Ribbon 内容 ========== */
+
+.ribbon__content
+{
+  display: flex;
+  gap: 5px;
+  align-items: stretch;
+  height: 100%;
+}
+
+/* ========== 按钮布局 ========== */
+
+.ribbon__row
+{
+  display: flex;
+  gap: 1px;
+  align-items: center;
+}
+
+.ribbon__button-row
+{
+  display: flex;
+  gap: 1px;
+  align-items: center;
+}
+
+.ribbon__button-column
+{
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  justify-content: flex-start;
+}
+
+.ribbon__button-column .ribbon__button-row + .ribbon__button-row
+{
+  margin-top: 2px;
+}
+
+.ribbon__button-stack
+{
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  justify-content: space-between;
+}
+
+.ribbon__button--stack
+{
+  flex: 1;
+  min-height: 0;
+  padding: 4px 8px !important;
+  font-size: 11px !important;
+}
+
+.ribbon__button--stack .icon
+{
+  width: 14px;
+  height: 14px;
+  margin-right: 4px;
+}
+
+.ribbon__button--stack span
+{
+  font-size: 11px;
+  display: inline;
+}
+
+/* 剪贴板组特殊布局 */
+.ribbon__row--with-large
+{
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+
+/* ========== 选择器 ========== */
+
+.ribbon__select
+{
+  height: 20px;
+  min-width: 100px;
+  padding: 0 6px;
+  border: 1px solid #E1E1E1;
+  border-radius: 2px;
+  background-color: var(--word-white);
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 100ms ease-out;
+  font-family: var(--font-family-ui);
+  color: var(--word-text-primary);
+  outline: none;
+}
+
+.ribbon__select:hover
+{
+  border-color: #B3B3B3;
+  background-color: #FAFAFA;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.ribbon__select:focus
+{
+  border-color: var(--word-blue-primary);
+  box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.25);
+}
+
+/* 字体选择器 */
+.ribbon__select--font
+{
+  min-width: 130px;
+  max-width: 130px;
+}
+
+/* 字号选择器 */
+.ribbon__select--size
+{
+  min-width: 40px;
+  max-width: 40px;
+  text-align: center;
+  padding: 0 4px;
+}
+
+/* 字号容器 */
+.ribbon__font-size-container
+{
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.ribbon__font-size-btn
+{
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  background-color: transparent;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 100ms ease-out;
+}
+
+.ribbon__font-size-btn svg
+{
+  width: 12px;
+  height: 12px;
+  fill: var(--word-text-primary);
+}
+
+.ribbon__font-size-btn:hover
+{
+  background-color: #F3F2F1;
+  border-color: #E1E1E1;
+}
+
+.ribbon__font-size-btn:active
+{
+  background-color: #E1DFDD;
+  border-color: #D1D1D1;
+}
+
+/* 旧版选择器样式（如果需要） */
+.ribbon__selector
+{
+  height: 20px;
+  min-width: 100px;
+  padding: 0 18px 0 5px;
+  border: 1px solid #E1E1E1;
+  border-radius: 2px;
+  background-color: var(--word-white);
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 100ms ease-out;
+  position: relative;
+}
+
+.ribbon__selector:hover
+{
+  border-color: #B3B3B3;
+  background-color: #FAFAFA;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.ribbon__selector:focus
+{
+  border-color: var(--word-blue-primary);
+  box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.25);
+  outline: none;
+}
+
+.ribbon__selector__value
+{
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-family-ui);
+}
+
+.ribbon__selector__arrow
+{
+  width: 8px;
+  height: 8px;
+  position: absolute;
+  right: 4px;
+  pointer-events: none;
+  fill: var(--word-text-secondary);
+}
+
+.ribbon__font-selector
+{
+  min-width: 130px;
+  max-width: 130px;
+}
+
+.ribbon__fontsize-selector
+{
+  min-width: 40px;
+  max-width: 40px;
+  text-align: center;
+  padding: 0 18px 0 6px;
+}
+
+/* ========== 颜色按钮 ========== */
+
+.ribbon__color-button
+{
+  position: relative;
+  padding-bottom: 7px !important;
+  width: auto !important;
+  min-width: 32px;
+  padding-right: 14px !important;
+}
+
+.ribbon__color-bar
+{
+  position: absolute;
+  bottom: 2px;
+  left: 3px;
+  right: 14px;
+  height: 3px;
+  border-radius: 1px;
+  display: block;
+}
+
+.ribbon__color-button .ribbon__dropdown-arrow
+{
+  width: 6px;
+  height: 6px;
+  right: 2px;
+}
+
+/* ========== 样式画廊 ========== */
+
+.ribbon__group--styles .ribbon__group-content
+{
+  padding: 6px 4px;
+}
+
+.ribbon__styles-gallery
+{
+  display: flex;
+  gap: 2px;
+  align-items: center;
+  padding: 2px 0;
+}
+
+.ribbon__style-item
+{
+  min-width: 58px;
+  height: 18px;
+  padding: 1px 5px;
+  background-color: var(--word-white);
+  border: 1px solid #E1E1E1;
+  border-radius: 3px;
+  font-size: 11px;
+  text-align: left;
+  transition: all 100ms ease-out;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  font-family: var(--font-family-ui);
+  cursor: pointer;
+}
+
+.ribbon__style-item:hover
+{
+  background-color: #E6F2FA;
+  border-color: #0078D4;
+  box-shadow: 0 1px 3px rgba(0,120,212,0.2);
+  transform: translateY(-1px);
+}
+
+.ribbon__style-item:active,
+.ribbon__style-item--active
+{
+  background-color: #D4E8F7;
+  border-color: #005A9E;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.ribbon__style-item span
+{
+  font-size: 11px;
+  font-weight: var(--font-weight-normal);
+  color: var(--word-text-primary);
+}
+
+/* 旧版样式按钮 */
+.ribbon__style-button
+{
+  min-width: 58px;
+  height: 18px;
+  padding: 1px 5px;
+  background-color: var(--word-white);
+  border: 1px solid #E1E1E1;
+  border-radius: 3px;
+  font-size: 11px;
+  text-align: left;
+  transition: all 100ms ease-out;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  font-family: var(--font-family-ui);
+}
+
+.ribbon__style-button:hover
+{
+  background-color: #E6F2FA;
+  border-color: #0078D4;
+  box-shadow: 0 1px 3px rgba(0,120,212,0.2);
+  transform: translateY(-1px);
+}
+
+.ribbon__style-button:active
+{
+  background-color: #D4E8F7;
+  border-color: #005A9E;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+  transform: translateY(0);
+}
+
+.ribbon__style-button--normal
+{
+  font-size: 11px;
+  font-weight: var(--font-weight-normal);
+  color: var(--word-text-primary);
+}
+
+.ribbon__style-button--heading1
+{
+  font-size: 13px;
+  font-weight: var(--font-weight-bold);
+  color: #2E75B5;
+  font-family: '微软雅黑', 'Microsoft YaHei', sans-serif;
+}
+
+.ribbon__style-button--heading2
+{
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
+  color: #2E75B5;
+  font-family: '微软雅黑', 'Microsoft YaHei', sans-serif;
+}
+
+/* 更多样式按钮 */
+.ribbon__style-more
+{
+  width: 16px;
+  height: 16px;
+  border: 1px solid #D1D1D1;
+  border-radius: 2px;
+  background-color: var(--word-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 100ms ease;
+  flex-shrink: 0;
+}
+
+.ribbon__style-more svg
+{
+  width: 8px;
+  height: 8px;
+  fill: var(--word-text-secondary);
+}
+
+.ribbon__style-more:hover
+{
+  background-color: #DEECF9;
+  border-color: #0078D4;
+}
+
+.ribbon__style-more:hover svg
+{
+  fill: var(--word-blue-primary);
+}
+
+/* ========== 特殊状态 ========== */
+
+.ribbon__button--active
+{
+  background-color: var(--word-blue-light);
+  border: 1px solid var(--word-blue-primary);
+}
+
+.ribbon__button--disabled,
+.ribbon__button-large:disabled,
+.ribbon__button--large:disabled,
+.ribbon__button-small:disabled,
+.ribbon__button--small:disabled
+{
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* 下拉按钮样式 */
+.ribbon__button--dropdown
+{
+  position: relative;
+  padding-right: 18px !important;
+}
+
+.ribbon__button--dropdown::after
+{
+  content: '';
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 3px solid transparent;
+  border-right: 3px solid transparent;
+  border-top: 3px solid #605E5C;
+}
+
+/* ========== 响应式 ========== */
+
+@media (max-width: 1200px)
+{
+  .ribbon__group-label
+  {
+    font-size: 9px;
+  }
+  
+  .ribbon__button-large
+  {
+    width: 32px;
+  }
+}
+
+@media (max-width: 900px)
+{
+  .ribbon__toolbar
+  {
+    overflow-x: scroll;
+  }
+  
+  .ribbon__group
+  {
+    min-width: auto;
+  }
+}
+

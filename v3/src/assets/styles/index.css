@@ -1,0 +1,23 @@
+/**
+ * 主样式入口文件
+ * 按顺序导入所有样式模块
+ */
+
+/* 1. CSS 变量 - 必须首先加载 */
+@import './variables.css';
+
+/* 2. 重置样式 */
+@import './reset.css';
+
+/* 3. 基础样式 */
+@import './base.css';
+
+/* 4. 组件样式 */
+@import './components/titlebar.css';
+@import './components/ribbon.css';
+@import './components/editor.css';
+@import './components/statusbar.css';
+
+/* 5. 图标样式 */
+@import './icons.css';
+

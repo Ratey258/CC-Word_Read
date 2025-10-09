@@ -1,0 +1,121 @@
+/**
+ * CSS Variables - Word 2022 主题配色
+ * 所有颜色、尺寸、字体等设计令牌的集中定义
+ */
+
+:root
+{
+  /* ========== 颜色系统 ========== */
+  
+  /* 标题栏 */
+  --word-titlebar-bg: #F3F2F1;
+  --word-titlebar-text: #323130;
+  --word-titlebar-hover: #E1DFDD;
+  --word-titlebar-active: #D2D0CE;
+  
+  /* 蓝色系 */
+  --word-blue-primary: #0078D4;
+  --word-blue-hover: #106EBE;
+  --word-blue-active: #005A9E;
+  --word-blue-light: #DEECF9;
+  --word-blue-border: #0078D4;
+  
+  /* 灰色系 */
+  --word-gray-bg: #FFFFFF;
+  --word-gray-canvas: #E7E7E7;
+  --word-gray-hover: #F3F2F1;
+  --word-gray-active: #E1DFDD;
+  --word-gray-border: #E1E1E1;
+  --word-gray-separator: #E1DFDD;
+  
+  /* 文字颜色 */
+  --word-text-primary: #323130;
+  --word-text-secondary: #605E5C;
+  --word-text-disabled: #A19F9D;
+  --word-text-white: #FFFFFF;
+  
+  /* 白色系 */
+  --word-white: #FFFFFF;
+  --word-white-bg: #FAFAFA;
+  
+  /* 强调色 */
+  --word-red-close: #E81123;
+  --word-red-hover: #F1707A;
+  --word-green: #107C10;
+  --word-orange: #FF8C00;
+  --word-yellow-highlight: #FFFF00;
+  
+  /* 阴影 */
+  --word-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --word-shadow-md: 0 2px 4px rgba(0, 0, 0, 0.08);
+  --word-shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.12);
+  --word-page-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), 0 0 1px rgba(0, 0, 0, 0.1);
+  
+  /* ========== 尺寸系统 ========== */
+  
+  /* 布局尺寸 */
+  --titlebar-height: 30px;
+  --ribbon-tab-height: 24px;
+  --ribbon-toolbar-height: 94px;
+  --ribbon-total-height: 118px;
+  --statusbar-height: 22px;
+  
+  /* 按钮尺寸 */
+  --button-large-width: 36px;
+  --button-large-height: 64px;
+  --button-small-size: 20px;
+  --button-medium-size: 24px;
+  
+  /* 图标尺寸 */
+  --icon-small: 16px;
+  --icon-medium: 20px;
+  --icon-large: 32px;
+  
+  /* 间距系统 */
+  --spacing-xs: 2px;
+  --spacing-sm: 4px;
+  --spacing-md: 8px;
+  --spacing-lg: 12px;
+  --spacing-xl: 16px;
+  
+  /* 圆角 */
+  --border-radius-sm: 2px;
+  --border-radius-md: 4px;
+  
+  /* ========== 字体系统 ========== */
+  
+  /* 字体族 */
+  --font-family-ui: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Microsoft YaHei', sans-serif;
+  --font-family-icons: 'Segoe MDL2 Assets', 'Segoe UI Symbol', sans-serif;
+  --font-family-document: 'Calibri', '宋体', serif;
+  
+  /* 字体大小 */
+  --font-size-xs: 10px;
+  --font-size-sm: 11px;
+  --font-size-md: 12px;
+  --font-size-lg: 13px;
+  --font-size-xl: 14px;
+  
+  /* 字体粗细 */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  /* ========== 动画系统 ========== */
+  
+  /* 过渡动画 */
+  --transition-fast: 100ms ease-out;
+  --transition-normal: 150ms ease-out;
+  --transition-slow: 250ms ease-out;
+  
+  /* ========== Z-Index 层级 ========== */
+  
+  --z-titlebar: 1000;
+  --z-ribbon-tabs: 999;
+  --z-ribbon-toolbar: 998;
+  --z-statusbar: 997;
+  --z-modal: 1001;
+  --z-tooltip: 1002;
+}
+
