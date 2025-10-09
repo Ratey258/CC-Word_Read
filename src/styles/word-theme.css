@@ -51,8 +51,8 @@
   /* ===== 精确尺寸 (Precise Dimensions) ===== */
   --titlebar-height: 30px;
   --ribbon-tab-height: 24px;
-  --ribbon-toolbar-height: 92px;
-  --ribbon-total-height: 116px;      /* tab(24) + toolbar(92) */
+  --ribbon-toolbar-height: 90px;
+  --ribbon-total-height: 114px;      /* tab(24) + toolbar(90) */
   --statusbar-height: 22px;
   
   --button-large-width: 36px;

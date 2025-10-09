@@ -26,7 +26,7 @@
 }
 
 .ribbon__tab {
-  padding: 2px 12px;
+  padding: 2px 11px;
   font-size: 11px;
   color: var(--word-text-primary);
   border: none;
@@ -55,8 +55,8 @@
   background-color: var(--word-blue-primary);
   color: var(--word-white);
   border-radius: 2px 2px 0 0;
-  margin-right: 1px;
-  padding: 2px 10px;
+  margin-right: 2px;
+  padding: 2px 9px;
 }
 
 .ribbon__tab--file:hover {
@@ -65,14 +65,15 @@
 
 /* OfficePLUS 标识 */
 .ribbon__officeplus {
-  padding: 2px 8px;
+  padding: 2px 6px;
   font-size: 11px;
   color: var(--word-text-secondary);
   font-weight: var(--font-weight-normal);
   display: flex;
   align-items: center;
-  margin-right: 0px;
-  letter-spacing: 0px;
+  margin-right: 2px;
+  margin-left: -2px;
+  letter-spacing: -0.2px;
   height: 22px;
 }
 
@@ -83,8 +84,8 @@
   border-bottom: 1px solid var(--word-gray-border);
   display: flex;
   align-items: flex-start;
-  padding: 6px 12px 4px 12px;
-  gap: 6px;
+  padding: 5px 10px 3px 10px;
+  gap: 5px;
   overflow-x: auto;
   overflow-y: hidden;
 }
@@ -112,8 +113,8 @@
 
 .ribbon__group-content {
   display: flex;
-  gap: 3px;
-  padding: 4px 6px;
+  gap: 2px;
+  padding: 3px 5px;
   flex: 1;
 }
 
@@ -130,6 +131,16 @@
 
 .ribbon__group:last-child::after {
   display: none;
+}
+
+/* 紧凑型分组 */
+.ribbon__group--compact .ribbon__group-content {
+  padding: 3px 4px;
+}
+
+.ribbon__group--compact .ribbon__button-large__label {
+  font-size: 9px;
+  line-height: 1.0;
 }
 
 /* ===== SVG图标样式 ===== */
@@ -156,8 +167,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  padding: 3px 5px;
+  gap: 1px;
+  padding: 2px 4px;
   border-radius: 2px;
   position: relative;
   transition: all var(--transition-fast);
@@ -184,7 +195,7 @@
 .ribbon__button-large__label {
   font-size: 10px;
   text-align: center;
-  line-height: 1.1;
+  line-height: 1.05;
   max-width: 100%;
   word-wrap: break-word;
   color: var(--word-text-primary);
@@ -228,13 +239,13 @@
 /* ===== 按钮行布局 ===== */
 .ribbon__button-row {
   display: flex;
-  gap: 2px;
+  gap: 1px;
 }
 
 .ribbon__button-column {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
 }
 
 /* ===== 选择器组件 ===== */
@@ -333,9 +344,9 @@
 }
 
 .ribbon__style-button {
-  min-width: 55px;
-  height: 17px;
-  padding: 0px 4px;
+  min-width: 52px;
+  height: 16px;
+  padding: 0px 3px;
   background-color: var(--word-white);
   border: 1px solid #D1D1D1;
   border-radius: 2px;
@@ -388,8 +399,8 @@
 
 /* 更多样式按钮 */
 .ribbon__style-more {
-  width: 17px;
-  height: 17px;
+  width: 16px;
+  height: 16px;
   border: 1px solid #D1D1D1;
   border-radius: 2px;
   background-color: var(--word-white);

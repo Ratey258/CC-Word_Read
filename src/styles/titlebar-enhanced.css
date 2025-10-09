@@ -48,14 +48,14 @@
 .title-bar__autosave {
   display: flex;
   align-items: center;
-  gap: 5px;
-  padding: 1px 5px;
+  gap: 4px;
+  padding: 1px 6px;
   border-radius: 2px;
   cursor: pointer;
   transition: background-color var(--transition-fast);
   font-size: 11px;
   white-space: nowrap;
-  margin-left: 1px;
+  margin-left: 4px;
 }
 
 .title-bar__autosave:hover {
@@ -97,12 +97,12 @@
 .title-bar__quick-access {
   display: flex;
   align-items: center;
-  gap: 1px;
-  margin-right: 4px;
+  gap: 0px;
+  margin-right: 6px;
 }
 
 .title-bar__quick-button {
-  width: 22px;
+  width: 24px;
   height: 22px;
   display: flex;
   align-items: center;
@@ -112,8 +112,8 @@
 }
 
 .title-bar__quick-button svg {
-  width: 13px;
-  height: 13px;
+  width: 12px;
+  height: 12px;
   fill: currentColor;
 }
 
@@ -167,11 +167,11 @@
   align-items: center;
   background-color: var(--word-white);
   border-radius: 3px;
-  padding: 3px 8px;
-  gap: 5px;
+  padding: 2px 8px;
+  gap: 6px;
   min-width: 200px;
   max-width: 240px;
-  height: 20px;
+  height: 22px;
   transition: all var(--transition-fast);
   border: 1px solid #D1D1D1;
 }
