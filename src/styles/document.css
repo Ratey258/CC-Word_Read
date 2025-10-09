@@ -9,7 +9,7 @@
   bottom: var(--statusbar-height);
   left: 0;
   right: 0;
-  background-color: var(--word-gray-canvas);
+  background-color: #D2D0CE;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -32,7 +32,7 @@
   background-color: var(--word-white);
   padding: 2.54cm;  /* 默认页边距 */
   margin-bottom: 20px;
-  box-shadow: var(--word-page-shadow);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.08);
   position: relative;
 }
 

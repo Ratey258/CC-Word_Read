@@ -18,16 +18,16 @@
 /* ===== 标签栏 ===== */
 .ribbon__tabs {
   height: var(--ribbon-tab-height);
-  background-color: var(--word-gray-bg);
-  border-bottom: 1px solid var(--word-gray-border);
+  background-color: var(--word-white);
+  border-bottom: 1px solid #D1D1D1;
   display: flex;
   align-items: flex-end;
-  padding: 0 var(--spacing-sm);
+  padding: 0 2px;
 }
 
 .ribbon__tab {
-  padding: 4px 16px;
-  font-size: var(--font-size-sm);
+  padding: 2px 12px;
+  font-size: 11px;
   color: var(--word-text-primary);
   border: none;
   background: none;
@@ -35,23 +35,28 @@
   position: relative;
   transition: background-color var(--transition-fast);
   border-bottom: 2px solid transparent;
+  height: 22px;
+  display: flex;
+  align-items: center;
 }
 
 .ribbon__tab:hover {
-  background-color: var(--word-gray-hover);
+  background-color: #F3F2F1;
 }
 
 .ribbon__tab--active {
   background-color: var(--word-white);
   border-bottom-color: var(--word-blue-primary);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-normal);
+  color: var(--word-blue-primary);
 }
 
 .ribbon__tab--file {
   background-color: var(--word-blue-primary);
   color: var(--word-white);
   border-radius: 2px 2px 0 0;
-  margin-right: var(--spacing-xs);
+  margin-right: 1px;
+  padding: 2px 10px;
 }
 
 .ribbon__tab--file:hover {
@@ -60,14 +65,15 @@
 
 /* OfficePLUS 标识 */
 .ribbon__officeplus {
-  padding: 4px 12px;
+  padding: 2px 8px;
   font-size: 11px;
   color: var(--word-text-secondary);
   font-weight: var(--font-weight-normal);
   display: flex;
   align-items: center;
-  margin-right: var(--spacing-xs);
-  letter-spacing: 0.3px;
+  margin-right: 0px;
+  letter-spacing: 0px;
+  height: 22px;
 }
 
 /* ===== 工具栏 ===== */
@@ -77,8 +83,8 @@
   border-bottom: 1px solid var(--word-gray-border);
   display: flex;
   align-items: flex-start;
-  padding: var(--spacing-sm) var(--spacing-md);
-  gap: var(--spacing-md);
+  padding: 6px 12px 4px 12px;
+  gap: 6px;
   overflow-x: auto;
   overflow-y: hidden;
 }
@@ -96,18 +102,18 @@
 }
 
 .ribbon__group-label {
-  font-size: var(--font-size-xs);
+  font-size: 10px;
   color: var(--word-text-secondary);
   text-align: center;
-  padding: var(--spacing-xs) 0;
+  padding: 3px 0 2px 0;
   margin-top: auto;
   border-top: 1px solid transparent;
 }
 
 .ribbon__group-content {
   display: flex;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-sm);
+  gap: 3px;
+  padding: 4px 6px;
   flex: 1;
 }
 
@@ -115,11 +121,11 @@
 .ribbon__group::after {
   content: '';
   position: absolute;
-  right: calc(var(--spacing-md) / -2);
-  top: var(--spacing-sm);
+  right: -3px;
+  top: 8px;
   bottom: 20px;
   width: 1px;
-  background-color: var(--word-gray-separator);
+  background-color: #D8D8D8;
 }
 
 .ribbon__group:last-child::after {
@@ -150,19 +156,24 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-sm);
-  border-radius: var(--border-radius-sm);
+  gap: 2px;
+  padding: 3px 5px;
+  border-radius: 2px;
   position: relative;
-  transition: background-color var(--transition-fast);
+  transition: all var(--transition-fast);
+  border: 1px solid transparent;
 }
 
 .ribbon__button-large:hover {
-  background-color: var(--word-gray-hover);
+  background-color: #F3F2F1;
+  border-color: #D1D1D1;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.06);
 }
 
 .ribbon__button-large:active {
-  background-color: var(--word-gray-active);
+  background-color: #E1DFDD;
+  border-color: #999999;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
 }
 
 .ribbon__button-large .ms-Icon {
@@ -171,18 +182,18 @@
 }
 
 .ribbon__button-large__label {
-  font-size: var(--font-size-xs);
+  font-size: 10px;
   text-align: center;
-  line-height: 1.2;
+  line-height: 1.1;
   max-width: 100%;
   word-wrap: break-word;
   color: var(--word-text-primary);
 }
 
 .ribbon__button-large__dropdown {
-  width: 8px;
-  height: 8px;
-  margin-top: -4px;
+  width: 7px;
+  height: 7px;
+  margin-top: -3px;
   fill: currentColor;
 }
 
@@ -193,16 +204,21 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--border-radius-sm);
-  transition: background-color var(--transition-fast);
+  border-radius: 2px;
+  transition: all var(--transition-fast);
+  border: 1px solid transparent;
 }
 
 .ribbon__button-small:hover {
-  background-color: var(--word-gray-hover);
+  background-color: #F3F2F1;
+  border-color: #D1D1D1;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.05);
 }
 
 .ribbon__button-small:active {
-  background-color: var(--word-gray-active);
+  background-color: #E1DFDD;
+  border-color: #999999;
+  box-shadow: inset 0 1px 1px rgba(0,0,0,0.1);
 }
 
 .ribbon__button-small .ms-Icon {
@@ -212,21 +228,21 @@
 /* ===== 按钮行布局 ===== */
 .ribbon__button-row {
   display: flex;
-  gap: var(--spacing-xs);
+  gap: 2px;
 }
 
 .ribbon__button-column {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xs);
+  gap: 2px;
 }
 
 /* ===== 选择器组件 ===== */
 .ribbon__selector {
-  height: 20px;
+  height: 19px;
   min-width: 100px;
-  padding: 0 20px 0 6px;
-  border: 1px solid var(--word-gray-border);
+  padding: 0 16px 0 5px;
+  border: 1px solid #D1D1D1;
   border-radius: 2px;
   background-color: var(--word-white);
   font-size: 11px;
@@ -234,18 +250,20 @@
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all 120ms ease;
   position: relative;
 }
 
 .ribbon__selector:hover {
-  border-color: var(--word-text-secondary);
-  background-color: var(--word-white-bg);
+  border-color: #999999;
+  background-color: var(--word-white);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
 }
 
 .ribbon__selector:focus {
   border-color: var(--word-blue-primary);
   box-shadow: 0 0 0 1px var(--word-blue-primary);
+  outline: none;
 }
 
 .ribbon__selector__value {
@@ -267,8 +285,8 @@
 
 /* 字体选择器 */
 .ribbon__font-selector {
-  min-width: 130px;
-  max-width: 130px;
+  min-width: 135px;
+  max-width: 135px;
 }
 
 .ribbon__font-selector .ribbon__selector__value {
@@ -277,9 +295,10 @@
 
 /* 字号选择器 */
 .ribbon__fontsize-selector {
-  min-width: 45px;
-  max-width: 45px;
+  min-width: 40px;
+  max-width: 40px;
   text-align: center;
+  padding: 0 14px 0 4px;
 }
 
 .ribbon__fontsize-selector .ribbon__selector__value {
@@ -304,25 +323,25 @@
 
 /* ===== 样式画廊 ===== */
 .ribbon__group--styles .ribbon__group-content {
-  padding: 4px;
+  padding: 6px 4px;
 }
 
 .ribbon__styles-gallery {
   display: flex;
-  gap: 2px;
+  gap: 1px;
   align-items: center;
 }
 
 .ribbon__style-button {
-  min-width: 65px;
-  height: 20px;
-  padding: 2px 6px;
+  min-width: 55px;
+  height: 17px;
+  padding: 0px 4px;
   background-color: var(--word-white);
-  border: 1px solid var(--word-gray-border);
+  border: 1px solid #D1D1D1;
   border-radius: 2px;
   font-size: 11px;
   text-align: left;
-  transition: all var(--transition-fast);
+  transition: all 100ms ease;
   display: flex;
   align-items: center;
   white-space: nowrap;
@@ -330,14 +349,15 @@
 }
 
 .ribbon__style-button:hover {
-  background-color: var(--word-blue-light);
-  border-color: var(--word-blue-primary);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  background-color: #DEECF9;
+  border-color: #0078D4;
+  box-shadow: 0 1px 2px rgba(0,120,212,0.2);
 }
 
 .ribbon__style-button:active {
-  background-color: var(--word-blue-primary);
-  color: var(--word-white);
+  background-color: #CCE4F7;
+  border-color: #005A9E;
+  box-shadow: inset 0 1px 1px rgba(0,0,0,0.1);
 }
 
 .ribbon__style-button--normal {
@@ -368,27 +388,27 @@
 
 /* 更多样式按钮 */
 .ribbon__style-more {
-  width: 20px;
-  height: 20px;
-  border: 1px solid var(--word-gray-border);
+  width: 17px;
+  height: 17px;
+  border: 1px solid #D1D1D1;
   border-radius: 2px;
   background-color: var(--word-white);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all var(--transition-fast);
+  transition: all 100ms ease;
   flex-shrink: 0;
 }
 
 .ribbon__style-more svg {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   fill: var(--word-text-secondary);
 }
 
 .ribbon__style-more:hover {
-  background-color: var(--word-blue-light);
-  border-color: var(--word-blue-primary);
+  background-color: #DEECF9;
+  border-color: #0078D4;
 }
 
 .ribbon__style-more:hover svg {

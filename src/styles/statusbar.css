@@ -9,37 +9,39 @@
   left: 0;
   right: 0;
   height: var(--statusbar-height);
-  background-color: var(--word-gray-bg);
-  border-top: 1px solid var(--word-gray-border);
+  background-color: var(--word-white);
+  border-top: 1px solid #D1D1D1;
   display: flex;
   align-items: center;
-  padding: 0 var(--spacing-md);
-  font-size: var(--font-size-sm);
+  padding: 0 4px;
+  font-size: 11px;
   color: var(--word-text-secondary);
   z-index: var(--z-statusbar);
+  gap: 1px;
 }
 
 /* ===== SVG图标 ===== */
 .status-bar__icon {
-  width: 14px;
-  height: 14px;
+  width: 13px;
+  height: 13px;
   fill: currentColor;
   flex-shrink: 0;
+  margin-right: 2px;
 }
 
 /* ===== 状态栏项目 ===== */
 .status-bar__item {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  padding: 0 var(--spacing-md);
+  gap: 3px;
+  padding: 0 6px;
   height: 100%;
   cursor: pointer;
   transition: background-color var(--transition-fast);
 }
 
 .status-bar__item:hover {
-  background-color: var(--word-gray-hover);
+  background-color: #F3F2F1;
 }
 
 .status-bar__item--separator {
@@ -165,26 +167,26 @@
 /* ===== 视图切换按钮 ===== */
 .status-bar__view-buttons {
   display: flex;
-  gap: var(--spacing-xs);
+  gap: 1px;
 }
 
 .status-bar__view-button {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--border-radius-sm);
+  border-radius: 2px;
   transition: background-color var(--transition-fast);
 }
 
 .status-bar__view-button:hover {
-  background-color: var(--word-gray-hover);
+  background-color: #F3F2F1;
 }
 
 .status-bar__view-button--active {
-  background-color: var(--word-blue-light);
-  border: 1px solid var(--word-blue-primary);
+  background-color: #DEECF9;
+  border: 1px solid #0078D4;
 }
 
 .status-bar__view-button .ms-Icon {
