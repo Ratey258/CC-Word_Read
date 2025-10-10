@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Word",
+  "productName": "CC-Word",
   "version": "0.3.0",
   "identifier": "com.cc.wordread",
   "build": {
