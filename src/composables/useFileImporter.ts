@@ -255,7 +255,7 @@ export function useFileImporter() {
 
 如何使用：左上角点击文件菜单栏导入文件，键盘输入任意字符即可显示导入文件内容。
 
-温馨提示：老板来了记得按 Alt+F4 😏`
+温馨提示：Alt+F4可直接关闭窗口 😏`
 
     const novel: Novel = {
       id: nanoid(),
