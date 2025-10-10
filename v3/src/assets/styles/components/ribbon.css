@@ -502,6 +502,46 @@
   display: none;
 }
 
+/* 堆叠按钮带文字 */
+.ribbon__button--stack-text
+{
+  flex: 1;
+  min-height: 18px;
+  max-height: 22px;
+  padding: 2px 6px !important;
+  width: 100% !important;
+  min-width: 0;
+  justify-content: flex-start;
+  align-items: center;
+  display: flex;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.ribbon__button--stack-text .icon
+{
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.ribbon__button--stack-text span
+{
+  font-size: 12px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* 按钮内分隔线 */
+.ribbon__separator
+{
+  width: 1px;
+  background-color: #D1D1D1;
+  margin: 0 2px;
+  align-self: stretch;
+}
+
 /* 剪贴板组特殊布局 */
 .ribbon__row--with-large
 {
@@ -592,6 +632,24 @@
   font-size: 12px;
   color: var(--word-text-primary);
   white-space: nowrap;
+}
+
+.ribbon__button--with-dropdown
+{
+  position: relative;
+  padding-right: 20px !important;
+}
+
+.ribbon__button--with-dropdown .dropdown-arrow
+{
+  width: 8px;
+  height: 8px;
+  fill: currentColor;
+  color: #424242;
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 /* ========== 选择器 ========== */
@@ -785,6 +843,13 @@
   padding: 8px 6px 4px 6px;
 }
 
+.ribbon__styles-container
+{
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
 .ribbon__styles-gallery
 {
   display: flex;
@@ -792,6 +857,35 @@
   align-items: center;
   padding: 0;
   flex-wrap: nowrap;
+  flex: 1;
+}
+
+.ribbon__styles-more
+{
+  width: 20px;
+  height: 46px;
+  background-color: #F3F2F1;
+  border: 1px solid #D1D1D1;
+  border-radius: 0 2px 2px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 100ms ease-out;
+  padding: 0;
+  margin-left: -1px;
+  flex-shrink: 0;
+}
+
+.ribbon__styles-more:hover
+{
+  background-color: #EDEBE9;
+}
+
+.ribbon__styles-more .icon
+{
+  width: 12px;
+  height: 12px;
 }
 
 .ribbon__style-item

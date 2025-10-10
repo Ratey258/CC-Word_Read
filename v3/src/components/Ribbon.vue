@@ -396,7 +396,7 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
               </button>
               <div class="ribbon__button-stack">
                 <button
-                  class="ribbon__button--small ribbon__button--stack-icon"
+                  class="ribbon__button--small ribbon__button--stack-text"
                   title="剪切 (Ctrl+X)"
                 >
                   <svg
@@ -404,11 +404,13 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
                     viewBox="0 0 16 16"
                     xmlns="http://www.w3.org/2000/svg"
                   >
-                    <path d="M15.825 8.115l-4.361 4.361a4 4 0 01-5.656-5.656l4.361-4.361a2.5 2.5 0 113.536 3.536L9.343 9.357a1 1 0 11-1.414-1.414l4.006-4.006-.708-.708-4.006 4.006a2 2 0 102.828 2.828l4.362-4.362a3.5 3.5 0 10-4.95-4.95L5.1 5.112a5 5 0 107.07 7.07l4.362-4.361-.708-.707z" />
+                    <path d="M6.5 1A1.5 1.5 0 0 0 5 2.5v11A1.5 1.5 0 0 0 6.5 15h3a1.5 1.5 0 0 0 1.5-1.5v-11A1.5 1.5 0 0 0 9.5 1h-3zm0 1h3a.5.5 0 0 1 .5.5V13H6V2.5a.5.5 0 0 1 .5-.5z" />
+                    <path d="M1 10h1.5v1H1v-1zm13 0h1.5v1H14v-1z" />
                   </svg>
+                  <span>剪切</span>
                 </button>
                 <button
-                  class="ribbon__button--small ribbon__button--stack-icon"
+                  class="ribbon__button--small ribbon__button--stack-text"
                   title="复制 (Ctrl+C)"
                 >
                   <svg
@@ -418,9 +420,10 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
                   >
                     <path d="M13 2H7c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h6c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM3 6H1v9c0 1.1.9 2 2 2h9v-2H3V6z" />
                   </svg>
+                  <span>复制</span>
                 </button>
                 <button
-                  class="ribbon__button--small ribbon__button--stack-icon"
+                  class="ribbon__button--small ribbon__button--stack-text"
                   title="格式刷 (Ctrl+Shift+C)"
                 >
                   <svg
@@ -430,6 +433,7 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
                   >
                     <path d="M12 0H4C2.9 0 2 .9 2 2v2c0 1.1.9 2 2 2h2v10h4V6h2c1.1 0 2-.9 2-2V2c0-1.1-.9-2-2-2z" />
                   </svg>
+                  <span>格式刷</span>
                 </button>
               </div>
             </div>
@@ -860,6 +864,95 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
                 </button>
                 <button
                   class="ribbon__button--small"
+                  title="底纹"
+                >
+                  <svg
+                    class="icon"
+                    viewBox="0 0 16 16"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path d="M0 2h16v12H0V2zm1 1v10h14V3H1z" />
+                    <rect
+                      x="2"
+                      y="4"
+                      width="12"
+                      height="1"
+                      opacity="0.5"
+                    />
+                    <rect
+                      x="2"
+                      y="6"
+                      width="12"
+                      height="1"
+                      opacity="0.5"
+                    />
+                    <rect
+                      x="2"
+                      y="8"
+                      width="12"
+                      height="1"
+                      opacity="0.5"
+                    />
+                    <rect
+                      x="2"
+                      y="10"
+                      width="12"
+                      height="1"
+                      opacity="0.5"
+                    />
+                    <rect
+                      x="2"
+                      y="12"
+                      width="12"
+                      height="1"
+                      opacity="0.5"
+                    />
+                  </svg>
+                </button>
+                <button
+                  class="ribbon__button--small"
+                  title="边框"
+                >
+                  <svg
+                    class="icon"
+                    viewBox="0 0 16 16"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path d="M0 0h16v16H0V0zm1 1v14h14V1H1z" />
+                    <path
+                      d="M8 0v16M0 8h16"
+                      stroke="currentColor"
+                      stroke-width="1"
+                    />
+                  </svg>
+                </button>
+                <div class="ribbon__separator" />
+                <button
+                  class="ribbon__button--small"
+                  title="显示/隐藏编辑标记"
+                >
+                  <svg
+                    class="icon"
+                    viewBox="0 0 16 16"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path d="M3 3h10v1H3V3zm0 3h8v1H3V6zm0 3h10v1H3V9zm0 3h8v1H3v-1z" />
+                    <circle
+                      cx="13"
+                      cy="6.5"
+                      r="0.8"
+                      fill="currentColor"
+                    />
+                    <circle
+                      cx="13"
+                      cy="12.5"
+                      r="0.8"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </button>
+                <button
+                  class="ribbon__button--small"
                   title="减少缩进"
                 >
                   <svg
@@ -927,20 +1020,34 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
         </div>
 
         <!-- 样式组 -->
-        <div class="ribbon__group">
+        <div class="ribbon__group ribbon__group--styles">
           <div class="ribbon__group-content">
-            <div class="ribbon__styles-gallery">
-              <div class="ribbon__style-item ribbon__style-item--active">
-                <span>正文</span>
-              </div>
-              <div class="ribbon__style-item">
-                <span>无间隔</span>
-              </div>
-              <div class="ribbon__style-item">
-                <span style="font-weight: 600; font-size: 16px; color: #2f5496">标题 1</span>
-              </div>
-              <div class="ribbon__style-item">
-                <span style="font-weight: 600; font-size: 14px; color: #2f5496">标题 2</span>
+            <div class="ribbon__styles-container">
+              <div class="ribbon__styles-gallery">
+                <div class="ribbon__style-item ribbon__style-item--active">
+                  <span>正文</span>
+                </div>
+                <div class="ribbon__style-item">
+                  <span>无间隔</span>
+                </div>
+                <div class="ribbon__style-item">
+                  <span style="font-weight: 600; font-size: 16px; color: #2f5496">标题 1</span>
+                </div>
+                <div class="ribbon__style-item">
+                  <span style="font-weight: 600; font-size: 14px; color: #2f5496">标题 2</span>
+                </div>
+                <button
+                  class="ribbon__styles-more"
+                  title="更多样式"
+                >
+                  <svg
+                    class="icon"
+                    viewBox="0 0 16 16"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path d="M8 11l-4-4h8l-4 4z" />
+                  </svg>
+                </button>
               </div>
             </div>
           </div>
@@ -980,7 +1087,7 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
                 <span>替换</span>
               </button>
               <button
-                class="ribbon__button--small ribbon__button--with-text"
+                class="ribbon__button--small ribbon__button--with-text ribbon__button--with-dropdown"
                 title="选择"
               >
                 <svg
@@ -991,6 +1098,13 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
                   <path d="M1 1l4 4V3h6v2H5v6h2V5h6v6h-2v6l-4-4h2V7H3v2H1V1z" />
                 </svg>
                 <span>选择</span>
+                <svg
+                  class="dropdown-arrow"
+                  viewBox="0 0 12 12"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M2 4l4 4 4-4z" />
+                </svg>
               </button>
             </div>
           </div>
