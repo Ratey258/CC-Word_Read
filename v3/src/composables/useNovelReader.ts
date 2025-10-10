@@ -142,17 +142,60 @@ export function useNovelReader()
       return
     }
 
-    // 阻止默认行为
-    event.preventDefault()
+    // 检查是否正在使用输入法（通过 isComposing 属性）
+    if (event.isComposing)
+    {
+      // 输入法正在工作，不阻止
+      return
+    }
 
     // 处理退格键
     if (event.key === 'Backspace')
     {
+      event.preventDefault()
       handleBackspace()
       return
     }
 
-    // 输出字符
+    // 检查是否是功能键（不应该触发输出）
+    const functionalKeys = [
+      'Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'Tab',
+      'Escape', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
+      'Home', 'End', 'PageUp', 'PageDown', 'Insert', 'Delete',
+      'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12'
+    ]
+    
+    if (functionalKeys.includes(event.key))
+    {
+      return
+    }
+
+    // 对于普通按键，不在这里阻止，让 beforeinput 来处理
+    // 这样输入法可以正常启动
+  }
+
+  /**
+   * 处理 beforeinput 事件
+   * @param event 输入事件
+   */
+  function handleBeforeInput(event: Event): void
+  {
+    // 如果不是阅读状态，允许正常输入
+    if (!readerStore.isReading)
+    {
+      return
+    }
+
+    // 如果在输入法组合中，允许输入法正常工作
+    if (readerStore.isComposing)
+    {
+      return
+    }
+
+    // 阻止所有直接输入
+    event.preventDefault()
+
+    // 输出小说内容
     const chars = outputChars()
     if (chars)
     {
@@ -187,6 +230,7 @@ export function useNovelReader()
   {
     readerStore.setComposing(true)
     compositionData.value = event.data || ''
+    // 不阻止默认行为，让输入法窗口正常显示
   }
 
   /**
@@ -196,6 +240,7 @@ export function useNovelReader()
   function handleCompositionUpdate(event: CompositionEvent): void
   {
     compositionData.value = event.data || ''
+    // 不阻止默认行为，让输入法窗口正常更新
   }
 
   /**
@@ -208,21 +253,29 @@ export function useNovelReader()
 
     const composedText = event.data || ''
     
-    // 删除输入法显示的文本
-    if (editorRef.value && composedText)
+    // 使用 setTimeout 确保在输入法文本插入后再删除
+    setTimeout(() =>
     {
-      const text = editorRef.value.textContent || ''
-      editorRef.value.textContent = text.replace(composedText, '')
-    }
+      // 删除输入法插入的文本
+      if (editorRef.value && composedText)
+      {
+        const text = editorRef.value.textContent || ''
+        const lastIndex = text.lastIndexOf(composedText)
+        if (lastIndex !== -1)
+        {
+          editorRef.value.textContent = text.substring(0, lastIndex) + text.substring(lastIndex + composedText.length)
+        }
+      }
 
-    // 输出小说字符替代输入法文本
-    const chars = outputChars(composedText.length)
-    if (chars)
-    {
-      insertTextToEditor(chars)
-    }
+      // 输出小说字符替代输入法文本
+      const chars = outputChars(composedText.length)
+      if (chars)
+      {
+        insertTextToEditor(chars)
+      }
 
-    compositionData.value = ''
+      compositionData.value = ''
+    }, 0)
   }
 
   /**
@@ -319,6 +372,7 @@ export function useNovelReader()
     stopReading,
     outputChars,
     handleKeyDown,
+    handleBeforeInput,
     handleBackspace,
     handleCompositionStart,
     handleCompositionUpdate,

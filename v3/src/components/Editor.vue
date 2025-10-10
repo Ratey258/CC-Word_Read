@@ -29,6 +29,7 @@ const {
   editorRef,
   startReading,
   handleKeyDown,
+  handleBeforeInput,
   handleCompositionStart,
   handleCompositionUpdate,
   handleCompositionEnd,
@@ -133,6 +134,7 @@ onMounted(() =>
         spellcheck="false"
         :style="editorStyles"
         @keydown="handleKeyDown"
+        @beforeinput="handleBeforeInput"
         @compositionstart="handleCompositionStart"
         @compositionupdate="handleCompositionUpdate"
         @compositionend="handleCompositionEnd"
