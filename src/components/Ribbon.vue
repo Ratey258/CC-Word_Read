@@ -1,27 +1,56 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useNovelStore } from '@/stores/novel'
 import { useReaderStore } from '@/stores/reader'
 import { useSettingsStore } from '@/stores/settings'
 import { useUIStore } from '@/stores/ui'
+import { useHistoryStore } from '@/stores/history'
 import { useFileImporter } from '@/composables/useFileImporter'
 import { useNovelReader } from '@/composables/useNovelReader'
 import { useProgress } from '@/composables/useProgress'
 import { useHistory } from '@/composables/useHistory'
 import type { HistoryItem } from '@/types/history'
+import RenameDialog from './RenameDialog.vue'
 
 // Stores
 const novelStore = useNovelStore()
 const readerStore = useReaderStore()
 const settingsStore = useSettingsStore()
 const uiStore = useUIStore()
+const historyStore = useHistoryStore()
 
 // Composables
 const { importFile, importSampleNovel } = useFileImporter()
 const { startReading, pauseReading, resumeReading, stopReading, canStartReading } = useNovelReader()
-const { saveProgress, jumpToPercentage, resetToStart } = useProgress()
 const { recentItems, hasHistory, loadFromHistory, clearAllHistory, formatTime, formatFileSize, getFormatIcon } = useHistory()
+
+// 调试：监视历史记录变化
+watch(hasHistory, (newVal) =>
+{
+  console.log('[Ribbon] hasHistory changed:', newVal)
+  console.log('[Ribbon] recentItems:', recentItems.value)
+}, { immediate: true })
+
+watch(recentItems, (newVal) =>
+{
+  console.log('[Ribbon] recentItems changed:', newVal?.length, 'items')
+}, { immediate: true })
+
+onMounted(() =>
+{
+  console.log('[Ribbon] Component mounted')
+  console.log('[Ribbon] hasHistory:', hasHistory.value)
+  console.log('[Ribbon] recentItems:', recentItems.value)
+  console.log('[Ribbon] historyStore.historyItems:', historyStore.historyItems)
+  
+  // 尝试手动重新加载历史记录
+  if (!hasHistory.value)
+  {
+    console.log('[Ribbon] No history found, attempting to reload...')
+    historyStore.loadFromStorage()
+  }
+})
 
 // Reactive state
 const { settings } = storeToRefs(settingsStore)
@@ -30,6 +59,7 @@ const { isReading, isPaused } = storeToRefs(readerStore)
 const { isRibbonCollapsed } = storeToRefs(uiStore)
 
 const showFileMenu = ref(false)
+const showRenameDialog = ref(false)
 
 // Font options
 const fontSizes = [8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72]
@@ -91,12 +121,6 @@ const handleImportSample = async () =>
 {
   closeFileMenu()
   await importSampleNovel()
-}
-
-const handleSaveProgress = () =>
-{
-  closeFileMenu()
-  saveProgress()
 }
 
 // Methods - Reading control
@@ -169,23 +193,17 @@ const handleStopReading = () =>
   }
 }
 
-const handleResetPosition = () =>
+const handleRenameDisplay = () =>
 {
-  resetToStart()
+  closeFileMenu()
+  showRenameDialog.value = true
 }
 
-const handleJumpToPosition = () =>
+const handleRenameConfirm = (newName: string) =>
 {
-  const input = window.prompt('跳转到百分比位置 (0-100):')
-  if (input)
-  {
-    const percentage = parseFloat(input)
-    if (!isNaN(percentage))
-    {
-      jumpToPercentage(percentage)
-    }
-  }
+  novelStore.setDisplayName(newName)
 }
+
 
 // Methods - History
 const handleLoadFromHistory = async (item: HistoryItem) =>
@@ -398,7 +416,7 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
               加载示例
             </div>
             <div class="file-menu__item-description">
-              加载示例小说进行体验
+              加载示例文件进行体验
             </div>
           </div>
         </button>
@@ -454,56 +472,23 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
         </div>
       </div>
 
-      <div class="file-menu__divider" />
 
       <div class="file-menu__section">
         <h3 class="file-menu__section-title">
-          进度
+          显示
         </h3>
         <button 
           class="file-menu__item"
           :disabled="!hasNovel"
-          @click="handleSaveProgress"
+          @click="handleRenameDisplay"
         >
-          <span class="file-menu__item-icon">💾</span>
+          <span class="file-menu__item-icon">✏️</span>
           <div class="file-menu__item-content">
             <div class="file-menu__item-title">
-              保存进度
+              修改显示文件名
             </div>
             <div class="file-menu__item-description">
-              保存当前阅读进度
-            </div>
-          </div>
-          <kbd class="file-menu__item-shortcut">Ctrl+S</kbd>
-        </button>
-        <button 
-          class="file-menu__item"
-          :disabled="!hasNovel"
-          @click="handleJumpToPosition"
-        >
-          <span class="file-menu__item-icon">🎯</span>
-          <div class="file-menu__item-content">
-            <div class="file-menu__item-title">
-              跳转位置
-            </div>
-            <div class="file-menu__item-description">
-              跳转到指定阅读位置
-            </div>
-          </div>
-          <kbd class="file-menu__item-shortcut">Ctrl+G</kbd>
-        </button>
-        <button 
-          class="file-menu__item"
-          :disabled="!hasNovel"
-          @click="handleResetPosition"
-        >
-          <span class="file-menu__item-icon">🔄</span>
-          <div class="file-menu__item-content">
-            <div class="file-menu__item-title">
-              重置位置
-            </div>
-            <div class="file-menu__item-description">
-              回到文件开头
+              自定义标题栏中显示的文件名
             </div>
           </div>
         </button>
@@ -1355,6 +1340,12 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
       </div>
     </div>
   </div>
+
+  <!-- 重命名对话框 -->
+  <RenameDialog
+    v-model:show="showRenameDialog"
+    @confirm="handleRenameConfirm"
+  />
 </template>
 
 <style scoped>

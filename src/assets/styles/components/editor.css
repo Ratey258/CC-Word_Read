@@ -17,7 +17,7 @@
   overflow-x: hidden;
   display: flex;
   justify-content: center;
-  padding: 40px 20px;
+  padding: 60px 20px;
 }
 
 /* ========== 文档页面 ========== */
@@ -25,12 +25,14 @@
 .document-page
 {
   width: 21cm; /* A4 宽度 */
-  min-height: 29.7cm; /* A4 高度 */
+  /* min-height 由 Vue 动态设置，确保能容纳多页内容 */
   background-color: var(--word-white);
   padding: 2.54cm; /* 默认页边距 */
   margin-bottom: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), 0 0 1px rgba(0, 0, 0, 0.1);
   position: relative;
+  /* 自动扩展以适应内容 */
+  height: auto;
 }
 
 .document-page:last-child
@@ -43,7 +45,7 @@
 .document-content
 {
   width: 100%;
-  min-height: 24.62cm; /* A4高度 - 页边距 */
+  /* min-height 由 Vue 动态设置，确保能容纳多页内容 */
   font-family: var(--font-family-document);
   font-size: 14pt;
   line-height: 1.6;
@@ -54,6 +56,8 @@
   overflow: visible;
   white-space: pre-wrap;
   word-wrap: break-word;
+  /* 自动扩展高度以适应所有内容 */
+  height: auto;
 }
 
 .document-content[contenteditable="true"]
@@ -83,13 +87,35 @@
   pointer-events: none;
 }
 
+/* ========== 页面标记（可选） ========== */
+
+/* 为编辑器内容添加页面分隔线标记 */
+.document-content[data-show-page-marks="true"]
+{
+  /* 使用重复的线性渐变创建页面分隔线 */
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent calc(24.62cm - 1px),
+    #e0e0e0 calc(24.62cm - 1px),
+    #e0e0e0 24.62cm
+  );
+  background-attachment: local;
+  background-position: 0 0;
+}
+
+/* 页面标记提示文字 */
+.document-content[data-show-page-marks="true"]::after
+{
+  /* 预留给未来可能的页码标记 */
+}
+
 /* ========== 响应式 ========== */
 
 @media (max-width: 1400px)
 {
   .document-container
   {
-    padding: 20px 10px;
+    padding: 40px 10px;
   }
 }
 

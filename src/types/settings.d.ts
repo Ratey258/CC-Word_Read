@@ -26,6 +26,8 @@ export interface EditorSettings {
   showLineNumbers: boolean
   /** 是否自动换行 */
   wordWrap: boolean
+  /** 是否显示页面标记线 */
+  showPageMarks: boolean
 }
 
 /**

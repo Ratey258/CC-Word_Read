@@ -21,11 +21,17 @@ export const useNovelStore = defineStore('novel', () =>
   /** 当前阅读位置 */
   const currentPosition = ref<number>(0)
   
+  /** 编辑器实际内容长度（用于页面计算） */
+  const editorContentLength = ref<number>(0)
+  
   /** 书签列表 */
   const bookmarks = ref<Bookmark[]>([])
   
   /** 最近打开的文件列表 */
   const recentFiles = ref<NovelMetadata[]>([])
+  
+  /** 显示的文件名（用于标题栏显示） */
+  const displayName = ref<string>('文档-Word')
   
   // ===== Getters =====
   
@@ -70,6 +76,9 @@ export const useNovelStore = defineStore('novel', () =>
     content.value = novel.content
     currentPosition.value = 0
     
+    // 保持默认显示名称为"文档-Word"，不使用导入的文件名
+    displayName.value = '文档-Word'
+    
     // 保存到本地存储
     saveToStorage()
     
@@ -90,6 +99,18 @@ export const useNovelStore = defineStore('novel', () =>
     content.value = ''
     currentPosition.value = 0
     bookmarks.value = []
+    displayName.value = '文档-Word'
+  }
+  
+  /**
+   * 设置显示的文件名
+   * @param name 新的显示名称
+   */
+  function setDisplayName(name: string): void
+  {
+    displayName.value = name || '文档-Word'
+    // 保存到本地存储
+    localStorage.setItem(STORAGE_KEYS.DISPLAY_NAME, displayName.value)
   }
   
   /**
@@ -291,19 +312,43 @@ export const useNovelStore = defineStore('novel', () =>
     }
   }
   
+  /**
+   * 加载显示名称
+   */
+  function loadDisplayName(): void
+  {
+    const data = localStorage.getItem(STORAGE_KEYS.DISPLAY_NAME)
+    if (data)
+    {
+      displayName.value = data
+    }
+  }
+  
+  /**
+   * 更新编辑器内容长度
+   * @param length 编辑器当前内容的字符数
+   */
+  function updateEditorContentLength(length: number): void
+  {
+    editorContentLength.value = length
+  }
+  
   // ===== 初始化 =====
   
   // 自动加载数据
   loadFromStorage()
   loadRecentFiles()
+  loadDisplayName()
   
   return {
     // State
     currentNovel,
     content,
     currentPosition,
+    editorContentLength,
     bookmarks,
     recentFiles,
+    displayName,
     
     // Getters
     totalLength,
@@ -316,7 +361,9 @@ export const useNovelStore = defineStore('novel', () =>
     // Actions
     loadNovel,
     clearNovel,
+    setDisplayName,
     updatePosition,
+    updateEditorContentLength,
     jumpTo,
     addBookmark,
     removeBookmark,

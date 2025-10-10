@@ -54,7 +54,9 @@ export const EDITOR_DEFAULTS = {
   /** 显示行号 */
   SHOW_LINE_NUMBERS: false,
   /** 自动换行 */
-  WORD_WRAP: true
+  WORD_WRAP: true,
+  /** 显示页面标记线（默认关闭）*/
+  SHOW_PAGE_MARKS: false
 } as const
 
 /**
@@ -88,7 +90,9 @@ export const STORAGE_KEYS = {
   /** 最近打开 */
   RECENT_FILES: 'recent_files',
   /** 历史记录 */
-  HISTORY: 'history'
+  HISTORY: 'history',
+  /** 显示的文件名 */
+  DISPLAY_NAME: 'display_name'
 } as const
 
 /**

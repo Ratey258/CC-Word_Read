@@ -276,11 +276,14 @@ export const useHistoryStore = defineStore('history', () =>
         items: historyItems.value,
         config: config.value
       }
-      localStorage.setItem(STORAGE_KEYS.HISTORY, JSON.stringify(data))
+      const jsonStr = JSON.stringify(data)
+      console.log('[HistoryStore] 保存历史记录:', historyItems.value.length, '条', jsonStr.length, '字节')
+      localStorage.setItem(STORAGE_KEYS.HISTORY, jsonStr)
+      console.log('[HistoryStore] 保存成功')
     }
     catch (error)
     {
-      console.error('保存历史记录失败:', error)
+      console.error('[HistoryStore] 保存历史记录失败:', error)
     }
   }
   
@@ -291,13 +294,22 @@ export const useHistoryStore = defineStore('history', () =>
   {
     try
     {
+      console.log('[HistoryStore] 开始加载历史记录')
+      console.log('[HistoryStore] 当前环境:', window.__TAURI__ ? 'Tauri' : '浏览器')
+      console.log('[HistoryStore] localStorage可用:', typeof localStorage !== 'undefined')
+      
       const saved = localStorage.getItem(STORAGE_KEYS.HISTORY)
+      console.log('[HistoryStore] 存储的数据:', saved ? `找到 ${saved.length} 字节` : '未找到')
+      
       if (!saved) return
       
       const data = JSON.parse(saved)
+      console.log('[HistoryStore] 解析的数据:', data)
+      
       if (data.items && Array.isArray(data.items))
       {
         historyItems.value = data.items
+        console.log('[HistoryStore] 成功加载', data.items.length, '条历史记录')
       }
       if (data.config)
       {
@@ -312,7 +324,7 @@ export const useHistoryStore = defineStore('history', () =>
     }
     catch (error)
     {
-      console.error('加载历史记录失败:', error)
+      console.error('[HistoryStore] 加载历史记录失败:', error)
     }
   }
   

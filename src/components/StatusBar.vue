@@ -3,11 +3,15 @@ import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useNovelStore } from '@/stores/novel'
 import { useSettingsStore } from '@/stores/settings'
+import { usePageCalculator } from '@/composables/usePageCalculator'
 import { formatNumber } from '@/utils/formatter'
 
 // Stores
 const novelStore = useNovelStore()
 const settingsStore = useSettingsStore()
+
+// Composables
+const { currentPage, totalPages } = usePageCalculator()
 
 // Reactive state
 const { currentNovel, currentPosition } = storeToRefs(novelStore)
@@ -15,20 +19,6 @@ const { settings } = storeToRefs(settingsStore)
 
 // Computed
 const hasNovel = computed(() => currentNovel.value !== null)
-
-const currentPage = computed(() =>
-{
-  if (!hasNovel.value) return 1
-  // TODO: 计算当前页码
-  return 1
-})
-
-const totalPages = computed(() =>
-{
-  if (!hasNovel.value) return 1
-  // TODO: 计算总页数
-  return 1
-})
 
 const currentChar = computed(() => currentPosition.value + 1)
 const totalChars = computed(() => currentNovel.value?.content.length || 0)

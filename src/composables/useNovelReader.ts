@@ -294,8 +294,8 @@ export function useNovelReader()
     // 移动光标到编辑器末尾
     moveCursorToEnd(editor)
 
-    // 滚动到可见区域
-    editor.scrollTop = editor.scrollHeight
+    // 不再手动滚动，让 MutationObserver 触发的 scrollToCursor() 来处理
+    // 这样可以确保光标始终在视口的最佳位置
   }
 
   /**
