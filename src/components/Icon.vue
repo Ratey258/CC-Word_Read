@@ -1,5 +1,8 @@
 <template>
-  <svg :class="['icon', `icon--${name}`, className]" :style="iconStyle">
+  <svg
+    :class="['icon', `icon--${name}`, className]"
+    :style="iconStyle"
+  >
     <use :href="`#icon-${name}`" />
   </svg>
 </template>

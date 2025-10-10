@@ -1,0 +1,409 @@
+/**
+ * StatusBar 组件样式
+ * 高度还原 Microsoft Word 2021 状态栏
+ */
+
+.status-bar
+{
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 23px;
+  background-color: #F3F2F1;
+  border-top: 1px solid #D1D1D1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px 0 12px;
+  font-family: 'Segoe UI', 'Microsoft YaHei UI', sans-serif;
+  font-size: 12px;
+  color: #323130;
+  z-index: var(--z-statusbar);
+  user-select: none;
+}
+
+/* ========== 左右布局 ========== */
+
+.status-bar__left,
+.status-bar__right
+{
+  display: flex;
+  align-items: center;
+  gap: 0;
+  height: 100%;
+}
+
+.status-bar__left
+{
+  flex: 1;
+  min-width: 0; /* 允许文本截断 */
+}
+
+.status-bar__right
+{
+  flex-shrink: 0;
+}
+
+/* ========== 状态栏项目 ========== */
+
+.status-bar__item
+{
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 8px;
+  cursor: default;
+  transition: background-color 80ms cubic-bezier(0.33, 0, 0.67, 1);
+  white-space: nowrap;
+}
+
+.status-bar__item:hover
+{
+  background-color: #E1DFDD;
+}
+
+.status-bar__item:active
+{
+  background-color: #D2D0CE;
+}
+
+.status-bar__text
+{
+  font-size: 12px;
+  line-height: 23px;
+  color: #323130;
+}
+
+/* ========== 分隔符 ========== */
+
+.status-bar__divider
+{
+  width: 1px;
+  height: 14px;
+  background-color: #D1D1D1;
+  margin: 0 4px;
+  flex-shrink: 0;
+}
+
+/* ========== 语言指示器 ========== */
+
+.status-bar__language
+{
+  cursor: pointer;
+}
+
+.status-bar__language:hover
+{
+  background-color: #E1DFDD;
+}
+
+/* ========== 缩放控制 ========== */
+
+.status-bar__zoom
+{
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 100%;
+}
+
+/* 缩放按钮 */
+.status-bar__zoom-btn
+{
+  width: 24px;
+  height: 23px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: background-color 80ms cubic-bezier(0.33, 0, 0.67, 1);
+}
+
+.status-bar__zoom-btn:hover:not(:disabled)
+{
+  background-color: #E1DFDD;
+}
+
+.status-bar__zoom-btn:active:not(:disabled)
+{
+  background-color: #D2D0CE;
+}
+
+.status-bar__zoom-btn:disabled
+{
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.status-bar__zoom-icon
+{
+  width: 12px;
+  height: 12px;
+  fill: #323130;
+}
+
+/* 缩放滑块 */
+.status-bar__zoom-slider
+{
+  -webkit-appearance: none;
+  appearance: none;
+  width: 96px;
+  height: 3px;
+  background: linear-gradient(to right, #0078D4 0%, #0078D4 100%);
+  background-size: 100% 100%;
+  outline: none;
+  margin: 0 4px;
+  cursor: pointer;
+  border-radius: 2px;
+}
+
+.status-bar__zoom-slider::-webkit-slider-thumb
+{
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: #FFFFFF;
+  border: 2px solid #0078D4;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.12);
+  transition: all 80ms cubic-bezier(0.33, 0, 0.67, 1);
+}
+
+.status-bar__zoom-slider::-webkit-slider-thumb:hover
+{
+  background: #F3F2F1;
+  transform: scale(1.1);
+}
+
+.status-bar__zoom-slider::-webkit-slider-thumb:active
+{
+  background: #EDEBE9;
+  transform: scale(1.05);
+}
+
+.status-bar__zoom-slider::-moz-range-thumb
+{
+  width: 12px;
+  height: 12px;
+  background: #FFFFFF;
+  border: 2px solid #0078D4;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.12);
+  transition: all 80ms cubic-bezier(0.33, 0, 0.67, 1);
+}
+
+.status-bar__zoom-slider::-moz-range-thumb:hover
+{
+  background: #F3F2F1;
+  transform: scale(1.1);
+}
+
+.status-bar__zoom-slider::-moz-range-thumb:active
+{
+  background: #EDEBE9;
+  transform: scale(1.05);
+}
+
+/* 缩放百分比显示 */
+.status-bar__zoom-display
+{
+  min-width: 42px;
+  height: 23px;
+  padding: 0 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  font-family: 'Segoe UI', 'Microsoft YaHei UI', sans-serif;
+  font-size: 12px;
+  color: #323130;
+  cursor: pointer;
+  transition: background-color 80ms cubic-bezier(0.33, 0, 0.67, 1);
+  white-space: nowrap;
+}
+
+.status-bar__zoom-display:hover
+{
+  background-color: #E1DFDD;
+}
+
+.status-bar__zoom-display:active
+{
+  background-color: #D2D0CE;
+}
+
+/* ========== 视图切换按钮 ========== */
+
+.status-bar__views
+{
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 100%;
+  padding: 0 4px;
+}
+
+.status-bar__view-btn
+{
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: all 80ms cubic-bezier(0.33, 0, 0.67, 1);
+  border-radius: 2px;
+}
+
+.status-bar__view-btn:hover
+{
+  background-color: #E1DFDD;
+}
+
+.status-bar__view-btn:active
+{
+  background-color: #D2D0CE;
+}
+
+.status-bar__view-btn--active
+{
+  background-color: #DEECF9;
+  border: 1px solid #8BBCEC;
+}
+
+.status-bar__view-btn--active:hover
+{
+  background-color: #D0E3F4;
+}
+
+.status-bar__view-btn--active:active
+{
+  background-color: #C7DDF0;
+}
+
+.status-bar__view-icon
+{
+  width: 14px;
+  height: 14px;
+  fill: #323130;
+}
+
+/* ========== 响应式设计 ========== */
+
+/* 小于 1200px 时隐藏缩放滑块 */
+@media (max-width: 1200px)
+{
+  .status-bar__zoom-slider
+  {
+    display: none;
+  }
+}
+
+/* 小于 900px 时隐藏语言和部分信息 */
+@media (max-width: 900px)
+{
+  .status-bar__language
+  {
+    display: none;
+  }
+  
+  .status-bar__item
+  {
+    padding: 0 6px;
+  }
+}
+
+/* 小于 600px 时最小化显示 */
+@media (max-width: 600px)
+{
+  .status-bar__zoom
+  {
+    display: none;
+  }
+  
+  .status-bar__views
+  {
+    display: none;
+  }
+  
+  .status-bar
+  {
+    padding: 0 8px;
+    font-size: 11px;
+  }
+  
+  .status-bar__text
+  {
+    font-size: 11px;
+  }
+}
+
+/* ========== 深色模式支持 (预留) ========== */
+
+@media (prefers-color-scheme: dark)
+{
+  .status-bar
+  {
+    background-color: #1E1E1E;
+    border-top-color: #3E3E3E;
+  }
+  
+  .status-bar__text,
+  .status-bar__zoom-icon,
+  .status-bar__view-icon
+  {
+    color: #CCCCCC;
+    fill: #CCCCCC;
+  }
+  
+  .status-bar__divider
+  {
+    background-color: #3E3E3E;
+  }
+  
+  .status-bar__item:hover,
+  .status-bar__zoom-btn:hover:not(:disabled),
+  .status-bar__zoom-display:hover,
+  .status-bar__view-btn:hover
+  {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+  
+  .status-bar__item:active,
+  .status-bar__zoom-btn:active:not(:disabled),
+  .status-bar__zoom-display:active,
+  .status-bar__view-btn:active
+  {
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+  
+  .status-bar__view-btn--active
+  {
+    background-color: #2B4E6A;
+    border-color: #4C7FA5;
+  }
+  
+  .status-bar__zoom-slider
+  {
+    background: linear-gradient(to right, #4C9EE8 0%, #4C9EE8 100%);
+  }
+  
+  .status-bar__zoom-slider::-webkit-slider-thumb,
+  .status-bar__zoom-slider::-moz-range-thumb
+  {
+    background: #2D2D2D;
+    border-color: #4C9EE8;
+  }
+}
+

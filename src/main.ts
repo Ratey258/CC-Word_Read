@@ -7,8 +7,9 @@ import router from './router'
 import './assets/styles/index.css'
 
 // 加载 SVG 图标
-async function loadSvgIcons() {
-  const response = await fetch('/src/assets/icons/icons.svg')
+async function loadSvgIcons() 
+{
+  const response = await window.fetch('/src/assets/icons/icons.svg')
   const svgText = await response.text()
   const div = document.createElement('div')
   div.innerHTML = svgText

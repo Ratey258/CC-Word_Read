@@ -1,10 +1,10 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Word",
-  "version": "2.0.0",
+  "version": "0.3.0",
   "identifier": "com.cc.wordread",
   "build": {
-    "frontendDist": "../src"
+    "frontendDist": "../build/dist"
   },
   "bundle": {
     "active": false
