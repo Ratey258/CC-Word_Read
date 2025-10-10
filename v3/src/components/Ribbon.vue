@@ -97,29 +97,66 @@ const handleSaveProgress = () =>
 }
 
 // Methods - Reading control
-const handleStartReading = () =>
+// 合并的开始/暂停切换按钮
+const handleToggleReading = () =>
 {
-  if (canStartReading.value)
+  if (!isReading.value)
   {
-    startReading()
+    // 未开始阅读，启动阅读
+    if (canStartReading.value)
+    {
+      startReading()
+    }
+  }
+  else if (isPaused.value)
+  {
+    // 已暂停，继续阅读
+    if (canResume.value)
+    {
+      resumeReading()
+    }
+  }
+  else
+  {
+    // 正在阅读，暂停
+    if (canPause.value)
+    {
+      pauseReading()
+    }
   }
 }
 
-const handlePauseReading = () =>
+// 计算切换按钮的状态
+const toggleButtonState = computed(() =>
 {
-  if (canPause.value)
+  if (!isReading.value)
   {
-    pauseReading()
+    return {
+      icon: 'play',
+      label: '开始',
+      title: '开始阅读 (F5)',
+      disabled: !canStartReading.value
+    }
   }
-}
-
-const handleResumeReading = () =>
-{
-  if (canResume.value)
+  else if (isPaused.value)
   {
-    resumeReading()
+    return {
+      icon: 'play',
+      label: '继续',
+      title: '继续阅读 (F6)',
+      disabled: !canResume.value
+    }
   }
-}
+  else
+  {
+    return {
+      icon: 'pause',
+      label: '暂停',
+      title: '暂停阅读 (F6)',
+      disabled: !canPause.value
+    }
+  }
+})
 
 const handleStopReading = () =>
 {
@@ -1187,29 +1224,21 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
             <div class="ribbon__row">
               <button
                 class="ribbon__button--large"
-                :class="{ 'ribbon__button--disabled': !canStartReading }"
-                :disabled="!canStartReading"
-                title="开始阅读 (F5)"
-                @click="handleStartReading"
+                :class="{ 'ribbon__button--disabled': toggleButtonState.disabled }"
+                :disabled="toggleButtonState.disabled"
+                :title="toggleButtonState.title"
+                @click="handleToggleReading"
               >
                 <svg
+                  v-if="toggleButtonState.icon === 'play'"
                   class="icon"
                   viewBox="0 0 24 24"
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <path d="M8 5v14l11-7z" />
                 </svg>
-                <span>开始</span>
-              </button>
-              <button
-                v-if="!isPaused"
-                class="ribbon__button--large"
-                :class="{ 'ribbon__button--disabled': !canPause }"
-                :disabled="!canPause"
-                title="暂停阅读 (F6)"
-                @click="handlePauseReading"
-              >
                 <svg
+                  v-else
                   class="icon"
                   viewBox="0 0 24 24"
                   xmlns="http://www.w3.org/2000/svg"
@@ -1227,24 +1256,7 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
                     height="14"
                   />
                 </svg>
-                <span>暂停</span>
-              </button>
-              <button
-                v-if="isPaused"
-                class="ribbon__button--large"
-                :class="{ 'ribbon__button--disabled': !canResume }"
-                :disabled="!canResume"
-                title="继续阅读 (F6)"
-                @click="handleResumeReading"
-              >
-                <svg
-                  class="icon"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M8 5v14l11-7z" />
-                </svg>
-                <span>继续</span>
+                <span>{{ toggleButtonState.label }}</span>
               </button>
               <button
                 class="ribbon__button--large"
