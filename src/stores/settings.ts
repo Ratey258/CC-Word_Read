@@ -7,8 +7,7 @@ import { ref } from 'vue'
 import type { AppSettings, Theme, Language, ShortcutConfig } from '@/types/settings'
 import { STORAGE_KEYS, SHORTCUTS, EDITOR_DEFAULTS, WINDOW_DEFAULTS } from '@/utils/constants'
 
-export const useSettingsStore = defineStore('settings', () =>
-{
+export const useSettingsStore = defineStore('settings', () => {
   // ===== State =====
   
   /** 应用设置 */
@@ -50,8 +49,7 @@ export const useSettingsStore = defineStore('settings', () =>
    * 设置主题
    * @param theme 主题类型
    */
-  function setTheme(theme: Theme): void
-  {
+  function setTheme(theme: Theme): void {
     settings.value.theme = theme
     applyTheme(theme)
     saveSettings()
@@ -61,8 +59,7 @@ export const useSettingsStore = defineStore('settings', () =>
    * 应用主题
    * @param theme 主题类型
    */
-  function applyTheme(theme: Theme): void
-  {
+  function applyTheme(theme: Theme): void {
     const effectiveTheme = theme === 'auto' 
       ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
       : theme
@@ -74,8 +71,7 @@ export const useSettingsStore = defineStore('settings', () =>
    * 设置语言
    * @param language 语言类型
    */
-  function setLanguage(language: Language): void
-  {
+  function setLanguage(language: Language): void {
     settings.value.language = language
     saveSettings()
   }
@@ -84,8 +80,7 @@ export const useSettingsStore = defineStore('settings', () =>
    * 更新编辑器设置
    * @param editorSettings 编辑器设置（部分）
    */
-  function updateEditorSettings(editorSettings: Partial<AppSettings['editor']>): void
-  {
+  function updateEditorSettings(editorSettings: Partial<AppSettings['editor']>): void {
     settings.value.editor = { ...settings.value.editor, ...editorSettings }
     saveSettings()
   }
@@ -94,10 +89,8 @@ export const useSettingsStore = defineStore('settings', () =>
    * 设置字号
    * @param fontSize 字号
    */
-  function setFontSize(fontSize: number): void
-  {
-    if (fontSize >= 10 && fontSize <= 32)
-    {
+  function setFontSize(fontSize: number): void {
+    if (fontSize >= 10 && fontSize <= 32) {
       settings.value.editor.fontSize = fontSize
       saveSettings()
     }
@@ -107,8 +100,7 @@ export const useSettingsStore = defineStore('settings', () =>
    * 设置字体
    * @param fontFamily 字体
    */
-  function setFontFamily(fontFamily: string): void
-  {
+  function setFontFamily(fontFamily: string): void {
     settings.value.editor.fontFamily = fontFamily
     saveSettings()
   }
@@ -117,8 +109,7 @@ export const useSettingsStore = defineStore('settings', () =>
    * 更新窗口设置
    * @param windowSettings 窗口设置（部分）
    */
-  function updateWindowSettings(windowSettings: Partial<AppSettings['window']>): void
-  {
+  function updateWindowSettings(windowSettings: Partial<AppSettings['window']>): void {
     settings.value.window = { ...settings.value.window, ...windowSettings }
     saveSettings()
   }
@@ -127,10 +118,8 @@ export const useSettingsStore = defineStore('settings', () =>
    * 设置缩放比例
    * @param zoomLevel 缩放比例（50-200）
    */
-  function setZoomLevel(zoomLevel: number): void
-  {
-    if (zoomLevel >= 50 && zoomLevel <= 200)
-    {
+  function setZoomLevel(zoomLevel: number): void {
+    if (zoomLevel >= 50 && zoomLevel <= 200) {
       settings.value.window.zoomLevel = zoomLevel
       applyZoom(zoomLevel)
       saveSettings()
@@ -141,16 +130,14 @@ export const useSettingsStore = defineStore('settings', () =>
    * 应用缩放
    * @param zoomLevel 缩放比例
    */
-  function applyZoom(zoomLevel: number): void
-  {
+  function applyZoom(zoomLevel: number): void {
     document.documentElement.style.zoom = `${zoomLevel}%`
   }
   
   /**
    * 切换全屏
    */
-  function toggleFullscreen(): void
-  {
+  function toggleFullscreen(): void {
     settings.value.window.fullscreen = !settings.value.window.fullscreen
     saveSettings()
   }
@@ -158,8 +145,7 @@ export const useSettingsStore = defineStore('settings', () =>
   /**
    * 切换自动保存
    */
-  function toggleAutoSave(): void
-  {
+  function toggleAutoSave(): void {
     settings.value.autoSave = !settings.value.autoSave
     saveSettings()
   }
@@ -168,10 +154,8 @@ export const useSettingsStore = defineStore('settings', () =>
    * 设置自动保存间隔
    * @param interval 间隔（秒）
    */
-  function setAutoSaveInterval(interval: number): void
-  {
-    if (interval >= 1 && interval <= 60)
-    {
+  function setAutoSaveInterval(interval: number): void {
+    if (interval >= 1 && interval <= 60) {
       settings.value.autoSaveInterval = interval
       saveSettings()
     }
@@ -182,8 +166,7 @@ export const useSettingsStore = defineStore('settings', () =>
    * @param key 快捷键名称
    * @param value 快捷键值
    */
-  function updateShortcut(key: keyof ShortcutConfig, value: string): void
-  {
+  function updateShortcut(key: keyof ShortcutConfig, value: string): void {
     shortcuts.value[key] = value
     saveSettings()
   }
@@ -191,8 +174,7 @@ export const useSettingsStore = defineStore('settings', () =>
   /**
    * 重置为默认设置
    */
-  function resetToDefaults(): void
-  {
+  function resetToDefaults(): void {
     settings.value = {
       theme: 'light',
       language: 'zh-CN',
@@ -232,8 +214,7 @@ export const useSettingsStore = defineStore('settings', () =>
   /**
    * 保存设置到本地存储
    */
-  function saveSettings(): void
-  {
+  function saveSettings(): void {
     const data = {
       settings: settings.value,
       shortcuts: shortcuts.value
@@ -244,29 +225,23 @@ export const useSettingsStore = defineStore('settings', () =>
   /**
    * 从本地存储加载设置
    */
-  function loadSettings(): void
-  {
+  function loadSettings(): void {
     const data = localStorage.getItem(STORAGE_KEYS.APP_SETTINGS)
     if (!data) return
     
-    try
-    {
+    try {
       const parsed = JSON.parse(data)
-      if (parsed.settings)
-      {
+      if (parsed.settings) {
         settings.value = parsed.settings
       }
-      if (parsed.shortcuts)
-      {
+      if (parsed.shortcuts) {
         shortcuts.value = parsed.shortcuts
       }
       
       // 应用设置
       applyTheme(settings.value.theme)
       applyZoom(settings.value.window.zoomLevel)
-    }
-    catch (error)
-    {
+    } catch (error) {
       console.error('加载设置失败:', error)
     }
   }
@@ -277,12 +252,9 @@ export const useSettingsStore = defineStore('settings', () =>
   loadSettings()
   
   // 监听系统主题变化
-  if (window.matchMedia)
-  {
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () =>
-    {
-      if (settings.value.theme === 'auto')
-      {
+  if (window.matchMedia) {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      if (settings.value.theme === 'auto') {
         applyTheme('auto')
       }
     })

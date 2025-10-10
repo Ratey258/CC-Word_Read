@@ -34,15 +34,12 @@ const emit = defineEmits<{
   close: []
 }>()
 
-function handleClose(): void 
-{
+function handleClose(): void {
   emit('close')
 }
 
-function handleOverlayClick(event: MouseEvent): void 
-{
-  if (event.target === event.currentTarget) 
-{
+function handleOverlayClick(event: MouseEvent): void {
+  if (event.target === event.currentTarget) {
     handleClose()
   }
 }

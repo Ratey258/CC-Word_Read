@@ -16,68 +16,52 @@ const emit = defineEmits<{
 }>()
 
 // 获取当前小说的书签
-const bookmarks = computed(() => 
-{
+const bookmarks = computed(() => {
   if (!novelStore.currentNovel) return []
   return bookmarkStore.getBookmarksByNovel(novelStore.currentNovel.id)
 })
 
 const hasBookmarks = computed(() => bookmarks.value.length > 0)
 
-function handleClose(): void 
-{
+function handleClose(): void {
   emit('close')
 }
 
-function handleOverlayClick(event: MouseEvent): void 
-{
-  if (event.target === event.currentTarget) 
-{
+function handleOverlayClick(event: MouseEvent): void {
+  if (event.target === event.currentTarget) {
     handleClose()
   }
 }
 
-function handleJumpToBookmark(bookmark: Bookmark): void 
-{
+function handleJumpToBookmark(bookmark: Bookmark): void {
   novelStore.jumpTo(bookmark.position)
   handleClose()
 }
 
-function handleDeleteBookmark(bookmarkId: string): void 
-{
-  if (confirm('确定要删除此书签吗？')) 
-{
+function handleDeleteBookmark(bookmarkId: string): void {
+  if (confirm('确定要删除此书签吗？')) {
     bookmarkStore.removeBookmark(bookmarkId)
   }
 }
 
-function formatDate(date: Date): string 
-{
+function formatDate(date: Date): string {
   const d = new Date(date)
   const now = new Date()
   const diff = now.getTime() - d.getTime()
   const days = Math.floor(diff / (1000 * 60 * 60 * 24))
   
-  if (days === 0) 
-{
+  if (days === 0) {
     return '今天 ' + d.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
-  }
- else if (days === 1) 
-{
+  } else if (days === 1) {
     return '昨天 ' + d.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
-  }
- else if (days < 7) 
-{
+  } else if (days < 7) {
     return `${days}天前`
-  }
- else 
-{
+  } else {
     return d.toLocaleDateString('zh-CN')
   }
 }
 
-function getProgressPercent(position: number): number 
-{
+function getProgressPercent(position: number): number {
   if (!novelStore.content) return 0
   return Math.round((position / novelStore.content.length) * 100)
 }

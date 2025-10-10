@@ -8,7 +8,6 @@ import { useUIStore } from '@/stores/ui'
 import { useHistoryStore } from '@/stores/history'
 import { useFileImporter } from '@/composables/useFileImporter'
 import { useNovelReader } from '@/composables/useNovelReader'
-import { useProgress } from '@/composables/useProgress'
 import { useHistory } from '@/composables/useHistory'
 import type { HistoryItem } from '@/types/history'
 import RenameDialog from './RenameDialog.vue'
@@ -26,27 +25,23 @@ const { startReading, pauseReading, resumeReading, stopReading, canStartReading 
 const { recentItems, hasHistory, loadFromHistory, clearAllHistory, formatTime, formatFileSize, getFormatIcon } = useHistory()
 
 // 调试：监视历史记录变化
-watch(hasHistory, (newVal) =>
-{
+watch(hasHistory, (newVal) => {
   console.log('[Ribbon] hasHistory changed:', newVal)
   console.log('[Ribbon] recentItems:', recentItems.value)
 }, { immediate: true })
 
-watch(recentItems, (newVal) =>
-{
+watch(recentItems, (newVal) => {
   console.log('[Ribbon] recentItems changed:', newVal?.length, 'items')
 }, { immediate: true })
 
-onMounted(() =>
-{
+onMounted(() => {
   console.log('[Ribbon] Component mounted')
   console.log('[Ribbon] hasHistory:', hasHistory.value)
   console.log('[Ribbon] recentItems:', recentItems.value)
   console.log('[Ribbon] historyStore.historyItems:', historyStore.historyItems)
   
   // 尝试手动重新加载历史记录
-  if (!hasHistory.value)
-  {
+  if (!hasHistory.value) {
     console.log('[Ribbon] No history found, attempting to reload...')
     historyStore.loadFromStorage()
   }
@@ -62,7 +57,7 @@ const showFileMenu = ref(false)
 const showRenameDialog = ref(false)
 
 // Font options
-const fontSizes = [8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72]
+const fontSizes = [10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72]
 const fontFamilies = [
   { label: 'Calibri', value: 'Calibri, "Microsoft YaHei", "Segoe UI", sans-serif' },
   { label: '宋体', value: '宋体' },
@@ -79,14 +74,12 @@ const canResume = computed(() => isPaused.value)
 const canStop = computed(() => isReading.value || isPaused.value)
 
 // Methods - Tab navigation
-const switchTab = (tab: string) =>
-{
+const switchTab = (tab: string) => {
   // 不再实际切换标签，只是提供视觉反馈
   showFileMenu.value = false
   
   // 如果 Ribbon 折叠了，点击标签时展开
-  if (isRibbonCollapsed.value)
-  {
+  if (isRibbonCollapsed.value) {
     uiStore.toggleRibbonCollapse()
   }
   
@@ -94,88 +87,68 @@ const switchTab = (tab: string) =>
   console.log(`Tab clicked: ${tab}`)
 }
 
-const toggleFileMenu = () =>
-{
+const toggleFileMenu = () => {
   showFileMenu.value = !showFileMenu.value
 }
 
-const closeFileMenu = () =>
-{
+const closeFileMenu = () => {
   showFileMenu.value = false
 }
 
 // 双击标签折叠/展开 Ribbon
-const handleTabDoubleClick = () =>
-{
+const handleTabDoubleClick = () => {
   uiStore.toggleRibbonCollapse()
 }
 
 // Methods - File operations
-const handleImportFile = async () =>
-{
+const handleImportFile = async () => {
   closeFileMenu()
   await importFile()
 }
 
-const handleImportSample = async () =>
-{
+const handleImportSample = async () => {
   closeFileMenu()
   await importSampleNovel()
 }
 
 // Methods - Reading control
 // 合并的开始/暂停切换按钮
-const handleToggleReading = () =>
-{
-  if (!isReading.value)
-  {
+const handleToggleReading = () => {
+  if (!isReading.value) {
     // 未开始阅读，启动阅读
-    if (canStartReading.value)
-    {
+    if (canStartReading.value) {
       startReading()
     }
-  }
-  else if (isPaused.value)
-  {
+  } else if (isPaused.value) {
     // 已暂停，继续阅读
-    if (canResume.value)
-    {
+    if (canResume.value) {
       resumeReading()
     }
-  }
-  else
-  {
+  } else {
     // 正在阅读，暂停
-    if (canPause.value)
-    {
+    if (canPause.value) {
       pauseReading()
     }
   }
 }
 
 // 计算切换按钮的状态
-const toggleButtonState = computed(() =>
-{
-  if (!isReading.value)
-  {
+const toggleButtonState = computed(() => {
+  if (!isReading.value) {
     return {
       icon: 'play',
       label: '开始',
       title: '开始阅读 (F5)',
       disabled: !canStartReading.value
     }
-  }
-  else if (isPaused.value)
-  {
+  } else if (isPaused.value) {
     return {
       icon: 'play',
       label: '继续',
       title: '继续阅读 (F6)',
       disabled: !canResume.value
     }
-  }
-  else
-  {
+  } else {
     return {
       icon: 'pause',
       label: '暂停',
@@ -185,48 +158,40 @@ const toggleButtonState = computed(() =>
   }
 })
 
-const handleStopReading = () =>
-{
-  if (canStop.value)
-  {
+const handleStopReading = () => {
+  if (canStop.value) {
     stopReading()
   }
 }
 
-const handleRenameDisplay = () =>
-{
+const handleRenameDisplay = () => {
   closeFileMenu()
   showRenameDialog.value = true
 }
 
-const handleRenameConfirm = (newName: string) =>
-{
+const handleRenameConfirm = (newName: string) => {
   novelStore.setDisplayName(newName)
 }
 
 
 // Methods - History
-const handleLoadFromHistory = async (item: HistoryItem) =>
-{
+const handleLoadFromHistory = async (item: HistoryItem) => {
   console.log('[Ribbon] 点击历史记录项:', item.title)
   closeFileMenu()
   await loadFromHistory(item)
   console.log('[Ribbon] 历史记录加载完成')
 }
 
-const handleClearHistory = () =>
-{
+const handleClearHistory = () => {
   clearAllHistory()
 }
 
 // Methods - Font styling
-const changeFontSize = (size: number) =>
-{
+const changeFontSize = (size: number) => {
   settingsStore.setFontSize(size)
 }
 
-const changeFontFamily = (family: string) =>
-{
+const changeFontFamily = (family: string) => {
   settingsStore.setFontFamily(family)
 }
 

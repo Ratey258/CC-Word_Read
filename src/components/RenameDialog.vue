@@ -97,18 +97,15 @@ const newDisplayName = ref('')
 const realFileName = computed(() => currentNovel.value?.metadata.title || '未命名文档')
 
 // Watch
-watch(() => props.show, (show) =>
-{
-  if (show)
-  {
+watch(() => props.show, (show) => {
+  if (show) {
     // 对话框打开时，使用当前的 displayName
     newDisplayName.value = displayName.value
   }
 })
 
 // Methods
-function handleConfirm(): void
-{
+function handleConfirm(): void {
   const trimmedName = newDisplayName.value.trim()
   if (!trimmedName) return
   
@@ -116,8 +113,7 @@ function handleConfirm(): void
   emit('update:show', false)
 }
 
-function handleCancel(): void
-{
+function handleCancel(): void {
   emit('update:show', false)
 }
 </script>

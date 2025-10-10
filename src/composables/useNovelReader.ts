@@ -7,8 +7,7 @@ import { useNovelStore } from '@/stores/novel'
 import { useReaderStore } from '@/stores/reader'
 import { useUIStore } from '@/stores/ui'
 
-export function useNovelReader()
-{
+export function useNovelReader() {
   const novelStore = useNovelStore()
   const readerStore = useReaderStore()
   const uiStore = useUIStore()
@@ -24,14 +23,12 @@ export function useNovelReader()
   // ===== Computed =====
   
   /** 是否可以开始阅读 */
-  const canStartReading = computed(() => 
-{
+  const canStartReading = computed(() => {
     return novelStore.hasNovel && !readerStore.isReading
   })
 
   /** 是否可以输出字符 */
-  const canOutput = computed(() => 
-{
+  const canOutput = computed(() => {
     return (
       readerStore.isReading &&
       !readerStore.isComposing &&
@@ -44,10 +41,8 @@ export function useNovelReader()
   /**
    * 开始阅读
    */
-  function startReading(): void
-  {
-    if (!canStartReading.value)
-    {
+  function startReading(): void {
+    if (!canStartReading.value) {
       return
     }
 
@@ -61,8 +56,7 @@ export function useNovelReader()
   /**
    * 暂停阅读
    */
-  function pauseReading(): void
-  {
+  function pauseReading(): void {
     readerStore.pauseReading()
     novelStore.saveProgress()
     uiStore.showInfo('已暂停')
@@ -71,8 +65,7 @@ export function useNovelReader()
   /**
    * 继续阅读
    */
-  function resumeReading(): void
-  {
+  function resumeReading(): void {
     readerStore.resumeReading()
     uiStore.showSuccess('继续阅读')
   }
@@ -80,8 +73,7 @@ export function useNovelReader()
   /**
    * 停止阅读
    */
-  function stopReading(): void
-  {
+  function stopReading(): void {
     readerStore.stopReading()
     novelStore.saveProgress()
     uiStore.showInfo('已停止')
@@ -91,10 +83,8 @@ export function useNovelReader()
    * 输出字符
    * @param count 输出字符数（可选）
    */
-  function outputChars(count?: number): string
-  {
-    if (!canOutput.value)
-    {
+  function outputChars(count?: number): string {
+    if (!canOutput.value) {
       return ''
     }
 
@@ -115,8 +105,7 @@ export function useNovelReader()
     readerStore.recordOutput(chars)
 
     // 检查是否读完
-    if (novelStore.remainingChars === 0)
-    {
+    if (novelStore.remainingChars === 0) {
       stopReading()
       uiStore.showSuccess('阅读完成！')
     }
@@ -128,30 +117,25 @@ export function useNovelReader()
    * 处理按键按下事件
    * @param event 键盘事件
    */
-  function handleKeyDown(event: KeyboardEvent): void
-  {
+  function handleKeyDown(event: KeyboardEvent): void {
     // 如果不是阅读状态，不处理
-    if (!readerStore.isReading)
-    {
+    if (!readerStore.isReading) {
       return
     }
 
     // 如果在输入法组合中，不处理
-    if (readerStore.isComposing)
-    {
+    if (readerStore.isComposing) {
       return
     }
 
     // 检查是否正在使用输入法（通过 isComposing 属性）
-    if (event.isComposing)
-    {
+    if (event.isComposing) {
       // 输入法正在工作，不阻止
       return
     }
 
     // 处理退格键
-    if (event.key === 'Backspace')
-    {
+    if (event.key === 'Backspace') {
       event.preventDefault()
       handleBackspace()
       return
@@ -165,8 +149,7 @@ export function useNovelReader()
       'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12'
     ]
     
-    if (functionalKeys.includes(event.key))
-    {
+    if (functionalKeys.includes(event.key)) {
       return
     }
 
@@ -178,17 +161,14 @@ export function useNovelReader()
    * 处理 beforeinput 事件
    * @param event 输入事件
    */
-  function handleBeforeInput(event: Event): void
-  {
+  function handleBeforeInput(event: Event): void {
     // 如果不是阅读状态，允许正常输入
-    if (!readerStore.isReading)
-    {
+    if (!readerStore.isReading) {
       return
     }
 
     // 如果在输入法组合中，允许输入法正常工作
-    if (readerStore.isComposing)
-    {
+    if (readerStore.isComposing) {
       return
     }
 
@@ -197,8 +177,7 @@ export function useNovelReader()
 
     // 输出小说内容
     const chars = outputChars()
-    if (chars)
-    {
+    if (chars) {
       insertTextToEditor(chars)
     }
   }
@@ -206,14 +185,12 @@ export function useNovelReader()
   /**
    * 处理退格键
    */
-  function handleBackspace(): void
-  {
+  function handleBackspace(): void {
     const editor = editorRef.value
     if (!editor) return
 
     const text = editor.textContent || ''
-    if (text.length > 0)
-    {
+    if (text.length > 0) {
       // 删除最后一个字符
       editor.textContent = text.slice(0, -1)
       
@@ -226,8 +203,7 @@ export function useNovelReader()
    * 处理输入法组合开始
    * @param event 组合事件
    */
-  function handleCompositionStart(event: CompositionEvent): void
-  {
+  function handleCompositionStart(event: CompositionEvent): void {
     readerStore.setComposing(true)
     compositionData.value = event.data || ''
     // 不阻止默认行为，让输入法窗口正常显示
@@ -237,8 +213,7 @@ export function useNovelReader()
    * 处理输入法组合更新
    * @param event 组合事件
    */
-  function handleCompositionUpdate(event: CompositionEvent): void
-  {
+  function handleCompositionUpdate(event: CompositionEvent): void {
     compositionData.value = event.data || ''
     // 不阻止默认行为，让输入法窗口正常更新
   }
@@ -247,30 +222,25 @@ export function useNovelReader()
    * 处理输入法组合结束
    * @param event 组合事件
    */
-  function handleCompositionEnd(event: CompositionEvent): void
-  {
+  function handleCompositionEnd(event: CompositionEvent): void {
     readerStore.setComposing(false)
 
     const composedText = event.data || ''
     
     // 使用 setTimeout 确保在输入法文本插入后再删除
-    setTimeout(() =>
-    {
+    setTimeout(() => {
       // 删除输入法插入的文本
-      if (editorRef.value && composedText)
-      {
+      if (editorRef.value && composedText) {
         const text = editorRef.value.textContent || ''
         const lastIndex = text.lastIndexOf(composedText)
-        if (lastIndex !== -1)
-        {
+        if (lastIndex !== -1) {
           editorRef.value.textContent = text.substring(0, lastIndex) + text.substring(lastIndex + composedText.length)
         }
       }
 
       // 输出小说字符替代输入法文本
       const chars = outputChars(composedText.length)
-      if (chars)
-      {
+      if (chars) {
         insertTextToEditor(chars)
       }
 
@@ -282,8 +252,7 @@ export function useNovelReader()
    * 插入文本到编辑器
    * @param text 文本
    */
-  function insertTextToEditor(text: string): void
-  {
+  function insertTextToEditor(text: string): void {
     const editor = editorRef.value
     if (!editor) return
 
@@ -302,8 +271,7 @@ export function useNovelReader()
    * 移动光标到元素末尾
    * @param element 元素
    */
-  function moveCursorToEnd(element: HTMLElement): void
-  {
+  function moveCursorToEnd(element: HTMLElement): void {
     const selection = window.getSelection()
     if (!selection) return
 
@@ -318,10 +286,8 @@ export function useNovelReader()
   /**
    * 清空编辑器内容
    */
-  function clearEditor(): void
-  {
-    if (editorRef.value)
-    {
+  function clearEditor(): void {
+    if (editorRef.value) {
       editorRef.value.textContent = ''
     }
     readerStore.clearOutputBuffer()
@@ -331,8 +297,7 @@ export function useNovelReader()
    * 跳转到指定位置
    * @param position 目标位置
    */
-  function jumpToPosition(position: number): void
-  {
+  function jumpToPosition(position: number): void {
     novelStore.jumpTo(position)
     uiStore.showSuccess(`已跳转到 ${position} 字符`)
   }
@@ -342,17 +307,14 @@ export function useNovelReader()
   /** 清理函数 */
   let cleanup: (() => void) | null = null
 
-  onMounted(() => 
-{
+  onMounted(() => {
     // 可以在这里添加全局事件监听
-    cleanup = () => 
-{
+    cleanup = () => {
       // 清理逻辑
     }
   })
 
-  onUnmounted(() => 
-{
+  onUnmounted(() => {
     cleanup?.()
   })
 

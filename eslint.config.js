@@ -201,8 +201,8 @@ export default [
       'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
       'prefer-const': 'warn',
       'no-var': 'error',
-      // Allman 风格大括号 - 大括号单独占一行
-      'brace-style': ['error', 'allman', { allowSingleLine: false }]
+      // 1TBS 风格大括号 - JavaScript 标准风格（花括号在同一行）
+      'brace-style': ['error', '1tbs', { allowSingleLine: true }]
     }
   }
 ];

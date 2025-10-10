@@ -8,8 +8,7 @@ import type { Novel, NovelMetadata, Bookmark, ReadingProgress } from '@/types/no
 import { STORAGE_KEYS } from '@/utils/constants'
 import { useHistoryStore } from './history'
 
-export const useNovelStore = defineStore('novel', () =>
-{
+export const useNovelStore = defineStore('novel', () => {
   // ===== State =====
   
   /** 当前小说 */
@@ -39,21 +38,18 @@ export const useNovelStore = defineStore('novel', () =>
   const totalLength = computed(() => content.value.length)
   
   /** 阅读进度（百分比） */
-  const progress = computed(() =>
-  {
+  const progress = computed(() => {
     if (totalLength.value === 0) return 0
     return (currentPosition.value / totalLength.value) * 100
   })
   
   /** 阅读进度百分比（整数） */
-  const progressPercent = computed(() =>
-  {
+  const progressPercent = computed(() => {
     return Math.round(progress.value)
   })
   
   /** 剩余字符数 */
-  const remainingChars = computed(() =>
-  {
+  const remainingChars = computed(() => {
     return totalLength.value - currentPosition.value
   })
   
@@ -70,8 +66,7 @@ export const useNovelStore = defineStore('novel', () =>
    * @param novel 小说对象
    * @param filePath 文件路径（可选，Tauri环境）
    */
-  function loadNovel(novel: Novel, filePath?: string): void
-  {
+  function loadNovel(novel: Novel, filePath?: string): void {
     currentNovel.value = novel
     content.value = novel.content
     currentPosition.value = 0
@@ -93,8 +88,7 @@ export const useNovelStore = defineStore('novel', () =>
   /**
    * 清空当前小说
    */
-  function clearNovel(): void
-  {
+  function clearNovel(): void {
     currentNovel.value = null
     content.value = ''
     currentPosition.value = 0
@@ -106,8 +100,7 @@ export const useNovelStore = defineStore('novel', () =>
    * 设置显示的文件名
    * @param name 新的显示名称
    */
-  function setDisplayName(name: string): void
-  {
+  function setDisplayName(name: string): void {
     displayName.value = name || '文档-Word'
     // 保存到本地存储
     localStorage.setItem(STORAGE_KEYS.DISPLAY_NAME, displayName.value)
@@ -117,16 +110,13 @@ export const useNovelStore = defineStore('novel', () =>
    * 更新阅读位置
    * @param position 新位置
    */
-  function updatePosition(position: number): void
-  {
-    if (position >= 0 && position <= totalLength.value)
-    {
+  function updatePosition(position: number): void {
+    if (position >= 0 && position <= totalLength.value) {
       currentPosition.value = position
       saveProgress()
       
       // 同步到历史记录
-      if (currentNovel.value)
-      {
+      if (currentNovel.value) {
         const historyStore = useHistoryStore()
         historyStore.updateProgress(currentNovel.value.id, position)
       }
@@ -137,8 +127,7 @@ export const useNovelStore = defineStore('novel', () =>
    * 跳转到指定位置
    * @param position 目标位置
    */
-  function jumpTo(position: number): void
-  {
+  function jumpTo(position: number): void {
     updatePosition(position)
   }
   
@@ -146,8 +135,7 @@ export const useNovelStore = defineStore('novel', () =>
    * 添加书签
    * @param bookmark 书签对象
    */
-  function addBookmark(bookmark: Bookmark): void
-  {
+  function addBookmark(bookmark: Bookmark): void {
     bookmarks.value.push(bookmark)
     saveBookmarks()
   }
@@ -156,11 +144,9 @@ export const useNovelStore = defineStore('novel', () =>
    * 删除书签
    * @param bookmarkId 书签ID
    */
-  function removeBookmark(bookmarkId: string): void
-  {
+  function removeBookmark(bookmarkId: string): void {
     const index = bookmarks.value.findIndex(b => b.id === bookmarkId)
-    if (index !== -1)
-    {
+    if (index !== -1) {
       bookmarks.value.splice(index, 1)
       saveBookmarks()
     }
@@ -170,16 +156,14 @@ export const useNovelStore = defineStore('novel', () =>
    * 获取书签
    * @param bookmarkId 书签ID
    */
-  function getBookmark(bookmarkId: string): Bookmark | undefined
-  {
+  function getBookmark(bookmarkId: string): Bookmark | undefined {
     return bookmarks.value.find(b => b.id === bookmarkId)
   }
   
   /**
    * 保存阅读进度
    */
-  function saveProgress(): void
-  {
+  function saveProgress(): void {
     if (!currentNovel.value) return
     
     const progressData: ReadingProgress = {
@@ -195,21 +179,16 @@ export const useNovelStore = defineStore('novel', () =>
   /**
    * 加载阅读进度
    */
-  function loadProgress(): void
-  {
+  function loadProgress(): void {
     const data = localStorage.getItem(STORAGE_KEYS.READING_PROGRESS)
     if (!data || !currentNovel.value) return
     
-    try
-    {
+    try {
       const progressData: ReadingProgress = JSON.parse(data)
-      if (progressData.novelId === currentNovel.value.id)
-      {
+      if (progressData.novelId === currentNovel.value.id) {
         currentPosition.value = progressData.currentPosition
       }
-    }
-    catch (error)
-    {
+    } catch (error) {
       console.error('加载进度失败:', error)
     }
   }
@@ -217,25 +196,20 @@ export const useNovelStore = defineStore('novel', () =>
   /**
    * 保存书签到本地存储
    */
-  function saveBookmarks(): void
-  {
+  function saveBookmarks(): void {
     localStorage.setItem(STORAGE_KEYS.BOOKMARKS, JSON.stringify(bookmarks.value))
   }
   
   /**
    * 加载书签
    */
-  function loadBookmarks(): void
-  {
+  function loadBookmarks(): void {
     const data = localStorage.getItem(STORAGE_KEYS.BOOKMARKS)
     if (!data) return
     
-    try
-    {
+    try {
       bookmarks.value = JSON.parse(data)
-    }
-    catch (error)
-    {
+    } catch (error) {
       console.error('加载书签失败:', error)
     }
   }
@@ -243,10 +217,8 @@ export const useNovelStore = defineStore('novel', () =>
   /**
    * 保存到本地存储
    */
-  function saveToStorage(): void
-  {
-    if (currentNovel.value)
-    {
+  function saveToStorage(): void {
+    if (currentNovel.value) {
       localStorage.setItem(STORAGE_KEYS.CURRENT_NOVEL, JSON.stringify(currentNovel.value))
     }
   }
@@ -254,20 +226,16 @@ export const useNovelStore = defineStore('novel', () =>
   /**
    * 从本地存储加载
    */
-  function loadFromStorage(): void
-  {
+  function loadFromStorage(): void {
     const data = localStorage.getItem(STORAGE_KEYS.CURRENT_NOVEL)
     if (!data) return
     
-    try
-    {
+    try {
       const novel: Novel = JSON.parse(data)
       loadNovel(novel)
       loadProgress()
       loadBookmarks()
-    }
-    catch (error)
-    {
+    } catch (error) {
       console.error('加载小说失败:', error)
     }
   }
@@ -276,8 +244,7 @@ export const useNovelStore = defineStore('novel', () =>
    * 添加到最近文件列表
    * @param metadata 小说元数据
    */
-  function addToRecentFiles(metadata: NovelMetadata): void
-  {
+  function addToRecentFiles(metadata: NovelMetadata): void {
     // 移除重复项
     recentFiles.value = recentFiles.value.filter(f => f.title !== metadata.title)
     
@@ -285,8 +252,7 @@ export const useNovelStore = defineStore('novel', () =>
     recentFiles.value.unshift(metadata)
     
     // 限制数量（最多10个）
-    if (recentFiles.value.length > 10)
-    {
+    if (recentFiles.value.length > 10) {
       recentFiles.value = recentFiles.value.slice(0, 10)
     }
     
@@ -297,17 +263,13 @@ export const useNovelStore = defineStore('novel', () =>
   /**
    * 加载最近文件列表
    */
-  function loadRecentFiles(): void
-  {
+  function loadRecentFiles(): void {
     const data = localStorage.getItem(STORAGE_KEYS.RECENT_FILES)
     if (!data) return
     
-    try
-    {
+    try {
       recentFiles.value = JSON.parse(data)
-    }
-    catch (error)
-    {
+    } catch (error) {
       console.error('加载最近文件失败:', error)
     }
   }
@@ -315,11 +277,9 @@ export const useNovelStore = defineStore('novel', () =>
   /**
    * 加载显示名称
    */
-  function loadDisplayName(): void
-  {
+  function loadDisplayName(): void {
     const data = localStorage.getItem(STORAGE_KEYS.DISPLAY_NAME)
-    if (data)
-    {
+    if (data) {
       displayName.value = data
     }
   }
@@ -328,8 +288,7 @@ export const useNovelStore = defineStore('novel', () =>
    * 更新编辑器内容长度
    * @param length 编辑器当前内容的字符数
    */
-  function updateEditorContentLength(length: number): void
-  {
+  function updateEditorContentLength(length: number): void {
     editorContentLength.value = length
   }
   

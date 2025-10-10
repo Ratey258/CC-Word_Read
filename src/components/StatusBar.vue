@@ -23,8 +23,7 @@ const hasNovel = computed(() => currentNovel.value !== null)
 const currentChar = computed(() => currentPosition.value + 1)
 const totalChars = computed(() => currentNovel.value?.content.length || 0)
 
-const wordCount = computed(() => 
-{
+const wordCount = computed(() => {
   // 简单计算：中文按字数，英文按单词数
   const content = currentNovel.value?.content || ''
   const chineseChars = content.match(/[\u4e00-\u9fa5]/g)?.length || 0
@@ -35,36 +34,29 @@ const wordCount = computed(() =>
 const zoomPercentage = computed(() => Math.round(settings.value.window.zoomLevel))
 
 // Methods
-const handleZoomIn = () =>
-{
-  if (settings.value.window.zoomLevel < 200)
-  {
+const handleZoomIn = () => {
+  if (settings.value.window.zoomLevel < 200) {
     settingsStore.setZoomLevel(Math.min(settings.value.window.zoomLevel + 10, 200))
   }
 }
 
-const handleZoomOut = () =>
-{
-  if (settings.value.window.zoomLevel > 50)
-  {
+const handleZoomOut = () => {
+  if (settings.value.window.zoomLevel > 50) {
     settingsStore.setZoomLevel(Math.max(settings.value.window.zoomLevel - 10, 50))
   }
 }
 
-const handleZoomChange = (event: Event) =>
-{
+const handleZoomChange = (event: Event) => {
   const target = event.target as HTMLInputElement
   const newZoom = parseInt(target.value)
   settingsStore.setZoomLevel(newZoom)
 }
 
-const handleZoomReset = () =>
-{
+const handleZoomReset = () => {
   settingsStore.setZoomLevel(100)
 }
 
-const switchView = (view: 'print' | 'web' | 'reading') =>
-{
+const switchView = (view: 'print' | 'web' | 'reading') => {
   console.log('Switch view to:', view)
   // TODO: 实现视图切换
 }

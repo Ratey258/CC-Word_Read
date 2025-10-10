@@ -20,8 +20,7 @@ export interface ShortcutHandler {
   enabled?: boolean
 }
 
-export function useKeyboardShortcuts() 
-{
+export function useKeyboardShortcuts() {
   const settingsStore = useSettingsStore()
   const novelStore = useNovelStore()
   const readerStore = useReaderStore()
@@ -34,8 +33,7 @@ export function useKeyboardShortcuts()
    * @param event 键盘事件
    * @returns 快捷键字符串（如 'Ctrl+O'）
    */
-  function parseKeyboardEvent(event: KeyboardEvent): string 
-{
+  function parseKeyboardEvent(event: KeyboardEvent): string {
     const parts: string[] = []
     
     if (event.ctrlKey) parts.push('Ctrl')
@@ -45,8 +43,7 @@ export function useKeyboardShortcuts()
     
     // 获取实际按键
     const key = event.key
-    if (key && !['Control', 'Alt', 'Shift', 'Meta'].includes(key)) 
-{
+    if (key && !['Control', 'Alt', 'Shift', 'Meta'].includes(key)) {
       parts.push(key.toUpperCase())
     }
     
@@ -59,8 +56,7 @@ export function useKeyboardShortcuts()
    * @param combination 快捷键组合
    * @returns 是否匹配
    */
-  function matchesShortcut(event: KeyboardEvent, combination: string): boolean 
-{
+  function matchesShortcut(event: KeyboardEvent, combination: string): boolean {
     const eventCombo = parseKeyboardEvent(event)
     return eventCombo === combination.toUpperCase()
   }
@@ -73,8 +69,7 @@ export function useKeyboardShortcuts()
     {
       combination: 'Ctrl+O',
       description: '打开文件',
-      handler: (event) => 
-{
+      handler: (event) => {
         event.preventDefault()
         importFile()
       }
@@ -82,11 +77,9 @@ export function useKeyboardShortcuts()
     {
       combination: 'Ctrl+S',
       description: '保存进度',
-      handler: (event) => 
-{
+      handler: (event) => {
         event.preventDefault()
-        if (novelStore.hasNovel) 
-{
+        if (novelStore.hasNovel) {
           novelStore.saveProgress()
         }
       }
@@ -96,15 +89,11 @@ export function useKeyboardShortcuts()
     {
       combination: 'Ctrl+P',
       description: '暂停/继续',
-      handler: (event) => 
-{
+      handler: (event) => {
         event.preventDefault()
-        if (readerStore.isReading && !readerStore.isPaused) 
-{
+        if (readerStore.isReading && !readerStore.isPaused) {
           pauseReading()
-        }
- else if (readerStore.isPaused) 
-{
+        } else if (readerStore.isPaused) {
           resumeReading()
         }
       }
@@ -112,11 +101,9 @@ export function useKeyboardShortcuts()
     {
       combination: 'Ctrl+Enter',
       description: '开始阅读',
-      handler: (event) => 
-{
+      handler: (event) => {
         event.preventDefault()
-        if (novelStore.hasNovel && !readerStore.isReading) 
-{
+        if (novelStore.hasNovel && !readerStore.isReading) {
           startReading()
         }
       }
@@ -126,8 +113,7 @@ export function useKeyboardShortcuts()
     {
       combination: 'Ctrl+G',
       description: '跳转到指定位置',
-      handler: (event) => 
-{
+      handler: (event) => {
         event.preventDefault()
         // 触发跳转对话框（由 UI 组件处理）
         window.dispatchEvent(new CustomEvent('show-jump-dialog'))
@@ -136,11 +122,9 @@ export function useKeyboardShortcuts()
     {
       combination: 'Ctrl+Home',
       description: '跳到开头',
-      handler: (event) => 
-{
+      handler: (event) => {
         event.preventDefault()
-        if (novelStore.hasNovel) 
-{
+        if (novelStore.hasNovel) {
           novelStore.jumpTo(0)
         }
       }
@@ -148,11 +132,9 @@ export function useKeyboardShortcuts()
     {
       combination: 'Ctrl+End',
       description: '跳到末尾',
-      handler: (event) => 
-{
+      handler: (event) => {
         event.preventDefault()
-        if (novelStore.hasNovel && novelStore.content) 
-{
+        if (novelStore.hasNovel && novelStore.content) {
           novelStore.jumpTo(novelStore.content.length)
         }
       }
@@ -162,8 +144,7 @@ export function useKeyboardShortcuts()
     {
       combination: 'Ctrl+D',
       description: '添加书签',
-      handler: (event) => 
-{
+      handler: (event) => {
         event.preventDefault()
         window.dispatchEvent(new CustomEvent('add-bookmark'))
       }
@@ -171,8 +152,7 @@ export function useKeyboardShortcuts()
     {
       combination: 'Ctrl+B',
       description: '显示书签列表',
-      handler: (event) => 
-{
+      handler: (event) => {
         event.preventDefault()
         window.dispatchEvent(new CustomEvent('show-bookmarks'))
       }
@@ -182,8 +162,7 @@ export function useKeyboardShortcuts()
     {
       combination: 'Ctrl+L',
       description: '清空编辑器',
-      handler: (event) => 
-{
+      handler: (event) => {
         event.preventDefault()
         window.dispatchEvent(new CustomEvent('clear-editor'))
       }
@@ -193,8 +172,7 @@ export function useKeyboardShortcuts()
     {
       combination: 'Ctrl+,',
       description: '打开设置',
-      handler: (event) => 
-{
+      handler: (event) => {
         event.preventDefault()
         window.dispatchEvent(new CustomEvent('show-settings'))
       }
@@ -204,8 +182,7 @@ export function useKeyboardShortcuts()
     {
       combination: 'Shift+?',
       description: '显示快捷键帮助',
-      handler: (event) => 
-{
+      handler: (event) => {
         event.preventDefault()
         window.dispatchEvent(new CustomEvent('show-shortcuts-help'))
       }
@@ -216,11 +193,9 @@ export function useKeyboardShortcuts()
    * 全局键盘事件处理
    * @param event 键盘事件
    */
-  function handleGlobalKeyDown(event: KeyboardEvent): void 
-{
+  function handleGlobalKeyDown(event: KeyboardEvent): void {
     // 如果快捷键被禁用，不处理
-    if (!settingsStore.settings.enableShortcuts) 
-{
+    if (!settingsStore.settings.enableShortcuts) {
       return
     }
 
@@ -231,17 +206,13 @@ export function useKeyboardShortcuts()
                     target.isContentEditable
 
     // 遍历所有快捷键
-    for (const shortcut of shortcuts) 
-{
-      if (matchesShortcut(event, shortcut.combination)) 
-{
+    for (const shortcut of shortcuts) {
+      if (matchesShortcut(event, shortcut.combination)) {
         // 如果在输入框中，只处理特定快捷键
-        if (isInput) 
-{
+        if (isInput) {
           // 只允许这些快捷键在输入框中工作
           const allowedInInput = ['Ctrl+S', 'Ctrl+P', 'Ctrl+G', 'Ctrl+D', 'Ctrl+B']
-          if (!allowedInInput.includes(shortcut.combination)) 
-{
+          if (!allowedInInput.includes(shortcut.combination)) {
             continue
           }
         }
@@ -256,21 +227,18 @@ export function useKeyboardShortcuts()
    * 获取快捷键帮助信息
    * @returns 快捷键列表
    */
-  function getShortcutHelp(): ShortcutHandler[] 
-{
+  function getShortcutHelp(): ShortcutHandler[] {
     return shortcuts.filter(s => s.description)
   }
 
   /**
    * 生命周期
    */
-  onMounted(() => 
-{
+  onMounted(() => {
     document.addEventListener('keydown', handleGlobalKeyDown)
   })
 
-  onUnmounted(() => 
-{
+  onUnmounted(() => {
     document.removeEventListener('keydown', handleGlobalKeyDown)
   })
 

@@ -51,8 +51,7 @@ const editorStyles = computed(() => ({
   lineHeight: settings.value.editor.lineHeight.toString()
 }))
 
-const pageStyles = computed(() =>
-{
+const pageStyles = computed(() => {
   // A4纸张尺寸（像素，96 DPI）
   const A4_WIDTH_PX = 816
   const A4_HEIGHT_PX = 1123
@@ -73,8 +72,7 @@ const pageStyles = computed(() =>
 })
 
 // 计算编辑器容器顶部位置（根据 Ribbon 折叠状态）
-const containerStyles = computed(() =>
-{
+const containerStyles = computed(() => {
   const titlebarHeight = 32 // var(--titlebar-height)
   const ribbonTabHeight = 27 // var(--ribbon-tab-height)
   const ribbonToolbarHeight = 93 // var(--ribbon-toolbar-height)
@@ -89,18 +87,15 @@ const containerStyles = computed(() =>
 })
 
 // 监听编辑器内容变化，同步到 store
-function updateEditorContentLength(): void
-{
-  if (editorRef.value)
-  {
+function updateEditorContentLength(): void {
+  if (editorRef.value) {
     const length = editorRef.value.textContent?.length || 0
     novelStore.updateEditorContentLength(length)
   }
 }
 
 // 滚动到内容末尾，保持最后的内容在视觉中心
-function scrollToContentEnd(): void
-{
+function scrollToContentEnd(): void {
   if (!editorRef.value) return
   
   const editor = editorRef.value
@@ -124,8 +119,7 @@ function scrollToContentEnd(): void
     null
   )
   
-  while (walker.nextNode())
-  {
+  while (walker.nextNode()) {
     lastTextNode = walker.currentNode
   }
   
@@ -134,13 +128,10 @@ function scrollToContentEnd(): void
   
   // 设置 range 到最后一个字符
   const textLength = lastTextNode.textContent?.length || 0
-  if (textLength > 0)
-  {
+  if (textLength > 0) {
     range.setStart(lastTextNode, textLength - 1)
     range.setEnd(lastTextNode, textLength)
-  }
-  else
-  {
+  } else {
     range.selectNodeContents(lastTextNode)
   }
   
@@ -170,8 +161,7 @@ function scrollToContentEnd(): void
     contentEndTop < (targetPositionInViewport - buffer) || 
     contentEndTop > (targetPositionInViewport + buffer)
   
-  if (shouldScroll)
-  {
+  if (shouldScroll) {
     // 计算需要滚动的距离
     const scrollDelta = contentEndTop - targetPositionInViewport
     const targetScrollTop = container.scrollTop + scrollDelta
@@ -187,23 +177,19 @@ function scrollToContentEnd(): void
 // 使用 MutationObserver 监听编辑器内容变化
 let editorObserver: globalThis.MutationObserver | null = null
 
-function setupEditorObserver(): void
-{
+function setupEditorObserver(): void {
   if (!editorRef.value) return
   
   // 清理旧的观察器
-  if (editorObserver)
-  {
+  if (editorObserver) {
     editorObserver.disconnect()
   }
   
   // 创建新的观察器
-  editorObserver = new globalThis.MutationObserver(() =>
-  {
+  editorObserver = new globalThis.MutationObserver(() => {
     updateEditorContentLength()
     // 内容变化后，滚动到内容末尾
-    globalThis.requestAnimationFrame(() =>
-    {
+    globalThis.requestAnimationFrame(() => {
       scrollToContentEnd()
     })
   })
@@ -220,24 +206,19 @@ function setupEditorObserver(): void
 }
 
 // 监听小说加载
-watch(currentNovel, (novel, oldNovel) =>
-{
-  if (novel && editorRef.value)
-  {
+watch(currentNovel, (novel, oldNovel) => {
+  if (novel && editorRef.value) {
     // 如果是新加载的小说（不是刷新页面恢复的），清空编辑器
     // 判断依据：旧小说为null或者小说ID不同
     const isNewNovel = !oldNovel || oldNovel.id !== novel.id
     
-    if (isNewNovel)
-    {
+    if (isNewNovel) {
       // 清空编辑器并聚焦
       editorRef.value.textContent = ''
       editorRef.value.focus()
       // 更新内容长度
       updateEditorContentLength()
-    }
-    else
-    {
+    } else {
       // 同一本小说，可能是位置更新，不清空内容
       editorRef.value.focus()
       // 更新内容长度
@@ -247,27 +228,23 @@ watch(currentNovel, (novel, oldNovel) =>
 })
 
 // 监听清空编辑器事件
-function handleClearEditorEvent(): void
-{
+function handleClearEditorEvent(): void {
   clearEditor()
 }
 
 // Lifecycle
-onMounted(() =>
-{
+onMounted(() => {
   // 监听自定义事件
   window.addEventListener('clear-editor', handleClearEditorEvent)
   
-  if (editorRef.value)
-  {
+  if (editorRef.value) {
     editorRef.value.focus()
     
     // 设置编辑器观察器
     setupEditorObserver()
     
     // 如果刷新页面后有小说和阅读位置，恢复已读内容
-    if (currentNovel.value && novelStore.currentPosition > 0)
-    {
+    if (currentNovel.value && novelStore.currentPosition > 0) {
       const readContent = currentNovel.value.content.substring(0, novelStore.currentPosition)
       editorRef.value.textContent = readContent
       console.log('[Editor] 页面刷新，已恢复已读内容，长度:', readContent.length)
@@ -276,14 +253,11 @@ onMounted(() =>
       updateEditorContentLength()
       
       // 将光标移到末尾
-      setTimeout(() =>
-      {
-        if (editorRef.value)
-        {
+      setTimeout(() => {
+        if (editorRef.value) {
           const range = document.createRange()
           const selection = window.getSelection()
-          if (selection && editorRef.value.childNodes.length > 0)
-          {
+          if (selection && editorRef.value.childNodes.length > 0) {
             range.selectNodeContents(editorRef.value)
             range.collapse(false) // 折叠到末尾
             selection.removeAllRanges()
@@ -295,14 +269,11 @@ onMounted(() =>
   }
   
   // 如果有小说且未开始阅读，按任意键开始阅读
-  const handleAutoStart = (event: KeyboardEvent) =>
-  {
-    if (hasNovel.value && !isReading.value)
-    {
+  const handleAutoStart = (event: KeyboardEvent) => {
+    if (hasNovel.value && !isReading.value) {
       // 排除修饰键和特殊键
       if (!['Control', 'Shift', 'Alt', 'Meta', 'Tab', 'Escape'].includes(event.key) &&
-          !event.ctrlKey && !event.altKey && !event.metaKey)
-      {
+          !event.ctrlKey && !event.altKey && !event.metaKey) {
         event.preventDefault()
         startReading()
         // 只执行一次后移除

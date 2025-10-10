@@ -5,23 +5,39 @@ use tauri::Manager;
 
 fn main() {
     tauri::Builder::default()
-        // 注册插件
+        // 注册Tauri插件
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_shell::init())
         .setup(|app| {
-            // 获取主窗口
-            let window = app.get_webview_window("main").unwrap();
+            // 获取主窗口 - 使用正确的Tauri 2.x API
+            let main_window = app.get_webview_window("main")
+                .expect("Failed to get main window");
             
-            // 显式设置窗口属性
-            window.set_minimizable(true).expect("Failed to set minimizable");
-            window.set_maximizable(true).expect("Failed to set maximizable");
-            window.set_closable(true).expect("Failed to set closable");
-            
-            // 设置窗口属性（Windows专用优化）
+            // 显式设置窗口属性（确保窗口控制按钮可用）
             #[cfg(target_os = "windows")]
             {
-                println!("✅ Window initialized for Windows");
-                println!("✅ Window properties set: minimizable, maximizable, closable");
+                // 设置窗口为可最小化、可最大化、可关闭
+                let _ = main_window.set_minimizable(true);
+                let _ = main_window.set_maximizable(true);
+                let _ = main_window.set_closable(true);
+                let _ = main_window.set_resizable(true);
+                
+                println!("✅ [Tauri] Window initialized for Windows");
+                println!("   - Minimizable: ✓");
+                println!("   - Maximizable: ✓");
+                println!("   - Closable: ✓");
+                println!("   - Resizable: ✓");
+            }
+            
+            #[cfg(not(target_os = "windows"))]
+            {
+                let _ = main_window.set_minimizable(true);
+                let _ = main_window.set_maximizable(true);
+                let _ = main_window.set_closable(true);
+                let _ = main_window.set_resizable(true);
+                
+                println!("✅ [Tauri] Window initialized");
             }
             
             Ok(())
@@ -30,4 +46,3 @@ fn main() {
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
-

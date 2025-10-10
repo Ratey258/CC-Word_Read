@@ -13,8 +13,7 @@ import { validateFile, validateNovelContent } from '@/utils/validator'
 import type { Novel, NovelFormat } from '@/types/novel'
 import { nanoid } from 'nanoid'
 
-export function useFileImporter()
-{
+export function useFileImporter() {
   const novelStore = useNovelStore()
   const historyStore = useHistoryStore()
   const uiStore = useUIStore()
@@ -38,10 +37,8 @@ export function useFileImporter()
   /**
    * 打开文件选择对话框并导入文件
    */
-  async function importFile(): Promise<void>
-  {
-    try
-    {
+  async function importFile(): Promise<void> {
+    try {
       // 打开文件选择对话框
       const result = await fileSystem.openFileDialog({
         title: '选择文档文件',
@@ -69,9 +66,7 @@ export function useFileImporter()
 
       // 导入文件
       await importFileFromResult(result)
-    }
-    catch (error)
-    {
+    } catch (error) {
       console.error('文件选择失败:', error)
       uiStore.showError('文件选择失败')
     }
@@ -83,23 +78,19 @@ export function useFileImporter()
    */
   async function importFileFromResult(
     fileResult: { name: string; content: string; file?: File; path: string | null }
-  ): Promise<void>
-  {
+  ): Promise<void> {
     if (isImporting.value) return
 
     isImporting.value = true
     uiStore.showLoading('正在导入文件...')
 
-    try
-    {
+    try {
       const { name: fileName, path } = fileResult
       
       // 检查是否已存在相同路径的历史记录
-      if (path)
-      {
+      if (path) {
         const existingHistory = historyStore.getHistoryItemByPath(path)
-        if (existingHistory)
-        {
+        if (existingHistory) {
           console.log('[FileImporter] 发现相同文件的历史记录，直接恢复:', existingHistory.title)
           uiStore.hideLoading()
           isImporting.value = false
@@ -114,21 +105,17 @@ export function useFileImporter()
 
       // 解析文档
       let parsedDoc
-      if (file)
-      {
+      if (file) {
         // 浏览器环境：使用 File 对象
         parsedDoc = await documentParser.parseDocument(file, fileName)
-      }
-      else
-      {
+      } else {
         // Tauri 环境：使用文本内容
         parsedDoc = await documentParser.parseDocument(content, fileName)
       }
 
       // 验证内容
       const validation = validateNovelContent(parsedDoc.text)
-      if (!validation.valid)
-      {
+      if (!validation.valid) {
         throw new Error(validation.message)
       }
 
@@ -159,16 +146,12 @@ export function useFileImporter()
       const formatInfo = parsedDoc.hasFormatting ? '（已保留格式）' : ''
       uiStore.showSuccess(`导入成功：${novel.metadata.title}${formatInfo}`)
       uiStore.hideWelcome()
-    }
-    catch (error)
-    {
+    } catch (error) {
       console.error('文件导入失败:', error)
       uiStore.showError(
         error instanceof Error ? error.message : '文件导入失败'
       )
-    }
-    finally
-    {
+    } finally {
       isImporting.value = false
       uiStore.hideLoading()
     }
@@ -178,8 +161,7 @@ export function useFileImporter()
    * 处理文件拖放
    * @param event 拖放事件
    */
-  async function handleFileDrop(event: DragEvent): Promise<void>
-  {
+  async function handleFileDrop(event: DragEvent): Promise<void> {
     event.preventDefault()
 
     const files = event.dataTransfer?.files
@@ -189,8 +171,7 @@ export function useFileImporter()
 
     // 验证文件
     const validation = validateFile(file)
-    if (!validation.valid)
-    {
+    if (!validation.valid) {
       uiStore.showError(validation.message || '文件验证失败')
       return
     }
@@ -224,20 +205,16 @@ export function useFileImporter()
    * 读取文件内容
    * @param file 文件对象
    */
-  async function readFileContent(file: File): Promise<string>
-  {
-    return new Promise((resolve, reject) =>
-    {
+  async function readFileContent(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
       const reader = new FileReader()
 
-      reader.onload = (e) =>
-      {
+      reader.onload = (e) => {
         const content = e.target?.result as string
         resolve(content)
       }
 
-      reader.onerror = () =>
-      {
+      reader.onerror = () => {
         reject(new Error('文件读取失败'))
       }
 
@@ -249,12 +226,10 @@ export function useFileImporter()
    * 获取文件格式
    * @param fileName 文件名
    */
-  function getFileFormat(fileName: string): NovelFormat
-  {
+  function getFileFormat(fileName: string): NovelFormat {
     const ext = fileName.split('.').pop()?.toLowerCase()
     
-    switch (ext)
-    {
+    switch (ext) {
       case 'txt':
         return 'txt'
       case 'docx':
@@ -269,8 +244,7 @@ export function useFileImporter()
   /**
    * 导入示例小说（用于演示）
    */
-  async function importSampleNovel(): Promise<void>
-  {
+  async function importSampleNovel(): Promise<void> {
     const sampleContent = `第一章 开始
 
 这是一个示例小说的开始。
@@ -306,12 +280,10 @@ export function useFileImporter()
   /**
    * 处理拖拽进入
    */
-  function handleDragEnter(event: DragEvent): void
-  {
+  function handleDragEnter(event: DragEvent): void {
     event.preventDefault()
     dragCounter++
-    if (dragCounter === 1)
-    {
+    if (dragCounter === 1) {
       isDragging.value = true
     }
   }
@@ -319,12 +291,10 @@ export function useFileImporter()
   /**
    * 处理拖拽离开
    */
-  function handleDragLeave(event: DragEvent): void
-  {
+  function handleDragLeave(event: DragEvent): void {
     event.preventDefault()
     dragCounter--
-    if (dragCounter === 0)
-    {
+    if (dragCounter === 0) {
       isDragging.value = false
     }
   }
@@ -332,8 +302,7 @@ export function useFileImporter()
   /**
    * 处理拖拽放置
    */
-  async function handleDrop(event: DragEvent): Promise<void>
-  {
+  async function handleDrop(event: DragEvent): Promise<void> {
     event.preventDefault()
     dragCounter = 0
     isDragging.value = false

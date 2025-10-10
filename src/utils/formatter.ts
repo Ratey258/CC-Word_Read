@@ -7,8 +7,7 @@
  * @param bytes 字节数
  * @param decimals 小数位数
  */
-export function formatFileSize(bytes: number, decimals = 2): string
-{
+export function formatFileSize(bytes: number, decimals = 2): string {
   if (bytes === 0) return '0 B'
 
   const k = 1024
@@ -24,8 +23,7 @@ export function formatFileSize(bytes: number, decimals = 2): string
  * 格式化数字（千分位）
  * @param num 数字
  */
-export function formatNumber(num: number): string
-{
+export function formatNumber(num: number): string {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 }
 
@@ -35,8 +33,7 @@ export function formatNumber(num: number): string
  * @param total 总数
  * @param decimals 小数位数
  */
-export function formatPercentage(value: number, total: number, decimals = 2): string
-{
+export function formatPercentage(value: number, total: number, decimals = 2): string {
   if (total === 0) return '0%'
   const percentage = (value / total) * 100
   return `${percentage.toFixed(decimals)}%`
@@ -46,22 +43,16 @@ export function formatPercentage(value: number, total: number, decimals = 2): st
  * 格式化时间（毫秒转可读格式）
  * @param ms 毫秒数
  */
-export function formatDuration(ms: number): string
-{
+export function formatDuration(ms: number): string {
   const seconds = Math.floor(ms / 1000)
   const minutes = Math.floor(seconds / 60)
   const hours = Math.floor(minutes / 60)
 
-  if (hours > 0)
-  {
+  if (hours > 0) {
     return `${hours}小时${minutes % 60}分钟`
-  }
-  else if (minutes > 0)
-  {
+  } else if (minutes > 0) {
     return `${minutes}分钟${seconds % 60}秒`
-  }
-  else
-  {
+  } else {
     return `${seconds}秒`
   }
 }
@@ -74,8 +65,7 @@ export function formatDuration(ms: number): string
 export function formatDateTime(
   timestamp: number,
   format = 'YYYY-MM-DD HH:mm:ss'
-): string
-{
+): string {
   const date = new Date(timestamp)
 
   const year = date.getFullYear()
@@ -98,8 +88,7 @@ export function formatDateTime(
  * 格式化相对时间
  * @param timestamp 时间戳（毫秒）
  */
-export function formatRelativeTime(timestamp: number): string
-{
+export function formatRelativeTime(timestamp: number): string {
   const now = Date.now()
   const diff = now - timestamp
 
@@ -108,20 +97,13 @@ export function formatRelativeTime(timestamp: number): string
   const hours = Math.floor(minutes / 60)
   const days = Math.floor(hours / 24)
 
-  if (days > 0)
-  {
+  if (days > 0) {
     return `${days}天前`
-  }
-  else if (hours > 0)
-  {
+  } else if (hours > 0) {
     return `${hours}小时前`
-  }
-  else if (minutes > 0)
-  {
+  } else if (minutes > 0) {
     return `${minutes}分钟前`
-  }
-  else
-  {
+  } else {
     return '刚刚'
   }
 }
@@ -132,10 +114,8 @@ export function formatRelativeTime(timestamp: number): string
  * @param maxLength 最大长度
  * @param suffix 后缀
  */
-export function truncate(text: string, maxLength: number, suffix = '...'): string
-{
-  if (text.length <= maxLength)
-  {
+export function truncate(text: string, maxLength: number, suffix = '...'): string {
+  if (text.length <= maxLength) {
     return text
   }
   return text.substring(0, maxLength - suffix.length) + suffix
@@ -145,8 +125,7 @@ export function truncate(text: string, maxLength: number, suffix = '...'): strin
  * 统计中文字符数
  * @param text 文本
  */
-export function countChineseChars(text: string): number
-{
+export function countChineseChars(text: string): number {
   const matches = text.match(/[\u4e00-\u9fa5]/g)
   return matches ? matches.length : 0
 }
@@ -155,8 +134,7 @@ export function countChineseChars(text: string): number
  * 格式化阅读速度
  * @param charsPerMinute 每分钟字符数
  */
-export function formatReadingSpeed(charsPerMinute: number): string
-{
+export function formatReadingSpeed(charsPerMinute: number): string {
   if (charsPerMinute === 0) return '0 字/分'
   return `${Math.round(charsPerMinute)} 字/分`
 }
@@ -165,8 +143,7 @@ export function formatReadingSpeed(charsPerMinute: number): string
  * 格式化章节标题
  * @param title 原始标题
  */
-export function formatChapterTitle(title: string): string
-{
+export function formatChapterTitle(title: string): string {
   return title.trim().replace(/\s+/g, ' ')
 }
 
@@ -174,8 +151,7 @@ export function formatChapterTitle(title: string): string
  * 清理文本（移除多余空白）
  * @param text 文本
  */
-export function cleanText(text: string): string
-{
+export function cleanText(text: string): string {
   return text
     .replace(/\r\n/g, '\n') // 统一换行符
     .replace(/\r/g, '\n')

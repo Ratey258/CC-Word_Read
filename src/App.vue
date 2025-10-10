@@ -19,38 +19,31 @@ const showShortcutsHelp = ref(false)
 const showBookmarkPanel = ref(false)
 const showAddBookmark = ref(false)
 
-function handleShowShortcutsHelp(): void
-{
+function handleShowShortcutsHelp(): void {
   showShortcutsHelp.value = true
 }
 
-function handleCloseShortcutsHelp(): void
-{
+function handleCloseShortcutsHelp(): void {
   showShortcutsHelp.value = false
 }
 
-function handleShowBookmarks(): void
-{
+function handleShowBookmarks(): void {
   showBookmarkPanel.value = true
 }
 
-function handleCloseBookmarks(): void
-{
+function handleCloseBookmarks(): void {
   showBookmarkPanel.value = false
 }
 
-function handleAddBookmark(): void
-{
+function handleAddBookmark(): void {
   showAddBookmark.value = true
 }
 
-function handleCloseAddBookmark(): void
-{
+function handleCloseAddBookmark(): void {
   showAddBookmark.value = false
 }
 
-onMounted(() =>
-{
+onMounted(() => {
   console.log('CC Word Reader v3 - Vue 3 App mounted successfully!')
   
   // 监听快捷键帮助事件

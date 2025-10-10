@@ -9,18 +9,15 @@ import type { NovelFormat } from '@/types/novel'
  * 验证文件大小
  * @param size 文件大小（字节）
  */
-export function validateFileSize(size: number): { valid: boolean; message?: string }
-{
-  if (size === 0)
-  {
+export function validateFileSize(size: number): { valid: boolean; message?: string } {
+  if (size === 0) {
     return {
       valid: false,
       message: '文件为空'
     }
   }
 
-  if (size > FILE_LIMITS.MAX_SIZE)
-  {
+  if (size > FILE_LIMITS.MAX_SIZE) {
     return {
       valid: false,
       message: `文件大小超过限制（最大 ${FILE_LIMITS.MAX_SIZE / 1024 / 1024}MB）`
@@ -36,12 +33,10 @@ export function validateFileSize(size: number): { valid: boolean; message?: stri
  */
 export function validateFileFormat(
   filename: string
-): { valid: boolean; format?: NovelFormat; message?: string }
-{
+): { valid: boolean; format?: NovelFormat; message?: string } {
   const ext = filename.split('.').pop()?.toLowerCase()
 
-  if (!ext)
-  {
+  if (!ext) {
     return {
       valid: false,
       message: '无法识别文件格式'
@@ -49,8 +44,7 @@ export function validateFileFormat(
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  if (!FILE_LIMITS.SUPPORTED_FORMATS.includes(ext as any))
-  {
+  if (!FILE_LIMITS.SUPPORTED_FORMATS.includes(ext as any)) {
     return {
       valid: false,
       message: `不支持的文件格式（支持: ${FILE_LIMITS.SUPPORTED_FORMATS.join(', ')}）`
@@ -69,19 +63,16 @@ export function validateFileFormat(
  */
 export function validateFile(
   file: File
-): { valid: boolean; format?: NovelFormat; message?: string }
-{
+): { valid: boolean; format?: NovelFormat; message?: string } {
   // 验证大小
   const sizeResult = validateFileSize(file.size)
-  if (!sizeResult.valid)
-  {
+  if (!sizeResult.valid) {
     return sizeResult
   }
 
   // 验证格式
   const formatResult = validateFileFormat(file.name)
-  if (!formatResult.valid)
-  {
+  if (!formatResult.valid) {
     return formatResult
   }
 
@@ -97,18 +88,15 @@ export function validateFile(
  */
 export function validateNovelContent(
   content: string
-): { valid: boolean; message?: string }
-{
-  if (!content || content.trim().length === 0)
-  {
+): { valid: boolean; message?: string } {
+  if (!content || content.trim().length === 0) {
     return {
       valid: false,
       message: '小说内容为空'
     }
   }
 
-  if (content.length < 10)
-  {
+  if (content.length < 10) {
     return {
       valid: false,
       message: '小说内容过短'
@@ -122,18 +110,15 @@ export function validateNovelContent(
  * 验证书签名称
  * @param name 书签名称
  */
-export function validateBookmarkName(name: string): { valid: boolean; message?: string }
-{
-  if (!name || name.trim().length === 0)
-  {
+export function validateBookmarkName(name: string): { valid: boolean; message?: string } {
+  if (!name || name.trim().length === 0) {
     return {
       valid: false,
       message: '书签名称不能为空'
     }
   }
 
-  if (name.length > 50)
-  {
+  if (name.length > 50) {
     return {
       valid: false,
       message: '书签名称过长（最多50个字符）'
@@ -151,18 +136,15 @@ export function validateBookmarkName(name: string): { valid: boolean; message?: 
 export function validatePosition(
   position: number,
   maxPosition: number
-): { valid: boolean; message?: string }
-{
-  if (position < 0)
-  {
+): { valid: boolean; message?: string } {
+  if (position < 0) {
     return {
       valid: false,
       message: '位置不能为负数'
     }
   }
 
-  if (position > maxPosition)
-  {
+  if (position > maxPosition) {
     return {
       valid: false,
       message: '位置超出范围'
@@ -176,18 +158,15 @@ export function validatePosition(
  * 验证字符数设置
  * @param count 字符数
  */
-export function validateCharsPerOutput(count: number): { valid: boolean; message?: string }
-{
-  if (count < 1)
-  {
+export function validateCharsPerOutput(count: number): { valid: boolean; message?: string } {
+  if (count < 1) {
     return {
       valid: false,
       message: '每次输出字符数不能小于1'
     }
   }
 
-  if (count > 100)
-  {
+  if (count > 100) {
     return {
       valid: false,
       message: '每次输出字符数不能大于100'
@@ -201,12 +180,10 @@ export function validateCharsPerOutput(count: number): { valid: boolean; message
  * 验证快捷键格式
  * @param shortcut 快捷键字符串
  */
-export function validateShortcut(shortcut: string): { valid: boolean; message?: string }
-{
+export function validateShortcut(shortcut: string): { valid: boolean; message?: string } {
   const validKeys = /^(Ctrl|Alt|Shift)\+[A-Za-z0-9]$/
   
-  if (!validKeys.test(shortcut))
-  {
+  if (!validKeys.test(shortcut)) {
     return {
       valid: false,
       message: '快捷键格式不正确（例如: Ctrl+O）'
@@ -220,25 +197,20 @@ export function validateShortcut(shortcut: string): { valid: boolean; message?: 
  * 是否为空值
  * @param value 值
  */
-export function isEmpty(value: unknown): boolean
-{
-  if (value === null || value === undefined)
-  {
+export function isEmpty(value: unknown): boolean {
+  if (value === null || value === undefined) {
     return true
   }
 
-  if (typeof value === 'string')
-  {
+  if (typeof value === 'string') {
     return value.trim().length === 0
   }
 
-  if (Array.isArray(value))
-  {
+  if (Array.isArray(value)) {
     return value.length === 0
   }
 
-  if (typeof value === 'object')
-  {
+  if (typeof value === 'object') {
     return Object.keys(value).length === 0
   }
 
@@ -249,15 +221,11 @@ export function isEmpty(value: unknown): boolean
  * 是否为有效的 URL
  * @param url URL 字符串
  */
-export function isValidUrl(url: string): boolean
-{
-  try
-  {
+export function isValidUrl(url: string): boolean {
+  try {
     new URL(url)
     return true
-  }
-  catch
-  {
+  } catch {
     return false
   }
 }

@@ -24,54 +24,45 @@ const searchQuery = ref('')
 const novelTitle = computed(() => displayName.value)
 
 // Methods
-const toggleAutoSave = () =>
-{
+const toggleAutoSave = () => {
   settingsStore.toggleAutoSave()
 }
 
-const handleSearchInput = (event: Event) =>
-{
+const handleSearchInput = (event: Event) => {
   const target = event.target as HTMLInputElement
   searchQuery.value = target.value
   // TODO: 实现搜索功能
 }
 
-const handleUndo = () =>
-{
+const handleUndo = () => {
   console.log('Undo')
   // TODO: 实现撤销功能
 }
 
-const handleRedo = () =>
-{
+const handleRedo = () => {
   console.log('Redo')
   // TODO: 实现重做功能
 }
 
-const handleSave = () =>
-{
+const handleSave = () => {
   console.log('Save')
   // TODO: 实现保存功能
 }
 
-const toggleRibbonCollapse = () =>
-{
+const toggleRibbonCollapse = () => {
   uiStore.toggleRibbonCollapse()
 }
 
 // 窗口控制方法
-const handleMinimize = () =>
-{
+const handleMinimize = () => {
   minimize()
 }
 
-const handleToggleMaximize = () =>
-{
+const handleToggleMaximize = () => {
   toggleMaximize()
 }
 
-const handleClose = () =>
-{
+const handleClose = () => {
   close()
 }
 </script>

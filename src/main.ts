@@ -7,20 +7,16 @@ import router from './router'
 import './assets/styles/index.css'
 
 // 加载 SVG 图标
-async function loadSvgIcons() 
-{
+async function loadSvgIcons() {
   const response = await window.fetch('/src/assets/icons/icons.svg')
   const svgText = await response.text()
   const div = document.createElement('div')
   div.innerHTML = svgText
   div.style.display = 'none'
   // 安全地插入到 body 的第一个位置
-  if (document.body.firstChild)
-  {
+  if (document.body.firstChild) {
     document.body.insertBefore(div, document.body.firstChild)
-  }
-  else
-  {
+  } else {
     document.body.appendChild(div)
   }
 }

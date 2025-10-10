@@ -8,8 +8,7 @@ import { computed } from 'vue'
 import { useNovelStore } from '@/stores/novel'
 import { useSettingsStore } from '@/stores/settings'
 
-export function usePageCalculator()
-{
+export function usePageCalculator() {
   const novelStore = useNovelStore()
   const settingsStore = useSettingsStore()
 
@@ -17,8 +16,7 @@ export function usePageCalculator()
    * 计算每页可容纳的字符数
    * 基于A4纸张尺寸和当前编辑器设置
    */
-  const charsPerPage = computed(() =>
-  {
+  const charsPerPage = computed(() => {
     // A4 尺寸常量（单位：像素，96 DPI）
     const A4_WIDTH_CM = 21
     const A4_HEIGHT_CM = 29.7
@@ -57,20 +55,17 @@ export function usePageCalculator()
    * 计算总页数
    * 优先使用编辑器实际内容长度，如果没有则使用小说总长度
    */
-  const totalPages = computed(() =>
-  {
+  const totalPages = computed(() => {
     // 优先使用编辑器实际内容长度
     const editorLength = novelStore.editorContentLength
     
     // 如果有编辑器内容，基于实际内容计算页数
-    if (editorLength > 0)
-    {
+    if (editorLength > 0) {
       return Math.ceil(editorLength / charsPerPage.value)
     }
     
     // 否则，如果有加载的小说，使用小说总长度
-    if (novelStore.hasNovel)
-    {
+    if (novelStore.hasNovel) {
       const totalChars = novelStore.totalLength
       if (totalChars === 0) return 1
       return Math.ceil(totalChars / charsPerPage.value)
@@ -84,13 +79,11 @@ export function usePageCalculator()
    * 计算当前页码
    * 优先基于编辑器实际内容位置，否则使用阅读进度
    */
-  const currentPage = computed(() =>
-  {
+  const currentPage = computed(() => {
     // 优先使用编辑器实际内容长度来计算当前页
     const editorLength = novelStore.editorContentLength
     
-    if (editorLength > 0)
-    {
+    if (editorLength > 0) {
       const page = Math.ceil(editorLength / charsPerPage.value)
       return Math.min(page, totalPages.value)
     }
@@ -108,8 +101,7 @@ export function usePageCalculator()
   /**
    * 计算当前页的进度（当前页内的百分比）
    */
-  const currentPageProgress = computed(() =>
-  {
+  const currentPageProgress = computed(() => {
     if (!novelStore.hasNovel) return 0
 
     const currentPos = novelStore.currentPosition
@@ -123,10 +115,8 @@ export function usePageCalculator()
    * 跳转到指定页
    * @param pageNumber 目标页码
    */
-  function jumpToPage(pageNumber: number): void
-  {
-    if (pageNumber < 1 || pageNumber > totalPages.value)
-    {
+  function jumpToPage(pageNumber: number): void {
+    if (pageNumber < 1 || pageNumber > totalPages.value) {
       console.warn('页码超出范围')
       return
     }
@@ -138,10 +128,8 @@ export function usePageCalculator()
   /**
    * 下一页
    */
-  function nextPage(): void
-  {
-    if (currentPage.value < totalPages.value)
-    {
+  function nextPage(): void {
+    if (currentPage.value < totalPages.value) {
       jumpToPage(currentPage.value + 1)
     }
   }
@@ -149,10 +137,8 @@ export function usePageCalculator()
   /**
    * 上一页
    */
-  function previousPage(): void
-  {
-    if (currentPage.value > 1)
-    {
+  function previousPage(): void {
+    if (currentPage.value > 1) {
       jumpToPage(currentPage.value - 1)
     }
   }

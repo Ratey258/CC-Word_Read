@@ -17,38 +17,31 @@ const emit = defineEmits<{
 const title = ref('')
 const note = ref('')
 
-watch(() => props.show, (show) =>
-{
-  if (show)
-  {
+watch(() => props.show, (show) => {
+  if (show) {
     // 重置表单
     title.value = ''
     note.value = ''
     
     // 自动生成标题
-    if (novelStore.currentNovel && novelStore.content)
-    {
+    if (novelStore.currentNovel && novelStore.content) {
       const progress = Math.round((novelStore.currentPosition / novelStore.content.length) * 100)
       title.value = `阅读进度 ${progress}%`
     }
   }
 })
 
-function handleClose(): void
-{
+function handleClose(): void {
   emit('close')
 }
 
-function handleOverlayClick(event: MouseEvent): void
-{
-  if (event.target === event.currentTarget)
-  {
+function handleOverlayClick(event: MouseEvent): void {
+  if (event.target === event.currentTarget) {
     handleClose()
   }
 }
 
-function handleSubmit(): void
-{
+function handleSubmit(): void {
   if (!novelStore.currentNovel) return
   
   bookmarkStore.addBookmark({
@@ -61,8 +54,7 @@ function handleSubmit(): void
   handleClose()
 }
 
-function handleCancel(): void
-{
+function handleCancel(): void {
   handleClose()
 }
 </script>

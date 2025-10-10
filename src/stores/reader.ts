@@ -7,8 +7,7 @@ import { ref, computed } from 'vue'
 import type { ReaderState, ReaderConfig, Statistics, OutputMode } from '@/types/reader'
 import { READER_DEFAULTS } from '@/utils/constants'
 
-export const useReaderStore = defineStore('reader', () =>
-{
+export const useReaderStore = defineStore('reader', () => {
   // ===== State =====
   
   /** 阅读器状态 */
@@ -59,8 +58,7 @@ export const useReaderStore = defineStore('reader', () =>
   const isIdle = computed(() => state.value === 'idle')
   
   /** 阅读速度（字/分钟） */
-  const readingSpeed = computed(() =>
-  {
+  const readingSpeed = computed(() => {
     if (statistics.value.readingDuration === 0) return 0
     const minutes = statistics.value.readingDuration / 60
     return Math.round(statistics.value.outputChars / minutes)
@@ -71,16 +69,14 @@ export const useReaderStore = defineStore('reader', () =>
   /**
    * 开始阅读
    */
-  function startReading(): void
-  {
+  function startReading(): void {
     if (state.value === 'reading') return
     
     state.value = 'reading'
     statistics.value.sessionStartAt = Date.now()
     
     // 启动自动保存
-    if (config.value.autoSave)
-    {
+    if (config.value.autoSave) {
       startAutoSave()
     }
     
@@ -91,8 +87,7 @@ export const useReaderStore = defineStore('reader', () =>
   /**
    * 暂停阅读
    */
-  function pauseReading(): void
-  {
+  function pauseReading(): void {
     if (state.value !== 'reading') return
     
     state.value = 'paused'
@@ -104,15 +99,13 @@ export const useReaderStore = defineStore('reader', () =>
   /**
    * 继续阅读
    */
-  function resumeReading(): void
-  {
+  function resumeReading(): void {
     if (state.value !== 'paused') return
     
     state.value = 'reading'
     
     // 重新启动定时器
-    if (config.value.autoSave)
-    {
+    if (config.value.autoSave) {
       startAutoSave()
     }
     startStatistics()
@@ -121,8 +114,7 @@ export const useReaderStore = defineStore('reader', () =>
   /**
    * 停止阅读
    */
-  function stopReading(): void
-  {
+  function stopReading(): void {
     state.value = 'stopped'
     
     // 停止定时器
@@ -135,14 +127,10 @@ export const useReaderStore = defineStore('reader', () =>
   /**
    * 切换暂停/继续
    */
-  function togglePause(): void
-  {
-    if (isReading.value)
-    {
+  function togglePause(): void {
+    if (isReading.value) {
       pauseReading()
-    }
-    else if (isPaused.value)
-    {
+    } else if (isPaused.value) {
       resumeReading()
     }
   }
@@ -151,8 +139,7 @@ export const useReaderStore = defineStore('reader', () =>
    * 记录输出
    * @param chars 输出的字符
    */
-  function recordOutput(chars: string): void
-  {
+  function recordOutput(chars: string): void {
     statistics.value.outputChars += chars.length
     outputBuffer.value += chars
   }
@@ -160,8 +147,7 @@ export const useReaderStore = defineStore('reader', () =>
   /**
    * 清空输出缓冲区
    */
-  function clearOutputBuffer(): void
-  {
+  function clearOutputBuffer(): void {
     outputBuffer.value = ''
   }
   
@@ -169,8 +155,7 @@ export const useReaderStore = defineStore('reader', () =>
    * 设置输入法组合状态
    * @param composing 是否在组合中
    */
-  function setComposing(composing: boolean): void
-  {
+  function setComposing(composing: boolean): void {
     isComposing.value = composing
   }
   
@@ -178,8 +163,7 @@ export const useReaderStore = defineStore('reader', () =>
    * 更新配置
    * @param newConfig 新配置（部分）
    */
-  function updateConfig(newConfig: Partial<ReaderConfig>): void
-  {
+  function updateConfig(newConfig: Partial<ReaderConfig>): void {
     config.value = { ...config.value, ...newConfig }
   }
   
@@ -187,13 +171,11 @@ export const useReaderStore = defineStore('reader', () =>
    * 设置输出模式
    * @param mode 输出模式
    */
-  function setOutputMode(mode: OutputMode): void
-  {
+  function setOutputMode(mode: OutputMode): void {
     config.value.outputMode = mode
     
     // 根据模式调整字符数
-    switch (mode)
-    {
+    switch (mode) {
       case 'fast':
         config.value.charsPerOutput = 10
         break
@@ -210,10 +192,8 @@ export const useReaderStore = defineStore('reader', () =>
    * 设置每次输出字符数
    * @param count 字符数
    */
-  function setCharsPerOutput(count: number): void
-  {
-    if (count >= 1 && count <= 100)
-    {
+  function setCharsPerOutput(count: number): void {
+    if (count >= 1 && count <= 100) {
       config.value.charsPerOutput = count
     }
   }
@@ -221,12 +201,10 @@ export const useReaderStore = defineStore('reader', () =>
   /**
    * 启动自动保存
    */
-  function startAutoSave(): void
-  {
+  function startAutoSave(): void {
     if (autoSaveTimer) return
     
-    autoSaveTimer = setInterval(() =>
-    {
+    autoSaveTimer = setInterval(() => {
       // 触发保存事件（由其他模块监听）
       // 这里只负责触发，具体保存逻辑在 novel store
     }, config.value.autoSaveInterval)
@@ -235,10 +213,8 @@ export const useReaderStore = defineStore('reader', () =>
   /**
    * 停止自动保存
    */
-  function stopAutoSave(): void
-  {
-    if (autoSaveTimer)
-    {
+  function stopAutoSave(): void {
+    if (autoSaveTimer) {
       clearInterval(autoSaveTimer)
       autoSaveTimer = null
     }
@@ -247,15 +223,12 @@ export const useReaderStore = defineStore('reader', () =>
   /**
    * 启动统计更新
    */
-  function startStatistics(): void
-  {
+  function startStatistics(): void {
     if (statisticsTimer) return
     
-    statisticsTimer = setInterval(() =>
-    {
+    statisticsTimer = setInterval(() => {
       // 更新阅读时长
-      if (statistics.value.sessionStartAt > 0)
-      {
+      if (statistics.value.sessionStartAt > 0) {
         statistics.value.readingDuration = 
           Math.floor((Date.now() - statistics.value.sessionStartAt) / 1000)
       }
@@ -268,10 +241,8 @@ export const useReaderStore = defineStore('reader', () =>
   /**
    * 停止统计更新
    */
-  function stopStatistics(): void
-  {
-    if (statisticsTimer)
-    {
+  function stopStatistics(): void {
+    if (statisticsTimer) {
       clearInterval(statisticsTimer)
       statisticsTimer = null
     }
@@ -280,8 +251,7 @@ export const useReaderStore = defineStore('reader', () =>
   /**
    * 停止所有定时器
    */
-  function stopTimers(): void
-  {
+  function stopTimers(): void {
     stopAutoSave()
     stopStatistics()
   }
@@ -289,8 +259,7 @@ export const useReaderStore = defineStore('reader', () =>
   /**
    * 重置统计信息
    */
-  function resetStatistics(): void
-  {
+  function resetStatistics(): void {
     statistics.value = {
       outputChars: 0,
       remainingChars: 0,
@@ -303,8 +272,7 @@ export const useReaderStore = defineStore('reader', () =>
   /**
    * 重置阅读器
    */
-  function reset(): void
-  {
+  function reset(): void {
     stopReading()
     clearOutputBuffer()
     state.value = 'idle'

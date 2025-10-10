@@ -20,8 +20,7 @@ const DEFAULT_CONFIG: HistoryConfig = {
   cacheContent: !window.__TAURI__
 }
 
-export const useHistoryStore = defineStore('history', () =>
-{
+export const useHistoryStore = defineStore('history', () => {
   // ===== State =====
   
   /** 历史记录列表 */
@@ -52,16 +51,13 @@ export const useHistoryStore = defineStore('history', () =>
    * @param novel 小说对象
    * @param filePath 文件路径（可选，Tauri环境）
    */
-  function addToHistory(novel: Novel, filePath?: string): void
-  {
+  function addToHistory(novel: Novel, filePath?: string): void {
     // 优先通过文件路径查找现有记录，如果没有路径则通过 ID 查找
     let existingIndex = -1
-    if (filePath)
-    {
+    if (filePath) {
       // 标准化路径进行比较
       const normalizedPath = filePath.replace(/\\/g, '/')
-      existingIndex = historyItems.value.findIndex(item =>
-      {
+      existingIndex = historyItems.value.findIndex(item => {
         if (!item.filePath) return false
         const itemPath = item.filePath.replace(/\\/g, '/')
         return itemPath === normalizedPath
@@ -69,8 +65,7 @@ export const useHistoryStore = defineStore('history', () =>
     }
     
     // 如果通过路径没找到，再尝试通过 ID 查找
-    if (existingIndex < 0)
-    {
+    if (existingIndex < 0) {
       existingIndex = historyItems.value.findIndex(item => item.id === novel.id)
     }
     
@@ -100,26 +95,21 @@ export const useHistoryStore = defineStore('history', () =>
       content: shouldCache ? novel.content : undefined
     }
     
-    if (existingIndex >= 0)
-    {
+    if (existingIndex >= 0) {
       // 更新现有记录
       historyItems.value[existingIndex] = historyItem
-    }
-    else
-    {
+    } else {
       // 添加新记录
       historyItems.value.unshift(historyItem)
       
       // 检查是否超过最大数量
-      if (historyItems.value.length > config.value.maxItems)
-      {
+      if (historyItems.value.length > config.value.maxItems) {
         historyItems.value = historyItems.value.slice(0, config.value.maxItems)
       }
     }
     
     // 自动清理旧记录
-    if (config.value.autoCleanup)
-    {
+    if (config.value.autoCleanup) {
       cleanupOldItems()
     }
     
@@ -131,8 +121,7 @@ export const useHistoryStore = defineStore('history', () =>
    * @param novelId 小说ID
    * @param currentPosition 当前位置
    */
-  function updateProgress(novelId: string, currentPosition: number): void
-  {
+  function updateProgress(novelId: string, currentPosition: number): void {
     const item = historyItems.value.find(h => h.id === novelId)
     if (!item) return
     
@@ -155,8 +144,7 @@ export const useHistoryStore = defineStore('history', () =>
    * 获取指定历史记录
    * @param novelId 小说ID
    */
-  function getHistoryItem(novelId: string): HistoryItem | undefined
-  {
+  function getHistoryItem(novelId: string): HistoryItem | undefined {
     return historyItems.value.find(item => item.id === novelId)
   }
   
@@ -164,13 +152,11 @@ export const useHistoryStore = defineStore('history', () =>
    * 通过文件路径获取历史记录
    * @param filePath 文件路径
    */
-  function getHistoryItemByPath(filePath: string): HistoryItem | undefined
-  {
+  function getHistoryItemByPath(filePath: string): HistoryItem | undefined {
     if (!filePath) return undefined
     // 标准化路径（处理不同操作系统的路径分隔符）
     const normalizedPath = filePath.replace(/\\/g, '/')
-    return historyItems.value.find(item =>
-    {
+    return historyItems.value.find(item => {
       if (!item.filePath) return false
       const itemPath = item.filePath.replace(/\\/g, '/')
       return itemPath === normalizedPath
@@ -181,11 +167,9 @@ export const useHistoryStore = defineStore('history', () =>
    * 删除指定历史记录
    * @param novelId 小说ID
    */
-  function removeHistoryItem(novelId: string): void
-  {
+  function removeHistoryItem(novelId: string): void {
     const index = historyItems.value.findIndex(item => item.id === novelId)
-    if (index >= 0)
-    {
+    if (index >= 0) {
       historyItems.value.splice(index, 1)
       saveToStorage()
     }
@@ -194,8 +178,7 @@ export const useHistoryStore = defineStore('history', () =>
   /**
    * 清空所有历史记录
    */
-  function clearHistory(): void
-  {
+  function clearHistory(): void {
     historyItems.value = []
     saveToStorage()
   }
@@ -203,15 +186,13 @@ export const useHistoryStore = defineStore('history', () =>
   /**
    * 清理过期的历史记录
    */
-  function cleanupOldItems(): void
-  {
+  function cleanupOldItems(): void {
     if (!config.value.autoCleanup) return
     
     const now = Date.now()
     const maxAge = config.value.retentionDays * 24 * 60 * 60 * 1000
     
-    historyItems.value = historyItems.value.filter(item =>
-    {
+    historyItems.value = historyItems.value.filter(item => {
       const age = now - item.lastAccessedAt
       return age < maxAge
     })
@@ -221,12 +202,10 @@ export const useHistoryStore = defineStore('history', () =>
    * 排序历史记录
    * @param sortBy 排序方式
    */
-  function sortHistory(sortBy: HistorySortBy): HistoryItem[]
-  {
+  function sortHistory(sortBy: HistorySortBy): HistoryItem[] {
     const sorted = [...historyItems.value]
     
-    switch (sortBy)
-    {
+    switch (sortBy) {
       case 'lastAccessed':
         return sorted.sort((a, b) => b.lastAccessedAt - a.lastAccessedAt)
       case 'title':
@@ -244,8 +223,7 @@ export const useHistoryStore = defineStore('history', () =>
    * 搜索历史记录
    * @param keyword 关键词
    */
-  function searchHistory(keyword: string): HistoryItem[]
-  {
+  function searchHistory(keyword: string): HistoryItem[] {
     if (!keyword.trim()) return historyItems.value
     
     const lowerKeyword = keyword.toLowerCase()
@@ -259,8 +237,7 @@ export const useHistoryStore = defineStore('history', () =>
    * 更新配置
    * @param newConfig 新配置（部分）
    */
-  function updateConfig(newConfig: Partial<HistoryConfig>): void
-  {
+  function updateConfig(newConfig: Partial<HistoryConfig>): void {
     config.value = { ...config.value, ...newConfig }
     saveToStorage()
   }
@@ -268,10 +245,8 @@ export const useHistoryStore = defineStore('history', () =>
   /**
    * 保存到本地存储
    */
-  function saveToStorage(): void
-  {
-    try
-    {
+  function saveToStorage(): void {
+    try {
       const data = {
         items: historyItems.value,
         config: config.value
@@ -280,9 +255,7 @@ export const useHistoryStore = defineStore('history', () =>
       console.log('[HistoryStore] 保存历史记录:', historyItems.value.length, '条', jsonStr.length, '字节')
       localStorage.setItem(STORAGE_KEYS.HISTORY, jsonStr)
       console.log('[HistoryStore] 保存成功')
-    }
-    catch (error)
-    {
+    } catch (error) {
       console.error('[HistoryStore] 保存历史记录失败:', error)
     }
   }
@@ -290,10 +263,8 @@ export const useHistoryStore = defineStore('history', () =>
   /**
    * 从本地存储加载
    */
-  function loadFromStorage(): void
-  {
-    try
-    {
+  function loadFromStorage(): void {
+    try {
       console.log('[HistoryStore] 开始加载历史记录')
       console.log('[HistoryStore] 当前环境:', window.__TAURI__ ? 'Tauri' : '浏览器')
       console.log('[HistoryStore] localStorage可用:', typeof localStorage !== 'undefined')
@@ -306,24 +277,19 @@ export const useHistoryStore = defineStore('history', () =>
       const data = JSON.parse(saved)
       console.log('[HistoryStore] 解析的数据:', data)
       
-      if (data.items && Array.isArray(data.items))
-      {
+      if (data.items && Array.isArray(data.items)) {
         historyItems.value = data.items
         console.log('[HistoryStore] 成功加载', data.items.length, '条历史记录')
       }
-      if (data.config)
-      {
+      if (data.config) {
         config.value = { ...DEFAULT_CONFIG, ...data.config }
       }
       
       // 加载后自动清理
-      if (config.value.autoCleanup)
-      {
+      if (config.value.autoCleanup) {
         cleanupOldItems()
       }
-    }
-    catch (error)
-    {
+    } catch (error) {
       console.error('[HistoryStore] 加载历史记录失败:', error)
     }
   }
@@ -331,8 +297,7 @@ export const useHistoryStore = defineStore('history', () =>
   /**
    * 重置状态
    */
-  function reset(): void
-  {
+  function reset(): void {
     historyItems.value = []
     config.value = DEFAULT_CONFIG
   }

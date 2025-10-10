@@ -10,8 +10,7 @@ import { useDocumentParser } from './useDocumentParser'
 import type { HistoryItem } from '@/types/history'
 import type { Novel, NovelFormat } from '@/types/novel'
 
-export function useHistory()
-{
+export function useHistory() {
   const historyStore = useHistoryStore()
   const novelStore = useNovelStore()
   const uiStore = useUIStore()
@@ -31,18 +30,15 @@ export function useHistory()
    * 从历史记录恢复阅读
    * @param item 历史记录项
    */
-  async function loadFromHistory(item: HistoryItem): Promise<void>
-  {
-    try
-    {
+  async function loadFromHistory(item: HistoryItem): Promise<void> {
+    try {
       console.log('[History] 开始加载历史记录:', item.title, item.id)
       uiStore.showLoading('正在加载小说...')
       
       let novel: Novel
       
       // 优先使用缓存内容
-      if (item.content)
-      {
+      if (item.content) {
         console.log('[History] 使用缓存内容，长度:', item.content.length)
         novel = {
           id: item.id,
@@ -58,14 +54,11 @@ export function useHistory()
             chapters: undefined
           }
         }
-      }
-      // 如果有文件路径，尝试重新读取文件
-      else if (item.filePath)
-      {
+      } else if (item.filePath) {
+        // 如果有文件路径，尝试重新读取文件
         console.log('[History] 从文件路径重新读取:', item.filePath)
         const content = await reimportFromPath(item.filePath)
-        if (!content)
-        {
+        if (!content) {
           uiStore.showError('无法读取文件，请重新导入')
           uiStore.hideLoading()
           return
@@ -85,10 +78,8 @@ export function useHistory()
             chapters: undefined
           }
         }
-      }
-      // 没有内容也没有路径
-      else
-      {
+      } else {
+        // 没有内容也没有路径
         console.warn('[History] 内容未缓存且无文件路径')
         const isBrowser = !window.__TAURI__
         const errorMsg = isBrowser 
@@ -108,14 +99,12 @@ export function useHistory()
       await new Promise(resolve => setTimeout(resolve, 100))
       
       // 立即恢复阅读位置和已读内容
-      if (item.progress.currentPosition > 0)
-      {
+      if (item.progress.currentPosition > 0) {
         console.log('[History] 恢复阅读位置:', item.progress.currentPosition)
         
         // 获取编辑器元素
         const editorEl = document.querySelector('.document-content') as HTMLElement
-        if (editorEl)
-        {
+        if (editorEl) {
           // 填充已读内容到编辑器
           const readContent = novel.content.substring(0, item.progress.currentPosition)
           editorEl.textContent = readContent
@@ -124,8 +113,7 @@ export function useHistory()
           // 将光标移到末尾
           const range = document.createRange()
           const selection = window.getSelection()
-          if (selection && editorEl.childNodes.length > 0)
-          {
+          if (selection && editorEl.childNodes.length > 0) {
             range.selectNodeContents(editorEl)
             range.collapse(false) // 折叠到末尾
             selection.removeAllRanges()
@@ -147,14 +135,10 @@ export function useHistory()
       uiStore.showSuccess(`已恢复到 ${progressPercent}% 的阅读位置`)
       
       uiStore.hideWelcome()
-    }
-    catch (error)
-    {
+    } catch (error) {
       console.error('[History] 从历史记录加载失败:', error)
       uiStore.showError('加载失败，请重新导入文件')
-    }
-    finally
-    {
+    } finally {
       uiStore.hideLoading()
     }
   }
@@ -164,13 +148,10 @@ export function useHistory()
    * @param filePath 文件路径
    * @returns 文件内容，失败返回 null
    */
-  async function reimportFromPath(filePath: string): Promise<string | null>
-  {
-    try
-    {
+  async function reimportFromPath(filePath: string): Promise<string | null> {
+    try {
       // 检查是否在 Tauri 环境
-      if (!window.__TAURI__)
-      {
+      if (!window.__TAURI__) {
         console.warn('[History] 不在 Tauri 环境，无法从路径读取')
         return null
       }
@@ -184,8 +165,7 @@ export function useHistory()
       const content = await readTextFile(filePath)
       
       // 如果是 docx 或其他需要解析的格式
-      if (format === 'docx')
-      {
+      if (format === 'docx') {
         console.warn('[History] DOCX 格式需要重新导入')
         return null
       }
@@ -193,9 +173,7 @@ export function useHistory()
       // 对于文本文件，可以直接使用
       const parsedDoc = await documentParser.parseDocument(content, fileName)
       return parsedDoc.text
-    }
-    catch (error)
-    {
+    } catch (error) {
       console.error('[History] 从路径重新导入失败:', error)
       return null
     }
@@ -206,11 +184,9 @@ export function useHistory()
    * @param fileName 文件名
    * @returns 文件格式
    */
-  function getFileFormat(fileName: string): NovelFormat
-  {
+  function getFileFormat(fileName: string): NovelFormat {
     const ext = fileName.split('.').pop()?.toLowerCase()
-    switch (ext)
-    {
+    switch (ext) {
       case 'txt':
         return 'txt'
       case 'md':
@@ -226,8 +202,7 @@ export function useHistory()
    * 删除历史记录
    * @param novelId 小说ID
    */
-  function removeHistory(novelId: string): void
-  {
+  function removeHistory(novelId: string): void {
     historyStore.removeHistoryItem(novelId)
     uiStore.showSuccess('已删除历史记录')
   }
@@ -235,10 +210,8 @@ export function useHistory()
   /**
    * 清空所有历史记录
    */
-  function clearAllHistory(): void
-  {
-    if (confirm('确定要清空所有历史记录吗？此操作不可撤销。'))
-    {
+  function clearAllHistory(): void {
+    if (confirm('确定要清空所有历史记录吗？此操作不可撤销。')) {
       historyStore.clearHistory()
       uiStore.showSuccess('已清空历史记录')
     }
@@ -248,8 +221,7 @@ export function useHistory()
    * 格式化时间显示
    * @param timestamp 时间戳
    */
-  function formatTime(timestamp: number): string
-  {
+  function formatTime(timestamp: number): string {
     const date = new Date(timestamp)
     const now = new Date()
     const diff = now.getTime() - date.getTime()
@@ -257,28 +229,17 @@ export function useHistory()
     const hours = Math.floor(diff / (1000 * 60 * 60))
     const days = Math.floor(diff / (1000 * 60 * 60 * 24))
     
-    if (minutes < 1)
-    {
+    if (minutes < 1) {
       return '刚刚'
-    }
-    else if (minutes < 60)
-    {
+    } else if (minutes < 60) {
       return `${minutes} 分钟前`
-    }
-    else if (hours < 24)
-    {
+    } else if (hours < 24) {
       return `${hours} 小时前`
-    }
-    else if (days === 1)
-    {
+    } else if (days === 1) {
       return '昨天 ' + date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
-    }
-    else if (days < 7)
-    {
+    } else if (days < 7) {
       return `${days} 天前`
-    }
-    else
-    {
+    } else {
       return date.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' })
     }
   }
@@ -287,18 +248,12 @@ export function useHistory()
    * 格式化文件大小
    * @param bytes 字节数
    */
-  function formatFileSize(bytes: number): string
-  {
-    if (bytes < 1024)
-    {
+  function formatFileSize(bytes: number): string {
+    if (bytes < 1024) {
       return `${bytes} B`
-    }
-    else if (bytes < 1024 * 1024)
-    {
+    } else if (bytes < 1024 * 1024) {
       return `${(bytes / 1024).toFixed(1)} KB`
-    }
-    else
-    {
+    } else {
       return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
     }
   }
@@ -307,10 +262,8 @@ export function useHistory()
    * 获取文件格式图标
    * @param format 文件格式
    */
-  function getFormatIcon(format: string): string
-  {
-    switch (format)
-    {
+  function getFormatIcon(format: string): string {
+    switch (format) {
       case 'txt':
         return '📄'
       case 'docx':

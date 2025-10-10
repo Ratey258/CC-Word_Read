@@ -15,8 +15,7 @@ export type RibbonTab = 'home' | 'insert' | 'design' | 'layout' | 'view'
  */
 export type DialogType = 'import' | 'jumpTo' | 'settings' | 'about' | null
 
-export const useUIStore = defineStore('ui', () =>
-{
+export const useUIStore = defineStore('ui', () => {
   // ===== State =====
   
   /** 当前激活的 Ribbon 标签页 */
@@ -68,13 +67,11 @@ export const useUIStore = defineStore('ui', () =>
    * 切换 Ribbon 标签页
    * @param tab 标签页名称
    */
-  function setActiveRibbonTab(tab: RibbonTab): void
-  {
+  function setActiveRibbonTab(tab: RibbonTab): void {
     activeRibbonTab.value = tab
     
     // 如果 Ribbon 折叠了，展开它
-    if (isRibbonCollapsed.value)
-    {
+    if (isRibbonCollapsed.value) {
       isRibbonCollapsed.value = false
     }
   }
@@ -82,8 +79,7 @@ export const useUIStore = defineStore('ui', () =>
   /**
    * 切换 Ribbon 折叠状态
    */
-  function toggleRibbonCollapse(): void
-  {
+  function toggleRibbonCollapse(): void {
     isRibbonCollapsed.value = !isRibbonCollapsed.value
   }
   
@@ -91,24 +87,21 @@ export const useUIStore = defineStore('ui', () =>
    * 打开对话框
    * @param type 对话框类型
    */
-  function openDialog(type: Exclude<DialogType, null>): void
-  {
+  function openDialog(type: Exclude<DialogType, null>): void {
     activeDialog.value = type
   }
   
   /**
    * 关闭对话框
    */
-  function closeDialog(): void
-  {
+  function closeDialog(): void {
     activeDialog.value = null
   }
   
   /**
    * 切换状态栏可见性
    */
-  function toggleStatusBar(): void
-  {
+  function toggleStatusBar(): void {
     isStatusBarVisible.value = !isStatusBarVisible.value
   }
   
@@ -116,8 +109,7 @@ export const useUIStore = defineStore('ui', () =>
    * 打开侧边栏
    * @param type 侧边栏类型
    */
-  function openSidebar(type: 'bookmarks' | 'history'): void
-  {
+  function openSidebar(type: 'bookmarks' | 'history'): void {
     isSidebarVisible.value = true
     sidebarType.value = type
   }
@@ -125,8 +117,7 @@ export const useUIStore = defineStore('ui', () =>
   /**
    * 关闭侧边栏
    */
-  function closeSidebar(): void
-  {
+  function closeSidebar(): void {
     isSidebarVisible.value = false
     sidebarType.value = null
   }
@@ -135,14 +126,10 @@ export const useUIStore = defineStore('ui', () =>
    * 切换侧边栏
    * @param type 侧边栏类型
    */
-  function toggleSidebar(type: 'bookmarks' | 'history'): void
-  {
-    if (isSidebarVisible.value && sidebarType.value === type)
-    {
+  function toggleSidebar(type: 'bookmarks' | 'history'): void {
+    if (isSidebarVisible.value && sidebarType.value === type) {
       closeSidebar()
-    }
-    else
-    {
+    } else {
       openSidebar(type)
     }
   }
@@ -151,8 +138,7 @@ export const useUIStore = defineStore('ui', () =>
    * 显示加载状态
    * @param text 提示文本
    */
-  function showLoading(text = '加载中...'): void
-  {
+  function showLoading(text = '加载中...'): void {
     isLoading.value = true
     loadingText.value = text
   }
@@ -160,8 +146,7 @@ export const useUIStore = defineStore('ui', () =>
   /**
    * 隐藏加载状态
    */
-  function hideLoading(): void
-  {
+  function hideLoading(): void {
     isLoading.value = false
     loadingText.value = ''
   }
@@ -176,8 +161,7 @@ export const useUIStore = defineStore('ui', () =>
     type: 'success' | 'error' | 'warning' | 'info',
     message: string,
     duration = 3000
-  ): string
-  {
+  ): string {
     const id = `notification-${Date.now()}-${Math.random()}`
     
     notifications.value.push({
@@ -188,10 +172,8 @@ export const useUIStore = defineStore('ui', () =>
     })
     
     // 自动移除
-    if (duration > 0)
-    {
-      setTimeout(() =>
-      {
+    if (duration > 0) {
+      setTimeout(() => {
         removeNotification(id)
       }, duration)
     }
@@ -203,11 +185,9 @@ export const useUIStore = defineStore('ui', () =>
    * 移除通知
    * @param id 通知ID
    */
-  function removeNotification(id: string): void
-  {
+  function removeNotification(id: string): void {
     const index = notifications.value.findIndex(n => n.id === id)
-    if (index !== -1)
-    {
+    if (index !== -1) {
       notifications.value.splice(index, 1)
     }
   }
@@ -215,8 +195,7 @@ export const useUIStore = defineStore('ui', () =>
   /**
    * 清空所有通知
    */
-  function clearNotifications(): void
-  {
+  function clearNotifications(): void {
     notifications.value = []
   }
   
@@ -224,8 +203,7 @@ export const useUIStore = defineStore('ui', () =>
    * 显示成功消息
    * @param message 消息内容
    */
-  function showSuccess(message: string): void
-  {
+  function showSuccess(message: string): void {
     showNotification('success', message)
   }
   
@@ -233,8 +211,7 @@ export const useUIStore = defineStore('ui', () =>
    * 显示错误消息
    * @param message 消息内容
    */
-  function showError(message: string): void
-  {
+  function showError(message: string): void {
     showNotification('error', message, 5000)
   }
   
@@ -242,8 +219,7 @@ export const useUIStore = defineStore('ui', () =>
    * 显示警告消息
    * @param message 消息内容
    */
-  function showWarning(message: string): void
-  {
+  function showWarning(message: string): void {
     showNotification('warning', message)
   }
   
@@ -251,24 +227,21 @@ export const useUIStore = defineStore('ui', () =>
    * 显示信息消息
    * @param message 消息内容
    */
-  function showInfo(message: string): void
-  {
+  function showInfo(message: string): void {
     showNotification('info', message)
   }
   
   /**
    * 隐藏欢迎页
    */
-  function hideWelcome(): void
-  {
+  function hideWelcome(): void {
     showWelcome.value = false
   }
   
   /**
    * 重置 UI 状态
    */
-  function reset(): void
-  {
+  function reset(): void {
     activeRibbonTab.value = 'home'
     isRibbonCollapsed.value = false
     activeDialog.value = null

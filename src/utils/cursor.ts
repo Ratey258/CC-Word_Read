@@ -16,11 +16,9 @@ export interface CursorPosition
 /**
  * 获取当前光标位置
  */
-export function getCursorPosition(): CursorPosition | null
-{
+export function getCursorPosition(): CursorPosition | null {
   const selection = window.getSelection()
-  if (!selection || selection.rangeCount === 0)
-  {
+  if (!selection || selection.rangeCount === 0) {
     return null
   }
 
@@ -36,23 +34,19 @@ export function getCursorPosition(): CursorPosition | null
  * @param node 目标节点
  * @param offset 偏移量
  */
-export function setCursorPosition(node: Node, offset: number): void
-{
+export function setCursorPosition(node: Node, offset: number): void {
   const selection = window.getSelection()
   if (!selection) return
 
   const range = document.createRange()
   
-  try
-  {
+  try {
     range.setStart(node, offset)
     range.setEnd(node, offset)
     
     selection.removeAllRanges()
     selection.addRange(range)
-  }
-  catch (error)
-  {
+  } catch (error) {
     console.error('设置光标位置失败:', error)
   }
 }
@@ -61,14 +55,12 @@ export function setCursorPosition(node: Node, offset: number): void
  * 保存光标位置
  * @param container 容器元素
  */
-export function saveCursorPosition(container: HTMLElement): CursorPosition | null
-{
+export function saveCursorPosition(container: HTMLElement): CursorPosition | null {
   const position = getCursorPosition()
   if (!position) return null
 
   // 确保光标在指定容器内
-  if (!container.contains(position.node))
-  {
+  if (!container.contains(position.node)) {
     return null
   }
 
@@ -79,8 +71,7 @@ export function saveCursorPosition(container: HTMLElement): CursorPosition | nul
  * 恢复光标位置
  * @param position 光标位置信息
  */
-export function restoreCursorPosition(position: CursorPosition | null): void
-{
+export function restoreCursorPosition(position: CursorPosition | null): void {
   if (!position) return
   setCursorPosition(position.node, position.offset)
 }
@@ -89,8 +80,7 @@ export function restoreCursorPosition(position: CursorPosition | null): void
  * 移动光标到元素开始
  * @param element 目标元素
  */
-export function moveCursorToStart(element: HTMLElement): void
-{
+export function moveCursorToStart(element: HTMLElement): void {
   const selection = window.getSelection()
   if (!selection) return
 
@@ -106,8 +96,7 @@ export function moveCursorToStart(element: HTMLElement): void
  * 移动光标到元素末尾
  * @param element 目标元素
  */
-export function moveCursorToEnd(element: HTMLElement): void
-{
+export function moveCursorToEnd(element: HTMLElement): void {
   const selection = window.getSelection()
   if (!selection) return
 
@@ -123,8 +112,7 @@ export function moveCursorToEnd(element: HTMLElement): void
  * 获取光标前的文本内容
  * @param container 容器元素
  */
-export function getTextBeforeCursor(container: HTMLElement): string
-{
+export function getTextBeforeCursor(container: HTMLElement): string {
   const selection = window.getSelection()
   if (!selection || selection.rangeCount === 0) return ''
 
@@ -140,8 +128,7 @@ export function getTextBeforeCursor(container: HTMLElement): string
  * 获取光标后的文本内容
  * @param container 容器元素
  */
-export function getTextAfterCursor(container: HTMLElement): string
-{
+export function getTextAfterCursor(container: HTMLElement): string {
   const selection = window.getSelection()
   if (!selection || selection.rangeCount === 0) return ''
 
@@ -157,8 +144,7 @@ export function getTextAfterCursor(container: HTMLElement): string
  * 检查光标是否在元素末尾
  * @param container 容器元素
  */
-export function isCursorAtEnd(container: HTMLElement): boolean
-{
+export function isCursorAtEnd(container: HTMLElement): boolean {
   const afterText = getTextAfterCursor(container)
   return afterText.length === 0
 }
@@ -167,8 +153,7 @@ export function isCursorAtEnd(container: HTMLElement): boolean
  * 检查光标是否在元素开始
  * @param container 容器元素
  */
-export function isCursorAtStart(container: HTMLElement): boolean
-{
+export function isCursorAtStart(container: HTMLElement): boolean {
   const beforeText = getTextBeforeCursor(container)
   return beforeText.length === 0
 }

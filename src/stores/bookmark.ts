@@ -15,8 +15,7 @@ interface StoredBookmark extends Omit<Bookmark, 'createdAt' | 'updatedAt'> {
   updatedAt: number
 }
 
-export const useBookmarkStore = defineStore('bookmark', () =>
-{
+export const useBookmarkStore = defineStore('bookmark', () => {
   // ===== State =====
   
   /** 所有书签 */
@@ -36,8 +35,7 @@ export const useBookmarkStore = defineStore('bookmark', () =>
    * 添加书签
    * @param data 书签数据
    */
-  function addBookmark(data: Omit<Bookmark, 'id' | 'createdAt' | 'updatedAt'>): void
-  {
+  function addBookmark(data: Omit<Bookmark, 'id' | 'createdAt' | 'updatedAt'>): void {
     const bookmark: Bookmark = {
       id: generateBookmarkId(),
       ...data,
@@ -53,11 +51,9 @@ export const useBookmarkStore = defineStore('bookmark', () =>
    * 删除书签
    * @param bookmarkId 书签ID
    */
-  function removeBookmark(bookmarkId: string): void
-  {
+  function removeBookmark(bookmarkId: string): void {
     const index = bookmarks.value.findIndex((b: Bookmark) => b.id === bookmarkId)
-    if (index !== -1)
-    {
+    if (index !== -1) {
       bookmarks.value.splice(index, 1)
       saveToStorage()
     }
@@ -68,11 +64,9 @@ export const useBookmarkStore = defineStore('bookmark', () =>
    * @param bookmarkId 书签ID
    * @param updates 更新数据
    */
-  function updateBookmark(bookmarkId: string, updates: Partial<Omit<Bookmark, 'id' | 'createdAt'>>): void
-  {
+  function updateBookmark(bookmarkId: string, updates: Partial<Omit<Bookmark, 'id' | 'createdAt'>>): void {
     const bookmark = bookmarks.value.find((b: Bookmark) => b.id === bookmarkId)
-    if (bookmark)
-    {
+    if (bookmark) {
       Object.assign(bookmark, updates, { updatedAt: new Date() })
       saveToStorage()
     }
@@ -83,8 +77,7 @@ export const useBookmarkStore = defineStore('bookmark', () =>
    * @param novelId 小说ID
    * @returns 书签数组
    */
-  function getBookmarksByNovel(novelId: string): Bookmark[]
-  {
+  function getBookmarksByNovel(novelId: string): Bookmark[] {
     return bookmarks.value
       .filter((b: Bookmark) => b.novelId === novelId)
       .sort((a: Bookmark, b: Bookmark) => b.createdAt.getTime() - a.createdAt.getTime())
@@ -94,8 +87,7 @@ export const useBookmarkStore = defineStore('bookmark', () =>
    * 删除指定小说的所有书签
    * @param novelId 小说ID
    */
-  function removeBookmarksByNovel(novelId: string): void
-  {
+  function removeBookmarksByNovel(novelId: string): void {
     bookmarks.value = bookmarks.value.filter((b: Bookmark) => b.novelId !== novelId)
     saveToStorage()
   }
@@ -103,8 +95,7 @@ export const useBookmarkStore = defineStore('bookmark', () =>
   /**
    * 清空所有书签
    */
-  function clearAllBookmarks(): void
-  {
+  function clearAllBookmarks(): void {
     bookmarks.value = []
     saveToStorage()
   }
@@ -113,27 +104,22 @@ export const useBookmarkStore = defineStore('bookmark', () =>
    * 生成书签ID
    * @returns 书签ID
    */
-  function generateBookmarkId(): string
-  {
+  function generateBookmarkId(): string {
     return `bookmark_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
   }
 
   /**
    * 保存到本地存储
    */
-  function saveToStorage(): void
-  {
-    try
-    {
+  function saveToStorage(): void {
+    try {
       const data = bookmarks.value.map((b: Bookmark) => ({
         ...b,
         createdAt: b.createdAt.getTime(),
         updatedAt: b.updatedAt.getTime()
       }))
       localStorage.setItem(STORAGE_KEYS.BOOKMARKS, JSON.stringify(data))
-    }
-    catch (error)
-    {
+    } catch (error) {
       console.error('Failed to save bookmarks:', error)
     }
   }
@@ -141,13 +127,10 @@ export const useBookmarkStore = defineStore('bookmark', () =>
   /**
    * 从本地存储加载
    */
-  function loadFromStorage(): void
-  {
-    try
-    {
+  function loadFromStorage(): void {
+    try {
       const saved = localStorage.getItem(STORAGE_KEYS.BOOKMARKS)
-      if (saved)
-      {
+      if (saved) {
         const data = JSON.parse(saved) as StoredBookmark[]
         bookmarks.value = data.map((b: StoredBookmark) => ({
           ...b,
@@ -155,9 +138,7 @@ export const useBookmarkStore = defineStore('bookmark', () =>
           updatedAt: new Date(b.updatedAt)
         }))
       }
-    }
-    catch (error)
-    {
+    } catch (error) {
       console.error('Failed to load bookmarks:', error)
     }
   }
@@ -165,8 +146,7 @@ export const useBookmarkStore = defineStore('bookmark', () =>
   /**
    * 重置状态
    */
-  function reset(): void
-  {
+  function reset(): void {
     bookmarks.value = []
   }
 

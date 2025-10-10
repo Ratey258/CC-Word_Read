@@ -33,8 +33,7 @@ export interface FileDialogOptions
   multiple?: boolean
 }
 
-export function useFileSystem()
-{
+export function useFileSystem() {
   // 加载状态
   const isLoading = ref(false)
   const error = ref<string | null>(null)
@@ -42,15 +41,12 @@ export function useFileSystem()
   /**
    * 打开文件选择对话框
    */
-  const openFileDialog = async (options: FileDialogOptions = {}): Promise<FileResult | null> =>
-  {
+  const openFileDialog = async (options: FileDialogOptions = {}): Promise<FileResult | null> => {
     isLoading.value = true
     error.value = null
 
-    try
-    {
-      if (isTauri())
-      {
+    try {
+      if (isTauri()) {
         // Tauri 环境：使用 Tauri 对话框
         const { open } = await import('@tauri-apps/plugin-dialog')
         const { readTextFile } = await import('@tauri-apps/plugin-fs')
@@ -66,8 +62,7 @@ export function useFileSystem()
           multiple: false
         })
 
-        if (!selected || Array.isArray(selected))
-        {
+        if (!selected || Array.isArray(selected)) {
           return null
         }
 
@@ -81,18 +76,14 @@ export function useFileSystem()
           content,
           size: content.length
         }
-      }
-      else
-      {
+      } else {
         // 浏览器环境：使用 File API
-        return new Promise((resolve) =>
-        {
+        return new Promise((resolve) => {
           const input = document.createElement('input')
           input.type = 'file'
           
           // 设置文件类型过滤
-          if (options.filters && options.filters.length > 0)
-          {
+          if (options.filters && options.filters.length > 0) {
             const extensions = options.filters
               .flatMap(f => f.extensions)
               .filter(ext => ext !== '*')
@@ -100,13 +91,11 @@ export function useFileSystem()
             input.accept = extensions.join(',')
           }
 
-          input.onchange = async (e) =>
-          {
+          input.onchange = async (e) => {
             const target = e.target as HTMLInputElement
             const file = target.files?.[0]
             
-            if (!file)
-            {
+            if (!file) {
               resolve(null)
               return
             }
@@ -116,8 +105,7 @@ export function useFileSystem()
             let content = ''
             
             // 只为纯文本格式读取内容
-            if (ext === 'txt' || ext === 'md')
-            {
+            if (ext === 'txt' || ext === 'md') {
               content = await file.text()
             }
 
@@ -133,15 +121,11 @@ export function useFileSystem()
           input.click()
         })
       }
-    }
-    catch (err)
-    {
+    } catch (err) {
       error.value = err instanceof Error ? err.message : '文件打开失败'
       console.error('Failed to open file:', err)
       return null
-    }
-    finally
-    {
+    } finally {
       isLoading.value = false
     }
   }
@@ -152,15 +136,12 @@ export function useFileSystem()
   const saveFileDialog = async (
     content: string,
     options: FileDialogOptions & { defaultFileName?: string } = {}
-  ): Promise<boolean> =>
-  {
+  ): Promise<boolean> => {
     isLoading.value = true
     error.value = null
 
-    try
-    {
-      if (isTauri())
-      {
+    try {
+      if (isTauri()) {
         // Tauri 环境：使用 Tauri 保存对话框
         const { save } = await import('@tauri-apps/plugin-dialog')
         const { writeTextFile } = await import('@tauri-apps/plugin-fs')
@@ -174,16 +155,13 @@ export function useFileSystem()
           defaultPath: options.defaultFileName
         })
 
-        if (!filePath)
-        {
+        if (!filePath) {
           return false
         }
 
         await writeTextFile(filePath, content)
         return true
-      }
-      else
-      {
+      } else {
         // 浏览器环境：使用下载方式保存
         const blob = new Blob([content], { type: 'text/plain;charset=utf-8' })
         const url = URL.createObjectURL(blob)
@@ -194,15 +172,11 @@ export function useFileSystem()
         URL.revokeObjectURL(url)
         return true
       }
-    }
-    catch (err)
-    {
+    } catch (err) {
       error.value = err instanceof Error ? err.message : '文件保存失败'
       console.error('Failed to save file:', err)
       return false
-    }
-    finally
-    {
+    } finally {
       isLoading.value = false
     }
   }
@@ -210,10 +184,8 @@ export function useFileSystem()
   /**
    * 读取文件（通过路径）
    */
-  const readFile = async (path: string): Promise<string | null> =>
-  {
-    if (!isTauri())
-    {
+  const readFile = async (path: string): Promise<string | null> => {
+    if (!isTauri()) {
       error.value = '浏览器环境不支持直接读取文件路径'
       return null
     }
@@ -221,20 +193,15 @@ export function useFileSystem()
     isLoading.value = true
     error.value = null
 
-    try
-    {
+    try {
       const { readTextFile } = await import('@tauri-apps/plugin-fs')
       const content = await readTextFile(path)
       return content
-    }
-    catch (err)
-    {
+    } catch (err) {
       error.value = err instanceof Error ? err.message : '文件读取失败'
       console.error('Failed to read file:', err)
       return null
-    }
-    finally
-    {
+    } finally {
       isLoading.value = false
     }
   }
@@ -242,10 +209,8 @@ export function useFileSystem()
   /**
    * 写入文件（通过路径）
    */
-  const writeFile = async (path: string, content: string): Promise<boolean> =>
-  {
-    if (!isTauri())
-    {
+  const writeFile = async (path: string, content: string): Promise<boolean> => {
+    if (!isTauri()) {
       error.value = '浏览器环境不支持直接写入文件路径'
       return false
     }
@@ -253,20 +218,15 @@ export function useFileSystem()
     isLoading.value = true
     error.value = null
 
-    try
-    {
+    try {
       const { writeTextFile } = await import('@tauri-apps/plugin-fs')
       await writeTextFile(path, content)
       return true
-    }
-    catch (err)
-    {
+    } catch (err) {
       error.value = err instanceof Error ? err.message : '文件写入失败'
       console.error('Failed to write file:', err)
       return false
-    }
-    finally
-    {
+    } finally {
       isLoading.value = false
     }
   }
@@ -274,20 +234,15 @@ export function useFileSystem()
   /**
    * 检查文件是否存在
    */
-  const fileExists = async (path: string): Promise<boolean> =>
-  {
-    if (!isTauri())
-    {
+  const fileExists = async (path: string): Promise<boolean> => {
+    if (!isTauri()) {
       return false
     }
 
-    try
-    {
+    try {
       const { exists } = await import('@tauri-apps/plugin-fs')
       return await exists(path)
-    }
-    catch (err)
-    {
+    } catch (err) {
       console.error('Failed to check file existence:', err)
       return false
     }
@@ -296,20 +251,15 @@ export function useFileSystem()
   /**
    * 获取应用数据目录
    */
-  const getAppDataDir = async (): Promise<string | null> =>
-  {
-    if (!isTauri())
-    {
+  const getAppDataDir = async (): Promise<string | null> => {
+    if (!isTauri()) {
       return null
     }
 
-    try
-    {
+    try {
       const { appDataDir } = await import('@tauri-apps/api/path')
       return await appDataDir()
-    }
-    catch (err)
-    {
+    } catch (err) {
       console.error('Failed to get app data directory:', err)
       return null
     }
@@ -318,20 +268,15 @@ export function useFileSystem()
   /**
    * 获取应用配置目录
    */
-  const getAppConfigDir = async (): Promise<string | null> =>
-  {
-    if (!isTauri())
-    {
+  const getAppConfigDir = async (): Promise<string | null> => {
+    if (!isTauri()) {
       return null
     }
 
-    try
-    {
+    try {
       const { appConfigDir } = await import('@tauri-apps/api/path')
       return await appConfigDir()
-    }
-    catch (err)
-    {
+    } catch (err) {
       console.error('Failed to get app config directory:', err)
       return null
     }

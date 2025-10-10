@@ -1,31 +1,43 @@
 /**
  * 窗口控制 Composable
  * 提供窗口最小化、最大化、关闭等功能
- * 支持 Tauri 和浏览器环境
+ * 支持 Tauri 2.x 和浏览器环境
+ * 
+ * @description
+ * 重新设计的窗口控制系统，使用Tauri 2.x最新API
+ * 参考官方文档：https://v2.tauri.app/reference/javascript/api/namespacewindow/
  */
 
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow'
+import type { UnlistenFn } from '@tauri-apps/api/event'
 
 // 检测是否在 Tauri 环境中
-const isTauri = () => '__TAURI__' in window
+const isTauri = (): boolean => {
+  return typeof window !== 'undefined' && '__TAURI__' in window
+}
 
-// 窗口状态
-interface WindowState
-{
+// 窗口状态接口
+interface WindowState {
   isMaximized: boolean
   isFullscreen: boolean
   isFocused: boolean
+  isMinimized: boolean
+  isVisible: boolean
 }
 
-export function useWindowControls()
-{
+export function useWindowControls() {
   // 窗口状态
   const windowState = ref<WindowState>({
     isMaximized: false,
     isFullscreen: false,
-    isFocused: true
+    isFocused: true,
+    isMinimized: false,
+    isVisible: true
   })
+
+  // 事件监听器清理函数
+  const unlistenFunctions = ref<UnlistenFn[]>([])
 
   // 是否支持窗口控制
   const supportsWindowControls = computed(() => isTauri())
@@ -33,275 +45,308 @@ export function useWindowControls()
   /**
    * 最小化窗口
    */
-  const minimize = async () =>
-  {
-    console.log('🔍 [Minimize] 开始执行最小化操作')
-    console.log('🔍 [Minimize] isTauri():', isTauri())
-    console.log('🔍 [Minimize] window.__TAURI__:', window.__TAURI__)
-    
-    if (isTauri())
-    {
-      try
-      {
-        const currentWindow = getCurrentWebviewWindow()
-        console.log('🔍 [Minimize] currentWindow 对象:', currentWindow)
-        console.log('🔍 [Minimize] currentWindow.label:', currentWindow.label)
-        console.log('🔍 [Minimize] 调用 minimize() 方法...')
-        
-        const result = await currentWindow.minimize()
-        console.log('✅ [Minimize] 最小化成功, 结果:', result)
-      }
-      catch (error)
-      {
-        console.error('❌ [Minimize] 最小化失败:', error)
-        console.error('❌ [Minimize] 错误详情:', JSON.stringify(error, null, 2))
-      }
+  const minimize = async (): Promise<void> => {
+    if (!isTauri()) {
+      console.warn('⚠️ 窗口最小化功能仅在 Tauri 桌面应用中可用')
+      return
     }
-    else
-    {
-      // 浏览器环境：尝试使用 Window Management API（实验性功能）
-      console.warn('⚠️ 窗口最小化功能仅在 Tauri 桌面应用中可用。当前为浏览器预览模式，窗口控制功能不可用。')
-      console.warn('💡 提示：请在 Tauri 应用窗口（非浏览器 DevTools）中测试此功能。')
+
+    try {
+      const window = getCurrentWebviewWindow()
+      await window.minimize()
+      console.log('✅ [Window] 最小化成功')
+    } catch (error) {
+      console.error('❌ [Window] 最小化失败:', error)
     }
   }
 
   /**
    * 最大化/还原窗口
    */
-  const toggleMaximize = async () =>
-  {
-    console.log('🔍 [Maximize] 开始执行最大化/还原操作')
-    console.log('🔍 [Maximize] isTauri():', isTauri())
-    
-    if (isTauri())
-    {
-      try
-      {
-        const currentWindow = getCurrentWebviewWindow()
-        console.log('🔍 [Maximize] currentWindow 对象:', currentWindow)
-        console.log('🔍 [Maximize] currentWindow.label:', currentWindow.label)
-        console.log('🔍 [Maximize] 调用 toggleMaximize() 方法...')
-        
-        await currentWindow.toggleMaximize()
-        windowState.value.isMaximized = await currentWindow.isMaximized()
-        console.log('✅ [Maximize] 最大化/还原成功, isMaximized:', windowState.value.isMaximized)
-      }
-      catch (error)
-      {
-        console.error('❌ [Maximize] 最大化/还原失败:', error)
-        console.error('❌ [Maximize] 错误详情:', JSON.stringify(error, null, 2))
-      }
-    }
-    else
-    {
+  const toggleMaximize = async (): Promise<void> => {
+    if (!isTauri()) {
       // 浏览器环境：使用全屏 API
-      if (!document.fullscreenElement)
-      {
-        document.documentElement.requestFullscreen().catch(err =>
-        {
-          console.error('Failed to enter fullscreen:', err)
-        })
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen().catch(console.error)
         windowState.value.isMaximized = true
-      }
-      else
-      {
-        document.exitFullscreen()
+      } else {
+        await document.exitFullscreen()
         windowState.value.isMaximized = false
       }
+      return
+    }
+
+    try {
+      const window = getCurrentWebviewWindow()
+      await window.toggleMaximize()
+      // 立即更新状态
+      windowState.value.isMaximized = await window.isMaximized()
+      console.log('✅ [Window] 最大化/还原成功, isMaximized:', windowState.value.isMaximized)
+    } catch (error) {
+      console.error('❌ [Window] 最大化/还原失败:', error)
     }
   }
 
   /**
    * 关闭窗口
    */
-  const close = async () =>
-  {
-    console.log('🔍 [Close] 开始执行关闭操作')
-    console.log('🔍 [Close] isTauri():', isTauri())
-    
-    if (isTauri())
-    {
-      try
-      {
-        const currentWindow = getCurrentWebviewWindow()
-        console.log('🔍 [Close] currentWindow 对象:', currentWindow)
-        console.log('🔍 [Close] currentWindow.label:', currentWindow.label)
-        
-        // 先隐藏窗口，避免白屏（关键！）
-        console.log('🔍 [Close] 调用 hide() 隐藏窗口...')
-        await currentWindow.hide()
-        console.log('✅ [Close] 窗口已隐藏')
-        
-        // 立即关闭窗口
-        console.log('🔍 [Close] 调用 close() 方法...')
-        await currentWindow.close()
-        console.log('✅ [Close] 关闭成功')
-      }
-      catch (error)
-      {
-        console.error('❌ [Close] 关闭失败:', error)
-        console.error('❌ [Close] 错误详情:', JSON.stringify(error, null, 2))
-      }
-    }
-    else
-    {
-      // 浏览器环境：关闭当前标签页/窗口
+  const close = async (): Promise<void> => {
+    if (!isTauri()) {
       window.close()
+      return
+    }
+
+    try {
+      const window = getCurrentWebviewWindow()
+      await window.close()
+      console.log('✅ [Window] 关闭成功')
+    } catch (error) {
+      console.error('❌ [Window] 关闭失败:', error)
     }
   }
 
   /**
    * 切换全屏
    */
-  const toggleFullscreen = async () =>
-  {
-    if (isTauri())
-    {
-      try
-      {
-        const currentWindow = getCurrentWebviewWindow()
-        const isFullscreen = await currentWindow.isFullscreen()
-        await currentWindow.setFullscreen(!isFullscreen)
-        windowState.value.isFullscreen = !isFullscreen
-      }
-      catch (error)
-      {
-        console.error('Failed to toggle fullscreen:', error)
-      }
-    }
-    else
-    {
+  const toggleFullscreen = async (): Promise<void> => {
+    if (!isTauri()) {
       // 浏览器环境：使用全屏 API
-      if (!document.fullscreenElement)
-      {
-        document.documentElement.requestFullscreen()
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen()
         windowState.value.isFullscreen = true
-      }
-      else
-      {
-        document.exitFullscreen()
+      } else {
+        await document.exitFullscreen()
         windowState.value.isFullscreen = false
       }
+      return
+    }
+
+    try {
+      const window = getCurrentWebviewWindow()
+      const isFullscreen = await window.isFullscreen()
+      await window.setFullscreen(!isFullscreen)
+      windowState.value.isFullscreen = !isFullscreen
+      console.log('✅ [Window] 全屏切换成功, isFullscreen:', windowState.value.isFullscreen)
+    } catch (error) {
+      console.error('❌ [Window] 全屏切换失败:', error)
     }
   }
 
   /**
    * 设置窗口标题
    */
-  const setTitle = async (title: string) =>
-  {
-    if (isTauri())
-    {
-      try
-      {
-        await getCurrentWebviewWindow().setTitle(title)
-      }
-      catch (error)
-      {
-        console.error('Failed to set window title:', error)
-      }
-    }
-    else
-    {
-      // 浏览器环境：设置页面标题
+  const setTitle = async (title: string): Promise<void> => {
+    if (!isTauri()) {
       document.title = title
+      return
+    }
+
+    try {
+      const window = getCurrentWebviewWindow()
+      await window.setTitle(title)
+      console.log('✅ [Window] 设置标题成功:', title)
+    } catch (error) {
+      console.error('❌ [Window] 设置标题失败:', error)
     }
   }
 
   /**
-   * 获取窗口状态
+   * 显示窗口
    */
-  const updateWindowState = async () =>
-  {
-    if (isTauri())
-    {
-      try
-      {
-        const currentWindow = getCurrentWebviewWindow()
-        windowState.value.isMaximized = await currentWindow.isMaximized()
-        windowState.value.isFullscreen = await currentWindow.isFullscreen()
-      }
-      catch (error)
-      {
-        console.error('Failed to update window state:', error)
-      }
+  const show = async (): Promise<void> => {
+    if (!isTauri()) return
+
+    try {
+      const window = getCurrentWebviewWindow()
+      await window.show()
+      windowState.value.isVisible = true
+      console.log('✅ [Window] 显示窗口成功')
+    } catch (error) {
+      console.error('❌ [Window] 显示窗口失败:', error)
     }
-    else
-    {
+  }
+
+  /**
+   * 隐藏窗口
+   */
+  const hide = async (): Promise<void> => {
+    if (!isTauri()) return
+
+    try {
+      const window = getCurrentWebviewWindow()
+      await window.hide()
+      windowState.value.isVisible = false
+      console.log('✅ [Window] 隐藏窗口成功')
+    } catch (error) {
+      console.error('❌ [Window] 隐藏窗口失败:', error)
+    }
+  }
+
+  /**
+   * 设置窗口是否可调整大小
+   */
+  const setResizable = async (resizable: boolean): Promise<void> => {
+    if (!isTauri()) return
+
+    try {
+      const window = getCurrentWebviewWindow()
+      await window.setResizable(resizable)
+      console.log('✅ [Window] 设置可调整大小成功:', resizable)
+    } catch (error) {
+      console.error('❌ [Window] 设置可调整大小失败:', error)
+    }
+  }
+
+  /**
+   * 更新窗口状态
+   */
+  const updateWindowState = async (): Promise<void> => {
+    if (!isTauri()) {
       // 浏览器环境：检查全屏状态
       windowState.value.isFullscreen = !!document.fullscreenElement
+      windowState.value.isMaximized = !!document.fullscreenElement
+      return
+    }
+
+    try {
+      const window = getCurrentWebviewWindow()
+      
+      // 批量获取窗口状态
+      const [isMaximized, isFullscreen, isFocused, isMinimized, isVisible] = await Promise.all([
+        window.isMaximized(),
+        window.isFullscreen(),
+        window.isFocused(),
+        window.isMinimized(),
+        window.isVisible()
+      ])
+
+      windowState.value = {
+        isMaximized,
+        isFullscreen,
+        isFocused,
+        isMinimized,
+        isVisible
+      }
+    } catch (error) {
+      console.error('❌ [Window] 更新窗口状态失败:', error)
     }
   }
 
   /**
    * 监听窗口事件
    */
-  const setupEventListeners = async () =>
-  {
-    if (isTauri())
-    {
-      try
-      {
-        const currentWindow = getCurrentWebviewWindow()
-        
-        // 监听窗口焦点变化
-        await currentWindow.listen('tauri://focus', () =>
-        {
-          windowState.value.isFocused = true
-        })
-
-        await currentWindow.listen('tauri://blur', () =>
-        {
-          windowState.value.isFocused = false
-        })
-
-        // 监听窗口大小变化
-        await currentWindow.listen('tauri://resize', async () =>
-        {
-          await updateWindowState()
-        })
-      }
-      catch (error)
-      {
-        console.error('Failed to setup window event listeners:', error)
-      }
-    }
-    else
-    {
-      // 浏览器环境：监听全屏变化
-      document.addEventListener('fullscreenchange', () =>
-      {
+  const setupEventListeners = async (): Promise<void> => {
+    if (!isTauri()) {
+      // 浏览器环境事件监听
+      const handleFullscreenChange = () => {
         windowState.value.isFullscreen = !!document.fullscreenElement
         windowState.value.isMaximized = !!document.fullscreenElement
-      })
+      }
 
-      // 监听窗口焦点
-      window.addEventListener('focus', () =>
-      {
+      const handleFocus = () => {
         windowState.value.isFocused = true
+      }
+
+      const handleBlur = () => {
+        windowState.value.isFocused = false
+      }
+
+      document.addEventListener('fullscreenchange', handleFullscreenChange)
+      window.addEventListener('focus', handleFocus)
+      window.addEventListener('blur', handleBlur)
+
+      // 清理函数
+      onUnmounted(() => {
+        document.removeEventListener('fullscreenchange', handleFullscreenChange)
+        window.removeEventListener('focus', handleFocus)
+        window.removeEventListener('blur', handleBlur)
+      })
+      return
+    }
+
+    try {
+      const window = getCurrentWebviewWindow()
+
+      // 监听窗口焦点事件
+      const unlistenFocus = await window.onFocusChanged(({ payload: focused }) => {
+        windowState.value.isFocused = focused
+        console.log('🔄 [Window] Focus changed:', focused)
       })
 
-      window.addEventListener('blur', () =>
-      {
-        windowState.value.isFocused = false
+      // 监听窗口大小调整事件
+      const unlistenResized = await window.onResized(() => {
+        updateWindowState()
+        console.log('🔄 [Window] Window resized')
       })
+
+      // 监听窗口移动事件
+      const unlistenMoved = await window.onMoved(() => {
+        console.log('🔄 [Window] Window moved')
+      })
+
+      // 监听窗口关闭请求事件（可用于阻止关闭）
+      const unlistenCloseRequested = await window.onCloseRequested(async (_event) => {
+        console.log('🔄 [Window] Close requested')
+        // 如果需要阻止关闭，可以使用: _event.preventDefault()
+      })
+
+      // 存储清理函数
+      unlistenFunctions.value.push(
+        unlistenFocus,
+        unlistenResized,
+        unlistenMoved,
+        unlistenCloseRequested
+      )
+
+      console.log('✅ [Window] 事件监听器设置成功')
+    } catch (error) {
+      console.error('❌ [Window] 设置事件监听器失败:', error)
     }
   }
 
+  /**
+   * 清理事件监听器
+   */
+  const cleanup = (): void => {
+    unlistenFunctions.value.forEach(unlisten => {
+      try {
+        unlisten()
+      } catch (error) {
+        console.error('❌ [Window] 清理事件监听器失败:', error)
+      }
+    })
+    unlistenFunctions.value = []
+  }
+
   // 组件挂载时初始化
-  onMounted(async () =>
-  {
+  onMounted(async () => {
+    console.log('🚀 [Window] 初始化窗口控制...')
+    console.log('   - isTauri:', isTauri())
+    console.log('   - window.__TAURI__:', typeof window !== 'undefined' ? !!window.__TAURI__ : false)
+    
     await updateWindowState()
     await setupEventListeners()
+    
+    console.log('✅ [Window] 窗口控制初始化完成')
+  })
+
+  // 组件卸载时清理
+  onUnmounted(() => {
+    cleanup()
+    console.log('✅ [Window] 窗口控制已清理')
   })
 
   return {
     // 状态
     windowState,
     supportsWindowControls,
+    
+    // 计算属性
     isMaximized: computed(() => windowState.value.isMaximized),
     isFullscreen: computed(() => windowState.value.isFullscreen),
     isFocused: computed(() => windowState.value.isFocused),
+    isMinimized: computed(() => windowState.value.isMinimized),
+    isVisible: computed(() => windowState.value.isVisible),
 
     // 方法
     minimize,
@@ -309,7 +354,12 @@ export function useWindowControls()
     close,
     toggleFullscreen,
     setTitle,
-    updateWindowState
+    show,
+    hide,
+    setResizable,
+    updateWindowState,
+    
+    // 工具方法
+    isTauri: () => isTauri()
   }
 }
-

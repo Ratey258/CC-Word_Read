@@ -1,7 +1,7 @@
 [package]
 name = "cc-word-read"
-version = "2.0.0"
-description = "像素级还原Word界面的小说阅读器"
+version = "0.3.0"
+description = "还原Word界面的小说阅读器"
 authors = ["CC-Word_Read Team"]
 license = "MIT"
 repository = "https://github.com/your-username/CC-Word_Read"
@@ -13,18 +13,23 @@ edition = "2021"
 name = "cc_word_read_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
+[[bin]]
+name = "cc-word-read"
+path = "src/main.rs"
+
 [build-dependencies]
-tauri-build = { version = "2.0", features = [] }
+tauri-build = { version = "2", features = [] }
 
 [dependencies]
-tauri = { version = "2.0", features = [] }
-tauri-plugin-dialog = "2.0"
-tauri-plugin-fs = "2.0"
+tauri = { version = "2", features = ["devtools"] }
+tauri-plugin-dialog = "2"
+tauri-plugin-fs = "2"
+tauri-plugin-shell = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
-tauri-plugin-updater = "2.0"
+tauri-plugin-updater = "2"
 
 # Windows specific optimizations
 [profile.release]

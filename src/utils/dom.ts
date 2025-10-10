@@ -5,19 +5,16 @@
 /**
  * 获取选区（Selection）
  */
-export function getSelection(): Selection | null
-{
+export function getSelection(): Selection | null {
   return window.getSelection()
 }
 
 /**
  * 获取光标所在的 Range
  */
-export function getRange(): Range | null
-{
+export function getRange(): Range | null {
   const selection = getSelection()
-  if (!selection || selection.rangeCount === 0)
-  {
+  if (!selection || selection.rangeCount === 0) {
     return null
   }
   return selection.getRangeAt(0)
@@ -27,8 +24,7 @@ export function getRange(): Range | null
  * 设置光标位置到指定节点的末尾
  * @param node 目标节点
  */
-export function setCursorToEnd(node: Node): void
-{
+export function setCursorToEnd(node: Node): void {
   const selection = getSelection()
   if (!selection) return
 
@@ -44,8 +40,7 @@ export function setCursorToEnd(node: Node): void
  * 在光标位置插入文本
  * @param text 要插入的文本
  */
-export function insertTextAtCursor(text: string): void
-{
+export function insertTextAtCursor(text: string): void {
   const selection = getSelection()
   if (!selection) return
 
@@ -66,8 +61,7 @@ export function insertTextAtCursor(text: string): void
  * 获取元素的文本内容（不包含 HTML 标签）
  * @param element HTML 元素
  */
-export function getTextContent(element: HTMLElement): string
-{
+export function getTextContent(element: HTMLElement): string {
   return element.textContent || ''
 }
 
@@ -75,8 +69,7 @@ export function getTextContent(element: HTMLElement): string
  * 清空元素内容
  * @param element HTML 元素
  */
-export function clearElement(element: HTMLElement): void
-{
+export function clearElement(element: HTMLElement): void {
   element.innerHTML = ''
 }
 
@@ -84,8 +77,7 @@ export function clearElement(element: HTMLElement): void
  * 滚动到元素底部
  * @param element 可滚动元素
  */
-export function scrollToBottom(element: HTMLElement): void
-{
+export function scrollToBottom(element: HTMLElement): void {
   element.scrollTop = element.scrollHeight
 }
 
@@ -93,8 +85,7 @@ export function scrollToBottom(element: HTMLElement): void
  * 检查元素是否在可视区域内
  * @param element HTML 元素
  */
-export function isInViewport(element: HTMLElement): boolean
-{
+export function isInViewport(element: HTMLElement): boolean {
   const rect = element.getBoundingClientRect()
   return (
     rect.top >= 0 &&
@@ -108,8 +99,7 @@ export function isInViewport(element: HTMLElement): boolean
  * 获取元素相对于文档的偏移位置
  * @param element HTML 元素
  */
-export function getOffset(element: HTMLElement): { top: number; left: number }
-{
+export function getOffset(element: HTMLElement): { top: number; left: number } {
   const rect = element.getBoundingClientRect()
   return {
     top: rect.top + window.pageYOffset,
@@ -125,8 +115,7 @@ export function getOffset(element: HTMLElement): { top: number; left: number }
 export function smoothScrollTo(
   element: HTMLElement,
   options?: ScrollIntoViewOptions
-): void
-{
+): void {
   element.scrollIntoView({
     behavior: 'smooth',
     block: 'start',
@@ -142,16 +131,13 @@ export function smoothScrollTo(
 export function debounce<T extends (...args: unknown[]) => unknown>(
   fn: T,
   delay: number
-): (...args: Parameters<T>) => void
-{
+): (...args: Parameters<T>) => void {
   let timer: ReturnType<typeof setTimeout> | null = null
   
-  return function (this: unknown, ...args: Parameters<T>)
-  {
+  return function (this: unknown, ...args: Parameters<T>) {
     if (timer) clearTimeout(timer)
     
-    timer = setTimeout(() =>
-    {
+    timer = setTimeout(() => {
       fn.apply(this, args)
       timer = null
     }, delay)
@@ -166,16 +152,13 @@ export function debounce<T extends (...args: unknown[]) => unknown>(
 export function throttle<T extends (...args: unknown[]) => unknown>(
   fn: T,
   delay: number
-): (...args: Parameters<T>) => void
-{
+): (...args: Parameters<T>) => void {
   let lastTime = 0
   
-  return function (this: unknown, ...args: Parameters<T>)
-  {
+  return function (this: unknown, ...args: Parameters<T>) {
     const now = Date.now()
     
-    if (now - lastTime >= delay)
-    {
+    if (now - lastTime >= delay) {
       fn.apply(this, args)
       lastTime = now
     }

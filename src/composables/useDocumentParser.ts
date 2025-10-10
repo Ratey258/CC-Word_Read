@@ -16,14 +16,12 @@ export interface ParsedDocument {
   hasFormatting: boolean
 }
 
-export function useDocumentParser() 
-{
+export function useDocumentParser() {
   /**
    * 解析 TXT 文件
    * @param content 文件内容
    */
-  function parseTxt(content: string): ParsedDocument 
-{
+  function parseTxt(content: string): ParsedDocument {
     // 清理内容
     const cleaned = content
       .replace(/\r\n/g, '\n')
@@ -33,10 +31,8 @@ export function useDocumentParser()
     // 转换为简单的 HTML
     const html = cleaned
       .split('\n')
-      .map(line => 
-{
-        if (line.trim() === '') 
-{
+      .map(line => {
+        if (line.trim() === '') {
           return '<p><br></p>'
         }
         return `<p>${escapeHtml(line)}</p>`
@@ -55,10 +51,8 @@ export function useDocumentParser()
    * 解析 Word 文档（.docx）
    * @param arrayBuffer 文件二进制数据
    */
-  async function parseDocx(arrayBuffer: ArrayBuffer): Promise<ParsedDocument> 
-{
-    try 
-{
+  async function parseDocx(arrayBuffer: ArrayBuffer): Promise<ParsedDocument> {
+    try {
       // 使用 mammoth 解析 Word 文档
       const result = await mammoth.convertToHtml({ arrayBuffer })
       
@@ -87,9 +81,7 @@ export function useDocumentParser()
         format: 'docx',
         hasFormatting
       }
-    }
- catch (error) 
-{
+    } catch (error) {
       console.error('解析 Word 文档失败:', error)
       throw new Error('Word 文档解析失败，请确保文件格式正确')
     }
@@ -99,8 +91,7 @@ export function useDocumentParser()
    * 解析 Markdown 文件
    * @param content 文件内容
    */
-  function parseMarkdown(content: string): ParsedDocument 
-{
+  function parseMarkdown(content: string): ParsedDocument {
     // 清理内容
     const cleaned = content
       .replace(/\r\n/g, '\n')
@@ -125,14 +116,11 @@ export function useDocumentParser()
     // 段落
     html = html
       .split('\n\n')
-      .map(para => 
-{
-        if (para.trim().startsWith('<h')) 
-{
+      .map(para => {
+        if (para.trim().startsWith('<h')) {
           return para
         }
-        if (para.trim() === '') 
-{
+        if (para.trim() === '') {
           return '<p><br></p>'
         }
         return `<p>${para.replace(/\n/g, '<br>')}</p>`
@@ -155,44 +143,33 @@ export function useDocumentParser()
   async function parseDocument(
     file: File | string,
     fileName: string
-  ): Promise<ParsedDocument> 
-{
+  ): Promise<ParsedDocument> {
     const ext = fileName.split('.').pop()?.toLowerCase()
 
-    switch (ext) 
-{
+    switch (ext) {
       case 'txt':
         // TXT 文件
-        if (typeof file === 'string') 
-{
+        if (typeof file === 'string') {
           return parseTxt(file)
-        }
- else 
-{
+        } else {
           const content = await file.text()
           return parseTxt(content)
         }
 
       case 'docx':
         // Word 文档
-        if (typeof file === 'string') 
-{
+        if (typeof file === 'string') {
           throw new Error('Word 文档不支持字符串内容，请使用 File 对象')
-        }
- else 
-{
+        } else {
           const arrayBuffer = await file.arrayBuffer()
           return await parseDocx(arrayBuffer)
         }
 
       case 'md':
         // Markdown 文件
-        if (typeof file === 'string') 
-{
+        if (typeof file === 'string') {
           return parseMarkdown(file)
-        }
- else 
-{
+        } else {
           const content = await file.text()
           return parseMarkdown(content)
         }
@@ -208,8 +185,7 @@ export function useDocumentParser()
   /**
    * HTML 转义
    */
-  function escapeHtml(text: string): string 
-{
+  function escapeHtml(text: string): string {
     const div = document.createElement('div')
     div.textContent = text
     return div.innerHTML
