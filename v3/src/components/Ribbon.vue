@@ -253,6 +253,65 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
       >
         📖导入
       </button>
+
+      <!-- 右侧按钮组 -->
+      <div class="ribbon__tabs-right">
+        <button
+          class="ribbon__action-button"
+          title="批注"
+        >
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 20 20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M4 3.5C4 2.67157 4.67157 2 5.5 2H14.5C15.3284 2 16 2.67157 16 3.5V12.5C16 13.3284 15.3284 14 14.5 14H8L4 18V3.5Z"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <span>批注</span>
+        </button>
+        <button
+          class="ribbon__action-button ribbon__action-button--edit"
+          title="编辑"
+        >
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 20 20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M15.502 1.94a2.5 2.5 0 0 1 3.535 3.535L7 17.5H2v-5L13.502 1.94Z"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <span>编辑</span>
+        </button>
+        <button
+          class="ribbon__action-button ribbon__action-button--share"
+          title="共享"
+        >
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path d="M10 3l-1.5 1.5L11 7H4v2h7l-2.5 2.5L10 13l5-5-5-5zm-6 9v5h12v-5h2v5a2 2 0 01-2 2H4a2 2 0 01-2-2v-5h2z" />
+          </svg>
+          <span>共享</span>
+        </button>
+      </div>
     </div>
 
     <!-- 文件菜单 -->

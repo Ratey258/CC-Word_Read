@@ -116,12 +116,12 @@
 .title-bar__quick-btn,
 .title-bar__quick-button
 {
-  width: 24px;
-  height: 24px;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 2px;
+  border-radius: 3px;
   transition: background-color var(--transition-fast);
   padding: 0;
   border: none;
@@ -133,8 +133,8 @@
 .title-bar__quick-btn svg,
 .title-bar__quick-button svg
 {
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
   fill: currentColor;
 }
 
@@ -330,7 +330,14 @@
   padding: 4px 12px;
 }
 
-.title-bar__comment-button svg,
+.title-bar__comment-button svg
+{
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  fill: none;
+}
+
 .title-bar__share-button svg
 {
   width: 14px;
@@ -372,14 +379,14 @@
 .title-bar__ribbon-toggle,
 .title-bar__help-button
 {
-  width: 24px;
-  height: 24px;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 2px;
+  border-radius: 3px;
   transition: background-color var(--transition-fast);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: var(--font-weight-bold);
 }
 
@@ -401,6 +408,8 @@
 
 .title-bar__ribbon-toggle svg
 {
+  width: 14px;
+  height: 14px;
   fill: currentColor;
 }
 
