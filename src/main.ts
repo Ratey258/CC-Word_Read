@@ -14,7 +14,15 @@ async function loadSvgIcons()
   const div = document.createElement('div')
   div.innerHTML = svgText
   div.style.display = 'none'
-  document.body.insertBefore(div, document.body.firstChild)
+  // 安全地插入到 body 的第一个位置
+  if (document.body.firstChild)
+  {
+    document.body.insertBefore(div, document.body.firstChild)
+  }
+  else
+  {
+    document.body.appendChild(div)
+  }
 }
 
 loadSvgIcons()

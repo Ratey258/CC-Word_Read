@@ -12,13 +12,16 @@ fn main() {
             // 获取主窗口
             let window = app.get_webview_window("main").unwrap();
             
+            // 显式设置窗口属性
+            window.set_minimizable(true).expect("Failed to set minimizable");
+            window.set_maximizable(true).expect("Failed to set maximizable");
+            window.set_closable(true).expect("Failed to set closable");
+            
             // 设置窗口属性（Windows专用优化）
             #[cfg(target_os = "windows")]
             {
-                use tauri::WebviewWindowBuilder;
-                
-                // 窗口创建后的额外配置可以在这里添加
-                println!("Window initialized for Windows");
+                println!("✅ Window initialized for Windows");
+                println!("✅ Window properties set: minimizable, maximizable, closable");
             }
             
             Ok(())

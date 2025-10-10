@@ -5,6 +5,7 @@
  */
 
 import { ref, computed, onMounted } from 'vue'
+import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow'
 
 // 检测是否在 Tauri 环境中
 const isTauri = () => '__TAURI__' in window
@@ -34,22 +35,33 @@ export function useWindowControls()
    */
   const minimize = async () =>
   {
+    console.log('🔍 [Minimize] 开始执行最小化操作')
+    console.log('🔍 [Minimize] isTauri():', isTauri())
+    console.log('🔍 [Minimize] window.__TAURI__:', window.__TAURI__)
+    
     if (isTauri())
     {
       try
       {
-        const { getCurrentWindow } = await import('@tauri-apps/api/window')
-        await getCurrentWindow().minimize()
+        const currentWindow = getCurrentWebviewWindow()
+        console.log('🔍 [Minimize] currentWindow 对象:', currentWindow)
+        console.log('🔍 [Minimize] currentWindow.label:', currentWindow.label)
+        console.log('🔍 [Minimize] 调用 minimize() 方法...')
+        
+        const result = await currentWindow.minimize()
+        console.log('✅ [Minimize] 最小化成功, 结果:', result)
       }
       catch (error)
       {
-        console.error('Failed to minimize window:', error)
+        console.error('❌ [Minimize] 最小化失败:', error)
+        console.error('❌ [Minimize] 错误详情:', JSON.stringify(error, null, 2))
       }
     }
     else
     {
       // 浏览器环境：尝试使用 Window Management API（实验性功能）
-      console.log('Minimize window (browser mode - not supported)')
+      console.warn('⚠️ 窗口最小化功能仅在 Tauri 桌面应用中可用。当前为浏览器预览模式，窗口控制功能不可用。')
+      console.warn('💡 提示：请在 Tauri 应用窗口（非浏览器 DevTools）中测试此功能。')
     }
   }
 
@@ -58,18 +70,26 @@ export function useWindowControls()
    */
   const toggleMaximize = async () =>
   {
+    console.log('🔍 [Maximize] 开始执行最大化/还原操作')
+    console.log('🔍 [Maximize] isTauri():', isTauri())
+    
     if (isTauri())
     {
       try
       {
-        const { getCurrentWindow } = await import('@tauri-apps/api/window')
-        const currentWindow = getCurrentWindow()
+        const currentWindow = getCurrentWebviewWindow()
+        console.log('🔍 [Maximize] currentWindow 对象:', currentWindow)
+        console.log('🔍 [Maximize] currentWindow.label:', currentWindow.label)
+        console.log('🔍 [Maximize] 调用 toggleMaximize() 方法...')
+        
         await currentWindow.toggleMaximize()
         windowState.value.isMaximized = await currentWindow.isMaximized()
+        console.log('✅ [Maximize] 最大化/还原成功, isMaximized:', windowState.value.isMaximized)
       }
       catch (error)
       {
-        console.error('Failed to toggle maximize:', error)
+        console.error('❌ [Maximize] 最大化/还原失败:', error)
+        console.error('❌ [Maximize] 错误详情:', JSON.stringify(error, null, 2))
       }
     }
     else
@@ -96,16 +116,25 @@ export function useWindowControls()
    */
   const close = async () =>
   {
+    console.log('🔍 [Close] 开始执行关闭操作')
+    console.log('🔍 [Close] isTauri():', isTauri())
+    
     if (isTauri())
     {
       try
       {
-        const { getCurrentWindow } = await import('@tauri-apps/api/window')
-        await getCurrentWindow().close()
+        const currentWindow = getCurrentWebviewWindow()
+        console.log('🔍 [Close] currentWindow 对象:', currentWindow)
+        console.log('🔍 [Close] currentWindow.label:', currentWindow.label)
+        console.log('🔍 [Close] 调用 close() 方法...')
+        
+        const result = await currentWindow.close()
+        console.log('✅ [Close] 关闭成功, 结果:', result)
       }
       catch (error)
       {
-        console.error('Failed to close window:', error)
+        console.error('❌ [Close] 关闭失败:', error)
+        console.error('❌ [Close] 错误详情:', JSON.stringify(error, null, 2))
       }
     }
     else
@@ -124,8 +153,7 @@ export function useWindowControls()
     {
       try
       {
-        const { getCurrentWindow } = await import('@tauri-apps/api/window')
-        const currentWindow = getCurrentWindow()
+        const currentWindow = getCurrentWebviewWindow()
         const isFullscreen = await currentWindow.isFullscreen()
         await currentWindow.setFullscreen(!isFullscreen)
         windowState.value.isFullscreen = !isFullscreen
@@ -160,8 +188,7 @@ export function useWindowControls()
     {
       try
       {
-        const { getCurrentWindow } = await import('@tauri-apps/api/window')
-        await getCurrentWindow().setTitle(title)
+        await getCurrentWebviewWindow().setTitle(title)
       }
       catch (error)
       {
@@ -184,8 +211,7 @@ export function useWindowControls()
     {
       try
       {
-        const { getCurrentWindow } = await import('@tauri-apps/api/window')
-        const currentWindow = getCurrentWindow()
+        const currentWindow = getCurrentWebviewWindow()
         windowState.value.isMaximized = await currentWindow.isMaximized()
         windowState.value.isFullscreen = await currentWindow.isFullscreen()
       }
@@ -210,8 +236,7 @@ export function useWindowControls()
     {
       try
       {
-        const { getCurrentWindow } = await import('@tauri-apps/api/window')
-        const currentWindow = getCurrentWindow()
+        const currentWindow = getCurrentWebviewWindow()
         
         // 监听窗口焦点变化
         await currentWindow.listen('tauri://focus', () =>

@@ -78,10 +78,12 @@ const handleClose = () =>
 <template>
   <div
     class="title-bar"
-    data-tauri-drag-region
   >
     <!-- 左侧区域 -->
-    <div class="title-bar__left">
+    <div 
+      class="title-bar__left"
+      data-tauri-drag-region
+    >
       <!-- Word 图标 -->
       <div class="title-bar__icon">
         <svg
@@ -167,7 +169,10 @@ const handleClose = () =>
     </div>
 
     <!-- 中间 - 搜索框 -->
-    <div class="title-bar__center">
+    <div 
+      class="title-bar__center"
+      data-tauri-drag-region
+    >
       <div class="title-bar__search">
         <svg
           class="title-bar__search-icon"
@@ -189,7 +194,10 @@ const handleClose = () =>
     </div>
 
     <!-- 右上角按钮组 -->
-    <div class="title-bar__top-right">
+    <div 
+      class="title-bar__top-right"
+      data-tauri-drag-region
+    >
       <!-- 共享给我 -->
       <div
         class="title-bar__shared-indicator"

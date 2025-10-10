@@ -425,6 +425,8 @@
 {
   display: flex;
   margin: 0;
+  pointer-events: auto;
+  z-index: 100;
 }
 
 .title-bar__control-button
@@ -437,6 +439,15 @@
   position: relative;
   font-size: 10px;
   transition: background-color var(--transition-fast);
+  border: none;
+  background: transparent;
+  color: var(--word-titlebar-text);
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  pointer-events: auto;
+  z-index: 101;
 }
 
 .title-bar__control-button:hover
