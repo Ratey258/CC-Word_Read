@@ -485,17 +485,19 @@
 /* 关闭 */
 .title-bar__control-button--close
 {
-  color: var(--word-white);
+  color: var(--word-titlebar-text);
 }
 
 .title-bar__control-button--close:hover
 {
   background-color: #E81123;
+  color: var(--word-white);
 }
 
 .title-bar__control-button--close:active
 {
   background-color: #C50E1F;
+  color: var(--word-white);
 }
 
 .title-bar__control-button--close::before,

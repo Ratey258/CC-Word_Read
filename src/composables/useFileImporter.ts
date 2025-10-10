@@ -245,26 +245,26 @@ export function useFileImporter() {
    * 导入示例小说（用于演示）
    */
   async function importSampleNovel(): Promise<void> {
-    const sampleContent = `第一章 开始
+    const sampleContent = `CC-Word Read - 上班摸鱼小说阅读器
 
-这是一个示例小说的开始。
+版本：v0.3.0  |  作者：春卷
 
-在一个风和日丽的早晨，主人公踏上了冒险的旅程。
+这是一款伪装成 Microsoft Word 的小说阅读器，让你在工作时也能安心摸鱼。
 
-第二章 冒险
+界面高度还原 Word 2021，支持 TXT、DOCX、Markdown 等格式，自动记忆阅读进度。
 
-旅途中充满了未知和惊喜...
+如何使用：左上角点击文件菜单栏导入文件，键盘输入任意字符即可显示导入文件内容。
 
-（这只是一个演示文本，实际使用时请导入真实的小说文件）`
+温馨提示：老板来了记得按 Alt+F4 😏`
 
     const novel: Novel = {
       id: nanoid(),
       content: sampleContent,
       totalLength: sampleContent.length,
       metadata: {
-        title: '示例小说',
-        author: '示例作者',
-        chapters: 2,
+        title: '使用指南',
+        author: '春卷',
+        chapters: 0,
         createdAt: Date.now(),
         updatedAt: Date.now(),
         fileSize: new Blob([sampleContent]).size,
