@@ -58,14 +58,16 @@ const pageStyles = computed(() =>
   const A4_HEIGHT_PX = 1123
   
   // 根据页数计算最小高度
-  // 确保至少显示1页的高度
+  // 确保至少显示1页的高度，并额外添加一页的缓冲空间以便输入时自动扩展
   const pages = Math.max(totalPages.value, 1)
-  const minHeight = A4_HEIGHT_PX * pages
+  const minHeight = A4_HEIGHT_PX * (pages + 1) // 额外添加1页空间
   
   return {
     page: {
       width: `${A4_WIDTH_PX}px`,
-      minHeight: `${minHeight}px`
+      minHeight: `${minHeight}px`,
+      // 使用 auto 高度允许内容自动扩展
+      height: 'auto'
     }
   }
 })
@@ -96,6 +98,55 @@ function updateEditorContentLength(): void
   }
 }
 
+// 滚动到光标位置，保持光标在视觉中心
+function scrollToCursor(): void
+{
+  if (!editorRef.value) return
+  
+  const selection = window.getSelection()
+  if (!selection || selection.rangeCount === 0) return
+  
+  const range = selection.getRangeAt(0)
+  const rect = range.getBoundingClientRect()
+  
+  // 计算编辑器容器顶部位置（考虑 Ribbon 的高度）
+  const titlebarHeight = 32
+  const ribbonTabHeight = 27
+  const ribbonToolbarHeight = isRibbonCollapsed.value ? 0 : 93
+  const headerHeight = titlebarHeight + ribbonTabHeight + ribbonToolbarHeight
+  
+  // 计算视口可用区域（排除顶部工具栏）
+  const viewportTop = headerHeight
+  const viewportBottom = window.innerHeight
+  const viewportHeight = viewportBottom - viewportTop
+  
+  // 定义光标应该保持在视口中的目标位置（视口中心偏上1/3处）
+  const targetPositionInViewport = viewportTop + viewportHeight / 3
+  
+  // 光标当前在窗口中的位置
+  const cursorTop = rect.top
+  
+  // 如果光标不在合适的位置，进行滚动
+  // 允许一定的缓冲区，避免频繁滚动
+  const buffer = 50
+  const shouldScroll = 
+    cursorTop < (targetPositionInViewport - buffer) || 
+    cursorTop > (targetPositionInViewport + buffer)
+  
+  if (shouldScroll)
+  {
+    // 计算需要滚动的距离
+    const scrollDelta = cursorTop - targetPositionInViewport
+    const targetScrollTop = window.scrollY + scrollDelta
+    
+    // 平滑滚动到目标位置
+    window.scrollTo({
+      top: Math.max(0, targetScrollTop),
+      behavior: 'smooth'
+    })
+  }
+}
+
 // 使用 MutationObserver 监听编辑器内容变化
 let editorObserver: globalThis.MutationObserver | null = null
 
@@ -113,6 +164,11 @@ function setupEditorObserver(): void
   editorObserver = new globalThis.MutationObserver(() =>
   {
     updateEditorContentLength()
+    // 内容变化后，滚动到光标位置
+    globalThis.requestAnimationFrame(() =>
+    {
+      scrollToCursor()
+    })
   })
   
   // 观察编辑器的所有子节点变化和文本内容变化
