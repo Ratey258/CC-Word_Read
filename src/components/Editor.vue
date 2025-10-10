@@ -98,15 +98,52 @@ function updateEditorContentLength(): void
   }
 }
 
-// 滚动到光标位置，保持光标在视觉中心
-function scrollToCursor(): void
+// 滚动到内容末尾，保持最后的内容在视觉中心
+function scrollToContentEnd(): void
 {
   if (!editorRef.value) return
   
-  const selection = window.getSelection()
-  if (!selection || selection.rangeCount === 0) return
+  const editor = editorRef.value
+  const text = editor.textContent || ''
   
-  const range = selection.getRangeAt(0)
+  // 如果没有内容，不需要滚动
+  if (text.length === 0) return
+  
+  // 获取文档容器（它是滚动容器）
+  const container = document.querySelector('.document-container') as HTMLElement
+  if (!container) return
+  
+  // 创建一个临时 range 来定位到内容末尾
+  const range = document.createRange()
+  
+  // 找到编辑器的最后一个文本节点
+  let lastTextNode: Node | null = null
+  const walker = document.createTreeWalker(
+    editor,
+    globalThis.NodeFilter.SHOW_TEXT,
+    null
+  )
+  
+  while (walker.nextNode())
+  {
+    lastTextNode = walker.currentNode
+  }
+  
+  // 如果找不到文本节点，退出
+  if (!lastTextNode) return
+  
+  // 设置 range 到最后一个字符
+  const textLength = lastTextNode.textContent?.length || 0
+  if (textLength > 0)
+  {
+    range.setStart(lastTextNode, textLength - 1)
+    range.setEnd(lastTextNode, textLength)
+  }
+  else
+  {
+    range.selectNodeContents(lastTextNode)
+  }
+  
   const rect = range.getBoundingClientRect()
   
   // 计算编辑器容器顶部位置（考虑 Ribbon 的高度）
@@ -120,27 +157,27 @@ function scrollToCursor(): void
   const viewportBottom = window.innerHeight
   const viewportHeight = viewportBottom - viewportTop
   
-  // 定义光标应该保持在视口中的目标位置（视口中心偏上1/3处）
+  // 定义内容末尾应该保持在视口中的目标位置（视口中心偏上1/3处）
   const targetPositionInViewport = viewportTop + viewportHeight / 3
   
-  // 光标当前在窗口中的位置
-  const cursorTop = rect.top
+  // 内容末尾当前在窗口中的位置
+  const contentEndTop = rect.top
   
-  // 如果光标不在合适的位置，进行滚动
+  // 如果内容末尾不在合适的位置，进行滚动
   // 允许一定的缓冲区，避免频繁滚动
   const buffer = 50
   const shouldScroll = 
-    cursorTop < (targetPositionInViewport - buffer) || 
-    cursorTop > (targetPositionInViewport + buffer)
+    contentEndTop < (targetPositionInViewport - buffer) || 
+    contentEndTop > (targetPositionInViewport + buffer)
   
   if (shouldScroll)
   {
     // 计算需要滚动的距离
-    const scrollDelta = cursorTop - targetPositionInViewport
-    const targetScrollTop = window.scrollY + scrollDelta
+    const scrollDelta = contentEndTop - targetPositionInViewport
+    const targetScrollTop = container.scrollTop + scrollDelta
     
-    // 平滑滚动到目标位置
-    window.scrollTo({
+    // 平滑滚动到目标位置（滚动容器而不是 window）
+    container.scrollTo({
       top: Math.max(0, targetScrollTop),
       behavior: 'smooth'
     })
@@ -164,10 +201,10 @@ function setupEditorObserver(): void
   editorObserver = new globalThis.MutationObserver(() =>
   {
     updateEditorContentLength()
-    // 内容变化后，滚动到光标位置
+    // 内容变化后，滚动到内容末尾
     globalThis.requestAnimationFrame(() =>
     {
-      scrollToCursor()
+      scrollToContentEnd()
     })
   })
   
