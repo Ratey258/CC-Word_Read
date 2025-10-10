@@ -468,6 +468,7 @@
   height: 1px;
   background-color: currentColor;
   position: absolute;
+  pointer-events: none;
 }
 
 /* 最大化 */
@@ -478,6 +479,7 @@
   height: 9px;
   border: 1px solid currentColor;
   position: absolute;
+  pointer-events: none;
 }
 
 /* 关闭 */
@@ -504,6 +506,7 @@
   width: 12px;
   height: 1.5px;
   background-color: currentColor;
+  pointer-events: none;
 }
 
 .title-bar__control-button--close::before
@@ -514,6 +517,18 @@
 .title-bar__control-button--close::after
 {
   transform: rotate(-45deg);
+}
+
+/* 禁用状态（浏览器模式） */
+.title-bar__control-button--disabled
+{
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.title-bar__control-button--disabled:hover
+{
+  background-color: transparent;
 }
 
 /* ========== 响应式 ========== */

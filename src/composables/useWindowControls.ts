@@ -14,7 +14,32 @@ import type { UnlistenFn } from '@tauri-apps/api/event'
 
 // 检测是否在 Tauri 环境中
 const isTauri = (): boolean => {
-  return typeof window !== 'undefined' && '__TAURI__' in window
+  // 方法1: 检查 window.__TAURI__ 对象
+  const hasTauriGlobal = typeof window !== 'undefined' && '__TAURI__' in window
+  
+  // 方法2: 检查 window.__TAURI_INTERNALS__ (Tauri 2.x 新增)
+  const hasTauriInternals = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window
+  
+  // 方法3: 尝试调用 getCurrentWebviewWindow 看是否抛出异常
+  let canGetWindow = false
+  try {
+    const testWindow = getCurrentWebviewWindow()
+    canGetWindow = testWindow !== null && testWindow !== undefined
+  } catch {
+    canGetWindow = false
+  }
+  
+  const result = hasTauriGlobal || hasTauriInternals || canGetWindow
+  
+  console.log('🔍 [Tauri 检测]', {
+    hasWindow: typeof window !== 'undefined',
+    hasTauriGlobal,
+    hasTauriInternals,
+    canGetWindow,
+    finalResult: result
+  })
+  
+  return result
 }
 
 // 窗口状态接口
@@ -47,7 +72,7 @@ export function useWindowControls() {
    */
   const minimize = async (): Promise<void> => {
     if (!isTauri()) {
-      console.warn('⚠️ 窗口最小化功能仅在 Tauri 桌面应用中可用')
+      console.warn('⚠️ [浏览器模式] 最小化功能仅在 Tauri 桌面应用中可用')
       return
     }
 
@@ -92,6 +117,8 @@ export function useWindowControls() {
    */
   const close = async (): Promise<void> => {
     if (!isTauri()) {
+      console.log('ℹ️ [浏览器模式] 尝试关闭标签页')
+      // 在浏览器中，window.close() 只能关闭通过脚本打开的窗口
       window.close()
       return
     }

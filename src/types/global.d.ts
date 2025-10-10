@@ -11,9 +11,11 @@ declare global {
       invoke: <T = unknown>(cmd: string, args?: Record<string, unknown>) => Promise<T>
       convertFileSrc: (filePath: string, protocol?: string) => string
     }
+    __TAURI_INTERNALS__?: Record<string, unknown>
   }
 
   const __TAURI__: Window['__TAURI__']
+  const __TAURI_INTERNALS__: Window['__TAURI_INTERNALS__']
 }
 
 /**

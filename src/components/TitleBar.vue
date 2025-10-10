@@ -13,7 +13,7 @@ const novelStore = useNovelStore()
 const uiStore = useUIStore()
 
 // Composables
-const { minimize, toggleMaximize, close, isMaximized } = useWindowControls()
+const { minimize, toggleMaximize, close, isMaximized, supportsWindowControls } = useWindowControls()
 
 // Reactive state
 const { settings } = storeToRefs(settingsStore)
@@ -55,14 +55,17 @@ const toggleRibbonCollapse = () => {
 
 // 窗口控制方法
 const handleMinimize = () => {
+  console.log('🔘 [TitleBar] 点击最小化按钮')
   minimize()
 }
 
 const handleToggleMaximize = () => {
+  console.log('🔘 [TitleBar] 点击最大化按钮')
   toggleMaximize()
 }
 
 const handleClose = () => {
+  console.log('🔘 [TitleBar] 点击关闭按钮')
   close()
 }
 </script>
@@ -229,22 +232,34 @@ const handleClose = () => {
     </div>
 
     <!-- 窗口控制按钮 -->
-    <div class="title-bar__controls">
+    <div 
+      class="title-bar__controls"
+    >
       <button
         class="title-bar__control-button title-bar__control-button--minimize"
-        title="最小化"
+        :title="supportsWindowControls ? '最小化' : '最小化（浏览器模式不支持）'"
+        :class="{ 'title-bar__control-button--disabled': !supportsWindowControls }"
+        data-tauri-drag-region="false"
         @click="handleMinimize"
-      />
+      >
+        <!-- 最小化图标 -->
+      </button>
       <button
         class="title-bar__control-button title-bar__control-button--maximize"
-        :title="isMaximized ? '还原' : '最大化'"
+        :title="supportsWindowControls ? (isMaximized ? '还原' : '最大化') : '全屏（按 F11 退出）'"
+        data-tauri-drag-region="false"
         @click="handleToggleMaximize"
-      />
+      >
+        <!-- 最大化图标 -->
+      </button>
       <button
         class="title-bar__control-button title-bar__control-button--close"
-        title="关闭"
+        :title="supportsWindowControls ? '关闭' : '关闭标签页'"
+        data-tauri-drag-region="false"
         @click="handleClose"
-      />
+      >
+        <!-- 关闭图标 -->
+      </button>
     </div>
   </div>
 </template>

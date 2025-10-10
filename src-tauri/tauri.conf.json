@@ -38,8 +38,7 @@
         "fullscreen": false,
         "alwaysOnTop": false,
         "skipTaskbar": false,
-        "dragDropEnabled": true,
-        "titleBarStyle": "Overlay"
+        "dragDropEnabled": true
       }
     ],
     "security": {
@@ -68,7 +67,8 @@
             "core:window:allow-is-visible",
             "core:window:allow-is-focused",
             "core:window:allow-set-fullscreen",
-            "core:window:allow-is-fullscreen"
+            "core:window:allow-is-fullscreen",
+            "core:window:allow-start-dragging"
           ]
         }
       ]
