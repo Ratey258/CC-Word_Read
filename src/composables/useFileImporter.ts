@@ -4,9 +4,11 @@
 
 import { ref } from 'vue'
 import { useNovelStore } from '@/stores/novel'
+import { useHistoryStore } from '@/stores/history'
 import { useUIStore } from '@/stores/ui'
 import { useFileSystem } from './useFileSystem'
 import { useDocumentParser } from './useDocumentParser'
+import { useHistory } from './useHistory'
 import { validateFile, validateNovelContent } from '@/utils/validator'
 import type { Novel, NovelFormat } from '@/types/novel'
 import { nanoid } from 'nanoid'
@@ -14,9 +16,11 @@ import { nanoid } from 'nanoid'
 export function useFileImporter()
 {
   const novelStore = useNovelStore()
+  const historyStore = useHistoryStore()
   const uiStore = useUIStore()
   const fileSystem = useFileSystem()
   const documentParser = useDocumentParser()
+  const history = useHistory()
 
   // ===== State =====
   
@@ -88,7 +92,25 @@ export function useFileImporter()
 
     try
     {
-      const { name: fileName, content, file } = fileResult
+      const { name: fileName, path } = fileResult
+      
+      // 检查是否已存在相同路径的历史记录
+      if (path)
+      {
+        const existingHistory = historyStore.getHistoryItemByPath(path)
+        if (existingHistory)
+        {
+          console.log('[FileImporter] 发现相同文件的历史记录，直接恢复:', existingHistory.title)
+          uiStore.hideLoading()
+          isImporting.value = false
+          
+          // 直接加载历史记录
+          await history.loadFromHistory(existingHistory)
+          return
+        }
+      }
+
+      const { content, file } = fileResult
 
       // 解析文档
       let parsedDoc
@@ -132,7 +154,7 @@ export function useFileImporter()
       }
 
       // 加载小说（传递文件路径以便历史记录使用）
-      novelStore.loadNovel(novel, fileResult.path || undefined)
+      novelStore.loadNovel(novel, path || undefined)
 
       const formatInfo = parsedDoc.hasFormatting ? '（已保留格式）' : ''
       uiStore.showSuccess(`导入成功：${novel.metadata.title}${formatInfo}`)

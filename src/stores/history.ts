@@ -54,28 +54,49 @@ export const useHistoryStore = defineStore('history', () =>
    */
   function addToHistory(novel: Novel, filePath?: string): void
   {
-    const existingIndex = historyItems.value.findIndex(item => item.id === novel.id)
+    // 优先通过文件路径查找现有记录，如果没有路径则通过 ID 查找
+    let existingIndex = -1
+    if (filePath)
+    {
+      // 标准化路径进行比较
+      const normalizedPath = filePath.replace(/\\/g, '/')
+      existingIndex = historyItems.value.findIndex(item =>
+      {
+        if (!item.filePath) return false
+        const itemPath = item.filePath.replace(/\\/g, '/')
+        return itemPath === normalizedPath
+      })
+    }
+    
+    // 如果通过路径没找到，再尝试通过 ID 查找
+    if (existingIndex < 0)
+    {
+      existingIndex = historyItems.value.findIndex(item => item.id === novel.id)
+    }
     
     // 浏览器环境必须缓存内容，否则无法重新加载
     const shouldCache = config.value.cacheContent || !window.__TAURI__
     
+    // 如果找到现有记录，保留其 ID 和进度
+    const existingItem = existingIndex >= 0 ? historyItems.value[existingIndex] : null
+    
     const historyItem: HistoryItem = {
-      id: novel.id,
+      id: existingItem?.id ?? novel.id, // 保留原有ID
       title: novel.metadata.title,
       author: novel.metadata.author,
       format: novel.metadata.format,
       fileSize: novel.metadata.fileSize,
       totalLength: novel.totalLength,
       filePath,
-      progress: {
-        novelId: novel.id,
+      progress: existingItem?.progress ?? { // 保留原有进度
+        novelId: existingItem?.id ?? novel.id,
         currentPosition: 0,
         percentage: 0,
         lastReadAt: Date.now()
       },
-      createdAt: existingIndex >= 0 ? historyItems.value[existingIndex].createdAt : Date.now(),
+      createdAt: existingItem?.createdAt ?? Date.now(),
       lastAccessedAt: Date.now(),
-      isCompleted: false,
+      isCompleted: existingItem?.isCompleted ?? false,
       content: shouldCache ? novel.content : undefined
     }
     
@@ -137,6 +158,23 @@ export const useHistoryStore = defineStore('history', () =>
   function getHistoryItem(novelId: string): HistoryItem | undefined
   {
     return historyItems.value.find(item => item.id === novelId)
+  }
+  
+  /**
+   * 通过文件路径获取历史记录
+   * @param filePath 文件路径
+   */
+  function getHistoryItemByPath(filePath: string): HistoryItem | undefined
+  {
+    if (!filePath) return undefined
+    // 标准化路径（处理不同操作系统的路径分隔符）
+    const normalizedPath = filePath.replace(/\\/g, '/')
+    return historyItems.value.find(item =>
+    {
+      if (!item.filePath) return false
+      const itemPath = item.filePath.replace(/\\/g, '/')
+      return itemPath === normalizedPath
+    })
   }
   
   /**
@@ -306,6 +344,7 @@ export const useHistoryStore = defineStore('history', () =>
     addToHistory,
     updateProgress,
     getHistoryItem,
+    getHistoryItemByPath,
     removeHistoryItem,
     clearHistory,
     cleanupOldItems,
