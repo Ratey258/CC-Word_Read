@@ -69,13 +69,25 @@ const containerStyles = computed(() =>
 })
 
 // 监听小说加载
-watch(currentNovel, (novel) =>
+watch(currentNovel, (novel, oldNovel) =>
 {
   if (novel && editorRef.value)
   {
-    // 清空编辑器并聚焦
-    editorRef.value.textContent = ''
-    editorRef.value.focus()
+    // 如果是新加载的小说（不是刷新页面恢复的），清空编辑器
+    // 判断依据：旧小说为null或者小说ID不同
+    const isNewNovel = !oldNovel || oldNovel.id !== novel.id
+    
+    if (isNewNovel)
+    {
+      // 清空编辑器并聚焦
+      editorRef.value.textContent = ''
+      editorRef.value.focus()
+    }
+    else
+    {
+      // 同一本小说，可能是位置更新，不清空内容
+      editorRef.value.focus()
+    }
   }
 })
 
@@ -94,6 +106,31 @@ onMounted(() =>
   if (editorRef.value)
   {
     editorRef.value.focus()
+    
+    // 如果刷新页面后有小说和阅读位置，恢复已读内容
+    if (currentNovel.value && novelStore.currentPosition > 0)
+    {
+      const readContent = currentNovel.value.content.substring(0, novelStore.currentPosition)
+      editorRef.value.textContent = readContent
+      console.log('[Editor] 页面刷新，已恢复已读内容，长度:', readContent.length)
+      
+      // 将光标移到末尾
+      setTimeout(() =>
+      {
+        if (editorRef.value)
+        {
+          const range = document.createRange()
+          const selection = window.getSelection()
+          if (selection && editorRef.value.childNodes.length > 0)
+          {
+            range.selectNodeContents(editorRef.value)
+            range.collapse(false) // 折叠到末尾
+            selection.removeAllRanges()
+            selection.addRange(range)
+          }
+        }
+      }, 50)
+    }
   }
   
   // 如果有小说且未开始阅读，按任意键开始阅读

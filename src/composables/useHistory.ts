@@ -104,20 +104,42 @@ export function useHistory()
       // 传递文件路径以便下次可以重新导入
       novelStore.loadNovel(novel, item.filePath || undefined)
       
-      // 立即恢复阅读位置（在历史记录被重置之前）
+      // 等待 Vue 更新 DOM
+      await new Promise(resolve => setTimeout(resolve, 100))
+      
+      // 立即恢复阅读位置和已读内容
       if (item.progress.currentPosition > 0)
       {
         console.log('[History] 恢复阅读位置:', item.progress.currentPosition)
-        // 直接更新位置
+        
+        // 获取编辑器元素
+        const editorEl = document.querySelector('.document-content') as HTMLElement
+        if (editorEl)
+        {
+          // 填充已读内容到编辑器
+          const readContent = novel.content.substring(0, item.progress.currentPosition)
+          editorEl.textContent = readContent
+          console.log('[History] 已恢复已读内容，长度:', readContent.length)
+          
+          // 将光标移到末尾
+          const range = document.createRange()
+          const selection = window.getSelection()
+          if (selection && editorEl.childNodes.length > 0)
+          {
+            range.selectNodeContents(editorEl)
+            range.collapse(false) // 折叠到末尾
+            selection.removeAllRanges()
+            selection.addRange(range)
+          }
+        }
+        
+        // 更新位置
         novelStore.updatePosition(item.progress.currentPosition)
         
         // 更新历史记录以恢复正确的进度
         await new Promise(resolve => setTimeout(resolve, 50))
         historyStore.updateProgress(item.id, item.progress.currentPosition)
       }
-      
-      // 等待 Vue 更新 DOM
-      await new Promise(resolve => setTimeout(resolve, 50))
       
       // 显示恢复信息
       const progressPercent = Math.round(item.progress.percentage)
