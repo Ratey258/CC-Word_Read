@@ -17,7 +17,7 @@
   overflow-x: hidden;
   display: flex;
   justify-content: center;
-  padding: 40px 20px;
+  padding: 60px 20px;
 }
 
 /* ========== 文档页面 ========== */
@@ -89,7 +89,7 @@
 {
   .document-container
   {
-    padding: 20px 10px;
+    padding: 40px 10px;
   }
 }
 

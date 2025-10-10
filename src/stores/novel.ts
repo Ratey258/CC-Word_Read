@@ -27,6 +27,9 @@ export const useNovelStore = defineStore('novel', () =>
   /** 最近打开的文件列表 */
   const recentFiles = ref<NovelMetadata[]>([])
   
+  /** 显示的文件名（用于标题栏显示） */
+  const displayName = ref<string>('文档-Word')
+  
   // ===== Getters =====
   
   /** 小说总长度 */
@@ -70,6 +73,9 @@ export const useNovelStore = defineStore('novel', () =>
     content.value = novel.content
     currentPosition.value = 0
     
+    // 保持默认显示名称为"文档-Word"，不使用导入的文件名
+    displayName.value = '文档-Word'
+    
     // 保存到本地存储
     saveToStorage()
     
@@ -90,6 +96,18 @@ export const useNovelStore = defineStore('novel', () =>
     content.value = ''
     currentPosition.value = 0
     bookmarks.value = []
+    displayName.value = '文档-Word'
+  }
+  
+  /**
+   * 设置显示的文件名
+   * @param name 新的显示名称
+   */
+  function setDisplayName(name: string): void
+  {
+    displayName.value = name || '文档-Word'
+    // 保存到本地存储
+    localStorage.setItem(STORAGE_KEYS.DISPLAY_NAME, displayName.value)
   }
   
   /**
@@ -291,11 +309,24 @@ export const useNovelStore = defineStore('novel', () =>
     }
   }
   
+  /**
+   * 加载显示名称
+   */
+  function loadDisplayName(): void
+  {
+    const data = localStorage.getItem(STORAGE_KEYS.DISPLAY_NAME)
+    if (data)
+    {
+      displayName.value = data
+    }
+  }
+  
   // ===== 初始化 =====
   
   // 自动加载数据
   loadFromStorage()
   loadRecentFiles()
+  loadDisplayName()
   
   return {
     // State
@@ -304,6 +335,7 @@ export const useNovelStore = defineStore('novel', () =>
     currentPosition,
     bookmarks,
     recentFiles,
+    displayName,
     
     // Getters
     totalLength,
@@ -316,6 +348,7 @@ export const useNovelStore = defineStore('novel', () =>
     // Actions
     loadNovel,
     clearNovel,
+    setDisplayName,
     updatePosition,
     jumpTo,
     addBookmark,

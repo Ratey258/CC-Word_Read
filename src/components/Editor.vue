@@ -176,38 +176,6 @@ onMounted(() =>
         @compositionupdate="handleCompositionUpdate"
         @compositionend="handleCompositionEnd"
       >
-        <template v-if="!hasNovel">
-          <div class="document-placeholder">
-            <div class="document-placeholder__icon">
-              <Icon 
-                name="file"
-                :size="64"
-                class="editor__welcome-icon"
-              />
-            </div>
-            <h3 class="document-placeholder__title">
-              导入小说开始阅读
-            </h3>
-            <p class="document-placeholder__description">
-              点击"文件"选项卡导入 TXT 文件<br>
-              或将文件拖放到此处
-            </p>
-            <div class="document-placeholder__shortcuts">
-              <div class="document-placeholder__shortcut">
-                <kbd>Ctrl</kbd> + <kbd>O</kbd>
-                <span>打开文件</span>
-              </div>
-              <div class="document-placeholder__shortcut">
-                <kbd>→</kbd>
-                <span>下一字</span>
-              </div>
-              <div class="document-placeholder__shortcut">
-                <kbd>←</kbd>
-                <span>上一字</span>
-              </div>
-            </div>
-          </div>
-        </template>
       </div>
     </div>
   </div>

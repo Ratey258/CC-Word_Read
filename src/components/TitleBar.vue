@@ -17,10 +17,11 @@ const { minimize, toggleMaximize, close, isMaximized } = useWindowControls()
 
 // Reactive state
 const { settings } = storeToRefs(settingsStore)
+const { displayName } = storeToRefs(novelStore)
 const searchQuery = ref('')
 
 // Computed
-const novelTitle = computed(() => novelStore.currentNovel?.metadata.title || '未命名文档')
+const novelTitle = computed(() => displayName.value)
 
 // Methods
 const toggleAutoSave = () =>

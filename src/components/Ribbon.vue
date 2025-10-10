@@ -11,6 +11,7 @@ import { useNovelReader } from '@/composables/useNovelReader'
 import { useProgress } from '@/composables/useProgress'
 import { useHistory } from '@/composables/useHistory'
 import type { HistoryItem } from '@/types/history'
+import RenameDialog from './RenameDialog.vue'
 
 // Stores
 const novelStore = useNovelStore()
@@ -59,6 +60,7 @@ const { isReading, isPaused } = storeToRefs(readerStore)
 const { isRibbonCollapsed } = storeToRefs(uiStore)
 
 const showFileMenu = ref(false)
+const showRenameDialog = ref(false)
 
 // Font options
 const fontSizes = [8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72]
@@ -201,6 +203,17 @@ const handleStopReading = () =>
 const handleResetPosition = () =>
 {
   resetToStart()
+}
+
+const handleRenameDisplay = () =>
+{
+  closeFileMenu()
+  showRenameDialog.value = true
+}
+
+const handleRenameConfirm = (newName: string) =>
+{
+  novelStore.setDisplayName(newName)
 }
 
 const handleJumpToPosition = () =>
@@ -533,6 +546,29 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
             </div>
             <div class="file-menu__item-description">
               回到文件开头
+            </div>
+          </div>
+        </button>
+      </div>
+
+      <div class="file-menu__divider" />
+
+      <div class="file-menu__section">
+        <h3 class="file-menu__section-title">
+          显示
+        </h3>
+        <button 
+          class="file-menu__item"
+          :disabled="!hasNovel"
+          @click="handleRenameDisplay"
+        >
+          <span class="file-menu__item-icon">✏️</span>
+          <div class="file-menu__item-content">
+            <div class="file-menu__item-title">
+              修改显示文件名
+            </div>
+            <div class="file-menu__item-description">
+              自定义标题栏中显示的文件名
             </div>
           </div>
         </button>
@@ -1384,6 +1420,12 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
       </div>
     </div>
   </div>
+
+  <!-- 重命名对话框 -->
+  <RenameDialog
+    v-model:show="showRenameDialog"
+    @confirm="handleRenameConfirm"
+  />
 </template>
 
 <style scoped>

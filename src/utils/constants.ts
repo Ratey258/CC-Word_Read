@@ -88,7 +88,9 @@ export const STORAGE_KEYS = {
   /** 最近打开 */
   RECENT_FILES: 'recent_files',
   /** 历史记录 */
-  HISTORY: 'history'
+  HISTORY: 'history',
+  /** 显示的文件名 */
+  DISPLAY_NAME: 'display_name'
 } as const
 
 /**
