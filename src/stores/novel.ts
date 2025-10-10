@@ -21,6 +21,9 @@ export const useNovelStore = defineStore('novel', () =>
   /** 当前阅读位置 */
   const currentPosition = ref<number>(0)
   
+  /** 编辑器实际内容长度（用于页面计算） */
+  const editorContentLength = ref<number>(0)
+  
   /** 书签列表 */
   const bookmarks = ref<Bookmark[]>([])
   
@@ -321,6 +324,15 @@ export const useNovelStore = defineStore('novel', () =>
     }
   }
   
+  /**
+   * 更新编辑器内容长度
+   * @param length 编辑器当前内容的字符数
+   */
+  function updateEditorContentLength(length: number): void
+  {
+    editorContentLength.value = length
+  }
+  
   // ===== 初始化 =====
   
   // 自动加载数据
@@ -333,6 +345,7 @@ export const useNovelStore = defineStore('novel', () =>
     currentNovel,
     content,
     currentPosition,
+    editorContentLength,
     bookmarks,
     recentFiles,
     displayName,
@@ -350,6 +363,7 @@ export const useNovelStore = defineStore('novel', () =>
     clearNovel,
     setDisplayName,
     updatePosition,
+    updateEditorContentLength,
     jumpTo,
     addBookmark,
     removeBookmark,

@@ -7,7 +7,7 @@ import { useSettingsStore } from '@/stores/settings'
 import { useUIStore } from '@/stores/ui'
 import { useNovelReader } from '@/composables/useNovelReader'
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
-import Icon from './Icon.vue'
+import { usePageCalculator } from '@/composables/usePageCalculator'
 
 // Stores
 const novelStore = useNovelStore()
@@ -39,6 +39,9 @@ const {
 // 注册全局快捷键
 useKeyboardShortcuts()
 
+// 页码计算器
+const { totalPages } = usePageCalculator()
+
 // Computed
 const hasNovel = computed(() => currentNovel.value !== null)
 
@@ -48,9 +51,24 @@ const editorStyles = computed(() => ({
   lineHeight: settings.value.editor.lineHeight.toString()
 }))
 
-const pageStyles = computed(() => ({
-  width: '816px' // A4 宽度
-}))
+const pageStyles = computed(() =>
+{
+  // A4纸张尺寸（像素，96 DPI）
+  const A4_WIDTH_PX = 816
+  const A4_HEIGHT_PX = 1123
+  
+  // 根据页数计算最小高度
+  // 确保至少显示1页的高度
+  const pages = Math.max(totalPages.value, 1)
+  const minHeight = A4_HEIGHT_PX * pages
+  
+  return {
+    page: {
+      width: `${A4_WIDTH_PX}px`,
+      minHeight: `${minHeight}px`
+    }
+  }
+})
 
 // 计算编辑器容器顶部位置（根据 Ribbon 折叠状态）
 const containerStyles = computed(() =>
@@ -68,6 +86,46 @@ const containerStyles = computed(() =>
   }
 })
 
+// 监听编辑器内容变化，同步到 store
+function updateEditorContentLength(): void
+{
+  if (editorRef.value)
+  {
+    const length = editorRef.value.textContent?.length || 0
+    novelStore.updateEditorContentLength(length)
+  }
+}
+
+// 使用 MutationObserver 监听编辑器内容变化
+let editorObserver: globalThis.MutationObserver | null = null
+
+function setupEditorObserver(): void
+{
+  if (!editorRef.value) return
+  
+  // 清理旧的观察器
+  if (editorObserver)
+  {
+    editorObserver.disconnect()
+  }
+  
+  // 创建新的观察器
+  editorObserver = new globalThis.MutationObserver(() =>
+  {
+    updateEditorContentLength()
+  })
+  
+  // 观察编辑器的所有子节点变化和文本内容变化
+  editorObserver.observe(editorRef.value, {
+    childList: true,
+    characterData: true,
+    subtree: true
+  })
+  
+  // 初始化时更新一次
+  updateEditorContentLength()
+}
+
 // 监听小说加载
 watch(currentNovel, (novel, oldNovel) =>
 {
@@ -82,11 +140,15 @@ watch(currentNovel, (novel, oldNovel) =>
       // 清空编辑器并聚焦
       editorRef.value.textContent = ''
       editorRef.value.focus()
+      // 更新内容长度
+      updateEditorContentLength()
     }
     else
     {
       // 同一本小说，可能是位置更新，不清空内容
       editorRef.value.focus()
+      // 更新内容长度
+      updateEditorContentLength()
     }
   }
 })
@@ -107,12 +169,18 @@ onMounted(() =>
   {
     editorRef.value.focus()
     
+    // 设置编辑器观察器
+    setupEditorObserver()
+    
     // 如果刷新页面后有小说和阅读位置，恢复已读内容
     if (currentNovel.value && novelStore.currentPosition > 0)
     {
       const readContent = currentNovel.value.content.substring(0, novelStore.currentPosition)
       editorRef.value.textContent = readContent
       console.log('[Editor] 页面刷新，已恢复已读内容，长度:', readContent.length)
+      
+      // 更新内容长度
+      updateEditorContentLength()
       
       // 将光标移到末尾
       setTimeout(() =>
@@ -162,7 +230,7 @@ onMounted(() =>
     <div 
       ref="pageRef"
       class="document-page"
-      :style="pageStyles"
+      :style="pageStyles.page"
     >
       <div 
         ref="editorRef"
@@ -170,13 +238,13 @@ onMounted(() =>
         contenteditable="true"
         spellcheck="false"
         :style="editorStyles"
+        :data-show-page-marks="settings.editor.showPageMarks"
         @keydown="handleKeyDown"
         @beforeinput="handleBeforeInput"
         @compositionstart="handleCompositionStart"
         @compositionupdate="handleCompositionUpdate"
         @compositionend="handleCompositionEnd"
-      >
-      </div>
+      />
     </div>
   </div>
 </template>

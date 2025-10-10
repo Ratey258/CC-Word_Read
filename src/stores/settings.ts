@@ -20,7 +20,8 @@ export const useSettingsStore = defineStore('settings', () =>
       fontSize: EDITOR_DEFAULTS.FONT_SIZE,
       lineHeight: EDITOR_DEFAULTS.LINE_HEIGHT,
       showLineNumbers: EDITOR_DEFAULTS.SHOW_LINE_NUMBERS,
-      wordWrap: EDITOR_DEFAULTS.WORD_WRAP
+      wordWrap: EDITOR_DEFAULTS.WORD_WRAP,
+      showPageMarks: EDITOR_DEFAULTS.SHOW_PAGE_MARKS
     },
     window: {
       width: WINDOW_DEFAULTS.WIDTH,
@@ -200,7 +201,8 @@ export const useSettingsStore = defineStore('settings', () =>
         fontSize: EDITOR_DEFAULTS.FONT_SIZE,
         lineHeight: EDITOR_DEFAULTS.LINE_HEIGHT,
         showLineNumbers: EDITOR_DEFAULTS.SHOW_LINE_NUMBERS,
-        wordWrap: EDITOR_DEFAULTS.WORD_WRAP
+        wordWrap: EDITOR_DEFAULTS.WORD_WRAP,
+        showPageMarks: EDITOR_DEFAULTS.SHOW_PAGE_MARKS
       },
       window: {
         width: WINDOW_DEFAULTS.WIDTH,

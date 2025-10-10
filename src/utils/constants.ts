@@ -54,7 +54,9 @@ export const EDITOR_DEFAULTS = {
   /** 显示行号 */
   SHOW_LINE_NUMBERS: false,
   /** 自动换行 */
-  WORD_WRAP: true
+  WORD_WRAP: true,
+  /** 显示页面标记线（默认关闭）*/
+  SHOW_PAGE_MARKS: false
 } as const
 
 /**
