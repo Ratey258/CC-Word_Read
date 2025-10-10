@@ -23,7 +23,6 @@ const historyStore = useHistoryStore()
 // Composables
 const { importFile, importSampleNovel } = useFileImporter()
 const { startReading, pauseReading, resumeReading, stopReading, canStartReading } = useNovelReader()
-const { saveProgress, jumpToPercentage, resetToStart } = useProgress()
 const { recentItems, hasHistory, loadFromHistory, clearAllHistory, formatTime, formatFileSize, getFormatIcon } = useHistory()
 
 // 调试：监视历史记录变化
@@ -124,12 +123,6 @@ const handleImportSample = async () =>
   await importSampleNovel()
 }
 
-const handleSaveProgress = () =>
-{
-  closeFileMenu()
-  saveProgress()
-}
-
 // Methods - Reading control
 // 合并的开始/暂停切换按钮
 const handleToggleReading = () =>
@@ -200,11 +193,6 @@ const handleStopReading = () =>
   }
 }
 
-const handleResetPosition = () =>
-{
-  resetToStart()
-}
-
 const handleRenameDisplay = () =>
 {
   closeFileMenu()
@@ -216,18 +204,6 @@ const handleRenameConfirm = (newName: string) =>
   novelStore.setDisplayName(newName)
 }
 
-const handleJumpToPosition = () =>
-{
-  const input = window.prompt('跳转到百分比位置 (0-100):')
-  if (input)
-  {
-    const percentage = parseFloat(input)
-    if (!isNaN(percentage))
-    {
-      jumpToPercentage(percentage)
-    }
-  }
-}
 
 // Methods - History
 const handleLoadFromHistory = async (item: HistoryItem) =>
@@ -440,7 +416,7 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
               加载示例
             </div>
             <div class="file-menu__item-description">
-              加载示例小说进行体验
+              加载示例文件进行体验
             </div>
           </div>
         </button>
@@ -496,62 +472,6 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
         </div>
       </div>
 
-      <div class="file-menu__divider" />
-
-      <div class="file-menu__section">
-        <h3 class="file-menu__section-title">
-          进度
-        </h3>
-        <button 
-          class="file-menu__item"
-          :disabled="!hasNovel"
-          @click="handleSaveProgress"
-        >
-          <span class="file-menu__item-icon">💾</span>
-          <div class="file-menu__item-content">
-            <div class="file-menu__item-title">
-              保存进度
-            </div>
-            <div class="file-menu__item-description">
-              保存当前阅读进度
-            </div>
-          </div>
-          <kbd class="file-menu__item-shortcut">Ctrl+S</kbd>
-        </button>
-        <button 
-          class="file-menu__item"
-          :disabled="!hasNovel"
-          @click="handleJumpToPosition"
-        >
-          <span class="file-menu__item-icon">🎯</span>
-          <div class="file-menu__item-content">
-            <div class="file-menu__item-title">
-              跳转位置
-            </div>
-            <div class="file-menu__item-description">
-              跳转到指定阅读位置
-            </div>
-          </div>
-          <kbd class="file-menu__item-shortcut">Ctrl+G</kbd>
-        </button>
-        <button 
-          class="file-menu__item"
-          :disabled="!hasNovel"
-          @click="handleResetPosition"
-        >
-          <span class="file-menu__item-icon">🔄</span>
-          <div class="file-menu__item-content">
-            <div class="file-menu__item-title">
-              重置位置
-            </div>
-            <div class="file-menu__item-description">
-              回到文件开头
-            </div>
-          </div>
-        </button>
-      </div>
-
-      <div class="file-menu__divider" />
 
       <div class="file-menu__section">
         <h3 class="file-menu__section-title">

@@ -299,7 +299,7 @@ export function useFileImporter()
     }
 
     novelStore.loadNovel(novel)
-    uiStore.showSuccess('已加载示例小说')
+    uiStore.showSuccess('已加载示例文件')
     uiStore.hideWelcome()
   }
 
