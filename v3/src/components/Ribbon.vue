@@ -26,7 +26,6 @@ const { hasNovel } = storeToRefs(novelStore)
 const { isReading, isPaused } = storeToRefs(readerStore)
 const { isRibbonCollapsed } = storeToRefs(uiStore)
 
-const activeTab = ref<'home' | 'insert' | 'design' | 'layout' | 'reference' | 'mailings' | 'review' | 'view'>('home')
 const showFileMenu = ref(false)
 
 // Font options
@@ -47,9 +46,9 @@ const canResume = computed(() => isPaused.value)
 const canStop = computed(() => isReading.value || isPaused.value)
 
 // Methods - Tab navigation
-const switchTab = (tab: typeof activeTab.value) =>
+const switchTab = (tab: string) =>
 {
-  activeTab.value = tab
+  // 不再实际切换标签，只是提供视觉反馈
   showFileMenu.value = false
   
   // 如果 Ribbon 折叠了，点击标签时展开
@@ -57,6 +56,9 @@ const switchTab = (tab: typeof activeTab.value) =>
   {
     uiStore.toggleRibbonCollapse()
   }
+  
+  // 可以在这里添加其他逻辑，比如日志记录
+  console.log(`Tab clicked: ${tab}`)
 }
 
 const toggleFileMenu = () =>
@@ -180,8 +182,7 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
         文件
       </button>
       <button 
-        class="ribbon__tab"
-        :class="{ 'ribbon__tab--active': activeTab === 'home' && !isRibbonCollapsed }"
+        class="ribbon__tab ribbon__tab--active"
         @click="switchTab('home')"
         @dblclick="handleTabDoubleClick"
       >
@@ -192,7 +193,6 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
       </div>
       <button 
         class="ribbon__tab"
-        :class="{ 'ribbon__tab--active': activeTab === 'insert' && !isRibbonCollapsed }"
         @click="switchTab('insert')"
         @dblclick="handleTabDoubleClick"
       >
@@ -200,7 +200,6 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
       </button>
       <button 
         class="ribbon__tab"
-        :class="{ 'ribbon__tab--active': activeTab === 'design' && !isRibbonCollapsed }"
         @click="switchTab('design')"
         @dblclick="handleTabDoubleClick"
       >
@@ -208,7 +207,6 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
       </button>
       <button 
         class="ribbon__tab"
-        :class="{ 'ribbon__tab--active': activeTab === 'layout' && !isRibbonCollapsed }"
         @click="switchTab('layout')"
         @dblclick="handleTabDoubleClick"
       >
@@ -216,7 +214,6 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
       </button>
       <button 
         class="ribbon__tab"
-        :class="{ 'ribbon__tab--active': activeTab === 'reference' && !isRibbonCollapsed }"
         @click="switchTab('reference')"
         @dblclick="handleTabDoubleClick"
       >
@@ -224,7 +221,6 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
       </button>
       <button 
         class="ribbon__tab"
-        :class="{ 'ribbon__tab--active': activeTab === 'mailings' && !isRibbonCollapsed }"
         @click="switchTab('mailings')"
         @dblclick="handleTabDoubleClick"
       >
@@ -232,7 +228,6 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
       </button>
       <button 
         class="ribbon__tab"
-        :class="{ 'ribbon__tab--active': activeTab === 'review' && !isRibbonCollapsed }"
         @click="switchTab('review')"
         @dblclick="handleTabDoubleClick"
       >
@@ -240,7 +235,6 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
       </button>
       <button 
         class="ribbon__tab"
-        :class="{ 'ribbon__tab--active': activeTab === 'view' && !isRibbonCollapsed }"
         @click="switchTab('view')"
         @dblclick="handleTabDoubleClick"
       >
@@ -248,6 +242,7 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
       </button>
       <button 
         class="ribbon__tab"
+        style="display: none;"
         @click="handleImportFile"
         @dblclick="handleTabDoubleClick"
       >
@@ -334,7 +329,7 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
               打开文件
             </div>
             <div class="file-menu__item-description">
-              从本地导入 TXT 文本文件
+              支持 TXT、Word (.docx)、Markdown 格式，完美保留原文档格式
             </div>
           </div>
           <kbd class="file-menu__item-shortcut">Ctrl+O</kbd>
@@ -413,11 +408,8 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
 
     <!-- 工具栏 -->
     <div class="ribbon__toolbar">
-      <!-- 开始标签内容 -->
-      <div
-        v-show="activeTab === 'home'"
-        class="ribbon__content"
-      >
+      <!-- 开始标签内容 - 始终显示 -->
+      <div class="ribbon__content">
         <!-- 剪贴板组 -->
         <div class="ribbon__group">
           <div class="ribbon__group-content">
@@ -1279,59 +1271,6 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
           </div>
           <div class="ribbon__group-label">
             阅读控制
-          </div>
-        </div>
-      </div>
-
-      <!-- 其他标签内容（暂时为空） -->
-      <div
-        v-show="activeTab === 'insert'"
-        class="ribbon__content"
-      >
-        <div class="ribbon__group">
-          <div class="ribbon__group-content">
-            <p style="padding: 20px; color: var(--word-text-secondary)">
-              插入功能开发中...
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div
-        v-show="activeTab === 'layout'"
-        class="ribbon__content"
-      >
-        <div class="ribbon__group">
-          <div class="ribbon__group-content">
-            <p style="padding: 20px; color: var(--word-text-secondary)">
-              布局功能开发中...
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div
-        v-show="activeTab === 'review'"
-        class="ribbon__content"
-      >
-        <div class="ribbon__group">
-          <div class="ribbon__group-content">
-            <p style="padding: 20px; color: var(--word-text-secondary)">
-              审阅功能开发中...
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div
-        v-show="activeTab === 'view'"
-        class="ribbon__content"
-      >
-        <div class="ribbon__group">
-          <div class="ribbon__group-content">
-            <p style="padding: 20px; color: var(--word-text-secondary)">
-              视图功能开发中...
-            </p>
           </div>
         </div>
       </div>

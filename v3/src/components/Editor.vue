@@ -19,7 +19,7 @@ const uiStore = useUIStore()
 const pageRef = ref<HTMLDivElement>()
 
 // Reactive state
-const { currentNovel, currentPosition, content } = storeToRefs(novelStore)
+const { currentNovel } = storeToRefs(novelStore)
 const { isReading } = storeToRefs(readerStore)
 const { settings } = storeToRefs(settingsStore)
 const { isRibbonCollapsed } = storeToRefs(uiStore)
@@ -52,7 +52,8 @@ const pageStyles = computed(() => ({
 }))
 
 // 计算编辑器容器顶部位置（根据 Ribbon 折叠状态）
-const containerStyles = computed(() => {
+const containerStyles = computed(() =>
+{
   const titlebarHeight = 32 // var(--titlebar-height)
   const ribbonTabHeight = 27 // var(--ribbon-tab-height)
   const ribbonToolbarHeight = 93 // var(--ribbon-toolbar-height)
@@ -64,13 +65,6 @@ const containerStyles = computed(() => {
   return {
     top: `${topOffset}px`
   }
-})
-
-// 显示文本：从开始到当前位置
-const displayedText = computed(() =>
-{
-  if (!content.value || currentPosition.value === 0) return ''
-  return content.value.substring(0, currentPosition.value)
 })
 
 // 监听小说加载
@@ -143,13 +137,14 @@ onMounted(() =>
         @compositionupdate="handleCompositionUpdate"
         @compositionend="handleCompositionEnd"
       >
-        <template v-if="hasNovel">
-          {{ displayedText }}
-        </template>
-        <template v-else>
+        <template v-if="!hasNovel">
           <div class="document-placeholder">
             <div class="document-placeholder__icon">
-              <Icon name="file" :size="64" class="editor__welcome-icon" />
+              <Icon 
+                name="file"
+                :size="64"
+                class="editor__welcome-icon"
+              />
             </div>
             <h3 class="document-placeholder__title">
               导入小说开始阅读

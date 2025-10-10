@@ -234,21 +234,12 @@ export function useNovelReader()
     const editor = editorRef.value
     if (!editor) return
 
-    // 获取当前光标位置
-    const selection = window.getSelection()
-    if (!selection) return
-
-    const range = selection.getRangeAt(0)
-    
-    // 插入文本
+    // 始终在编辑器内容末尾追加文本，而不是在当前光标位置插入
     const textNode = document.createTextNode(text)
-    range.insertNode(textNode)
+    editor.appendChild(textNode)
 
-    // 移动光标到文本末尾
-    range.setStartAfter(textNode)
-    range.setEndAfter(textNode)
-    selection.removeAllRanges()
-    selection.addRange(range)
+    // 移动光标到编辑器末尾
+    moveCursorToEnd(editor)
 
     // 滚动到可见区域
     editor.scrollTop = editor.scrollHeight

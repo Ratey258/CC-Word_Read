@@ -20,6 +20,8 @@ export interface NovelMetadata {
   fileSize: number
   /** 文件格式 */
   format: NovelFormat
+  /** HTML 格式内容（保留原文档格式） */
+  htmlContent?: string
 }
 
 /**

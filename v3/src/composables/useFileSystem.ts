@@ -19,6 +19,7 @@ export interface FileResult
   name: string
   content: string
   size: number
+  file?: File // 原始 File 对象（仅浏览器环境）
 }
 
 export interface FileDialogOptions
@@ -110,12 +111,22 @@ export function useFileSystem()
               return
             }
 
-            const content = await file.text()
+            // 对于文本文件，读取内容；对于二进制文件（如 docx），保留 File 对象
+            const ext = file.name.split('.').pop()?.toLowerCase()
+            let content = ''
+            
+            // 只为纯文本格式读取内容
+            if (ext === 'txt' || ext === 'md')
+            {
+              content = await file.text()
+            }
+
             resolve({
               path: null, // 浏览器环境无法获取真实路径
               name: file.name,
               content,
-              size: file.size
+              size: file.size,
+              file // 保留原始 File 对象供后续解析使用
             })
           }
 
