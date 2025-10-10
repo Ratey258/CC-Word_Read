@@ -123,6 +123,7 @@ const handleClose = () =>
 
       <!-- 快速访问工具栏 -->
       <div class="title-bar__quick-access">
+        <!-- 保存按钮 -->
         <button 
           class="title-bar__quick-btn" 
           title="保存 (Ctrl+S)"
@@ -133,6 +134,8 @@ const handleClose = () =>
             :size="14"
           />
         </button>
+        
+        <!-- 撤销按钮 -->
         <button 
           class="title-bar__quick-btn" 
           title="撤销 (Ctrl+Z)"
@@ -143,6 +146,8 @@ const handleClose = () =>
             :size="14"
           />
         </button>
+        
+        <!-- 重做按钮 -->
         <button 
           class="title-bar__quick-btn" 
           title="重做 (Ctrl+Y)"
@@ -154,39 +159,33 @@ const handleClose = () =>
           />
         </button>
       </div>
-    </div>
 
-    <!-- 中间 - 文档标题 -->
-    <div class="title-bar__center">
-      <div class="title-bar__title">
+      <!-- 文档标题 -->
+      <div class="title-bar__document-name">
         {{ novelTitle }}
       </div>
-      <div class="title-bar__separator">
-        -
-      </div>
-      <div class="title-bar__app">
-        Word
-      </div>
     </div>
 
-    <!-- 搜索框 -->
-    <div class="title-bar__search">
-      <svg
-        class="title-bar__search-icon"
-        width="16"
-        height="16"
-        viewBox="0 0 16 16"
-        fill="currentColor"
-      >
-        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
-      </svg>
-      <input
-        type="text"
-        class="title-bar__search-input"
-        placeholder="搜索"
-        :value="searchQuery"
-        @input="handleSearchInput"
-      >
+    <!-- 中间 - 搜索框 -->
+    <div class="title-bar__center">
+      <div class="title-bar__search">
+        <svg
+          class="title-bar__search-icon"
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          fill="currentColor"
+        >
+          <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+        </svg>
+        <input
+          type="text"
+          class="title-bar__search-input"
+          placeholder="搜索"
+          :value="searchQuery"
+          @input="handleSearchInput"
+        >
+      </div>
     </div>
 
     <!-- 右侧工具 -->

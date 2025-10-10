@@ -55,9 +55,9 @@
   
   /* 布局尺寸 */
   --titlebar-height: 30px;
-  --ribbon-tab-height: 24px;
-  --ribbon-toolbar-height: 94px;
-  --ribbon-total-height: 118px;
+  --ribbon-tab-height: 28px;
+  --ribbon-toolbar-height: 104px;
+  --ribbon-total-height: 132px;
   --statusbar-height: 22px;
   
   /* 按钮尺寸 */

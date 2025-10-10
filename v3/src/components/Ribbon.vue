@@ -32,11 +32,11 @@ const showFileMenu = ref(false)
 // Font options
 const fontSizes = [8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72]
 const fontFamilies = [
+  { label: 'Calibri', value: 'Calibri, "Microsoft YaHei", "Segoe UI", sans-serif' },
   { label: '宋体', value: '宋体' },
   { label: '黑体', value: '黑体' },
   { label: '楷体', value: '楷体' },
   { label: '仿宋', value: '仿宋' },
-  { label: 'Calibri', value: 'Calibri' },
   { label: 'Arial', value: 'Arial' },
   { label: 'Times New Roman', value: 'Times New Roman' }
 ]
