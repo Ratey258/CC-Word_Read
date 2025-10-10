@@ -126,10 +126,16 @@ export function useWindowControls()
         const currentWindow = getCurrentWebviewWindow()
         console.log('🔍 [Close] currentWindow 对象:', currentWindow)
         console.log('🔍 [Close] currentWindow.label:', currentWindow.label)
-        console.log('🔍 [Close] 调用 close() 方法...')
         
-        const result = await currentWindow.close()
-        console.log('✅ [Close] 关闭成功, 结果:', result)
+        // 先隐藏窗口，避免白屏（关键！）
+        console.log('🔍 [Close] 调用 hide() 隐藏窗口...')
+        await currentWindow.hide()
+        console.log('✅ [Close] 窗口已隐藏')
+        
+        // 立即关闭窗口
+        console.log('🔍 [Close] 调用 close() 方法...')
+        await currentWindow.close()
+        console.log('✅ [Close] 关闭成功')
       }
       catch (error)
       {
