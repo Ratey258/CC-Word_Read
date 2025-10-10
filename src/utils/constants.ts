@@ -86,7 +86,9 @@ export const STORAGE_KEYS = {
   /** 书签列表 */
   BOOKMARKS: 'bookmarks',
   /** 最近打开 */
-  RECENT_FILES: 'recent_files'
+  RECENT_FILES: 'recent_files',
+  /** 历史记录 */
+  HISTORY: 'history'
 } as const
 
 /**

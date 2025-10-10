@@ -131,8 +131,8 @@ export function useFileImporter()
         }
       }
 
-      // 加载小说
-      novelStore.loadNovel(novel)
+      // 加载小说（传递文件路径以便历史记录使用）
+      novelStore.loadNovel(novel, fileResult.path || undefined)
 
       const formatInfo = parsedDoc.hasFormatting ? '（已保留格式）' : ''
       uiStore.showSuccess(`导入成功：${novel.metadata.title}${formatInfo}`)

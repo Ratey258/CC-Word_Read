@@ -8,6 +8,8 @@ import { useUIStore } from '@/stores/ui'
 import { useFileImporter } from '@/composables/useFileImporter'
 import { useNovelReader } from '@/composables/useNovelReader'
 import { useProgress } from '@/composables/useProgress'
+import { useHistory } from '@/composables/useHistory'
+import type { HistoryItem } from '@/types/history'
 
 // Stores
 const novelStore = useNovelStore()
@@ -19,6 +21,7 @@ const uiStore = useUIStore()
 const { importFile, importSampleNovel } = useFileImporter()
 const { startReading, pauseReading, resumeReading, stopReading, canStartReading } = useNovelReader()
 const { saveProgress, jumpToPercentage, resetToStart } = useProgress()
+const { recentItems, hasHistory, loadFromHistory, clearAllHistory, formatTime, formatFileSize, getFormatIcon } = useHistory()
 
 // Reactive state
 const { settings } = storeToRefs(settingsStore)
@@ -182,6 +185,20 @@ const handleJumpToPosition = () =>
       jumpToPercentage(percentage)
     }
   }
+}
+
+// Methods - History
+const handleLoadFromHistory = async (item: HistoryItem) =>
+{
+  console.log('[Ribbon] 点击历史记录项:', item.title)
+  closeFileMenu()
+  await loadFromHistory(item)
+  console.log('[Ribbon] 历史记录加载完成')
+}
+
+const handleClearHistory = () =>
+{
+  clearAllHistory()
 }
 
 // Methods - Font styling
@@ -385,6 +402,56 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
             </div>
           </div>
         </button>
+      </div>
+
+      <div class="file-menu__divider" />
+
+      <!-- 最近打开 -->
+      <div 
+        v-if="hasHistory"
+        class="file-menu__section"
+      >
+        <div class="file-menu__section-header">
+          <h3 class="file-menu__section-title">
+            最近打开
+          </h3>
+          <button
+            class="file-menu__clear-button"
+            title="清空历史"
+            @click="handleClearHistory"
+          >
+            清空
+          </button>
+        </div>
+        <div class="file-menu__recent-list">
+          <button
+            v-for="item in recentItems"
+            :key="item.id"
+            class="file-menu__recent-item"
+            @click="handleLoadFromHistory(item)"
+          >
+            <span class="file-menu__recent-icon">{{ getFormatIcon(item.format) }}</span>
+            <div class="file-menu__recent-content">
+              <div class="file-menu__recent-title">
+                {{ item.title }}
+              </div>
+              <div class="file-menu__recent-meta">
+                <span class="file-menu__recent-progress">{{ Math.round(item.progress.percentage) }}%</span>
+                <span class="file-menu__recent-divider">•</span>
+                <span class="file-menu__recent-time">{{ formatTime(item.lastAccessedAt) }}</span>
+                <span class="file-menu__recent-divider">•</span>
+                <span class="file-menu__recent-size">{{ formatFileSize(item.fileSize) }}</span>
+              </div>
+            </div>
+            <div
+              v-if="item.isCompleted"
+              class="file-menu__recent-badge"
+              title="已完成"
+            >
+              ✓
+            </div>
+          </button>
+        </div>
       </div>
 
       <div class="file-menu__divider" />
@@ -1328,14 +1395,40 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
   padding: 16px;
 }
 
+.file-menu__section-header
+{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding: 0 8px;
+}
+
 .file-menu__section-title
 {
   font-size: 12px;
   font-weight: 600;
   color: var(--word-text-secondary);
   text-transform: uppercase;
-  margin-bottom: 12px;
-  padding-left: 8px;
+  margin: 0;
+}
+
+.file-menu__clear-button
+{
+  font-size: 11px;
+  color: var(--word-text-secondary);
+  background: transparent;
+  border: none;
+  padding: 4px 8px;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: all 150ms;
+}
+
+.file-menu__clear-button:hover
+{
+  background: var(--word-gray-hover);
+  color: var(--word-text-primary);
 }
 
 .file-menu__item
@@ -1413,6 +1506,101 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
   height: 1px;
   background-color: var(--word-gray-border);
   margin: 8px 16px;
+}
+
+/* 历史记录列表样式 */
+.file-menu__recent-list
+{
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.file-menu__recent-item
+{
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 10px 12px;
+  background-color: transparent;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: background-color 150ms;
+  text-align: left;
+  gap: 10px;
+  position: relative;
+}
+
+.file-menu__recent-item:hover
+{
+  background-color: var(--word-gray-hover);
+}
+
+.file-menu__recent-icon
+{
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.file-menu__recent-content
+{
+  flex: 1;
+  min-width: 0;
+}
+
+.file-menu__recent-title
+{
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--word-text-primary);
+  margin-bottom: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-menu__recent-meta
+{
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--word-text-tertiary);
+}
+
+.file-menu__recent-progress
+{
+  font-weight: 600;
+  color: var(--word-accent);
+}
+
+.file-menu__recent-divider
+{
+  opacity: 0.5;
+}
+
+.file-menu__recent-time,
+.file-menu__recent-size
+{
+  white-space: nowrap;
+}
+
+.file-menu__recent-badge
+{
+  width: 20px;
+  height: 20px;
+  background: var(--word-accent);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
 }
 
 /* Ribbon 按钮禁用状态样式 */

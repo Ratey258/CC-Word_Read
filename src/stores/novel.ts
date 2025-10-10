@@ -6,6 +6,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { Novel, NovelMetadata, Bookmark, ReadingProgress } from '@/types/novel'
 import { STORAGE_KEYS } from '@/utils/constants'
+import { useHistoryStore } from './history'
 
 export const useNovelStore = defineStore('novel', () =>
 {
@@ -61,8 +62,9 @@ export const useNovelStore = defineStore('novel', () =>
   /**
    * 加载小说
    * @param novel 小说对象
+   * @param filePath 文件路径（可选，Tauri环境）
    */
-  function loadNovel(novel: Novel): void
+  function loadNovel(novel: Novel, filePath?: string): void
   {
     currentNovel.value = novel
     content.value = novel.content
@@ -73,6 +75,10 @@ export const useNovelStore = defineStore('novel', () =>
     
     // 添加到最近打开列表
     addToRecentFiles(novel.metadata)
+    
+    // 添加到历史记录
+    const historyStore = useHistoryStore()
+    historyStore.addToHistory(novel, filePath)
   }
   
   /**
@@ -96,6 +102,13 @@ export const useNovelStore = defineStore('novel', () =>
     {
       currentPosition.value = position
       saveProgress()
+      
+      // 同步到历史记录
+      if (currentNovel.value)
+      {
+        const historyStore = useHistoryStore()
+        historyStore.updateProgress(currentNovel.value.id, position)
+      }
     }
   }
   
