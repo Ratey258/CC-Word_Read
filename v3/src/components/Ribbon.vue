@@ -396,7 +396,7 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
               </button>
               <div class="ribbon__button-stack">
                 <button
-                  class="ribbon__button--small ribbon__button--stack"
+                  class="ribbon__button--small ribbon__button--stack-icon"
                   title="剪切 (Ctrl+X)"
                 >
                   <svg
@@ -406,10 +406,9 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
                   >
                     <path d="M15.825 8.115l-4.361 4.361a4 4 0 01-5.656-5.656l4.361-4.361a2.5 2.5 0 113.536 3.536L9.343 9.357a1 1 0 11-1.414-1.414l4.006-4.006-.708-.708-4.006 4.006a2 2 0 102.828 2.828l4.362-4.362a3.5 3.5 0 10-4.95-4.95L5.1 5.112a5 5 0 107.07 7.07l4.362-4.361-.708-.707z" />
                   </svg>
-                  <span>剪切</span>
                 </button>
                 <button
-                  class="ribbon__button--small ribbon__button--stack"
+                  class="ribbon__button--small ribbon__button--stack-icon"
                   title="复制 (Ctrl+C)"
                 >
                   <svg
@@ -419,10 +418,9 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
                   >
                     <path d="M13 2H7c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h6c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM3 6H1v9c0 1.1.9 2 2 2h9v-2H3V6z" />
                   </svg>
-                  <span>复制</span>
                 </button>
                 <button
-                  class="ribbon__button--small ribbon__button--stack"
+                  class="ribbon__button--small ribbon__button--stack-icon"
                   title="格式刷 (Ctrl+Shift+C)"
                 >
                   <svg
@@ -432,7 +430,6 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
                   >
                     <path d="M12 0H4C2.9 0 2 .9 2 2v2c0 1.1.9 2 2 2h2v10h4V6h2c1.1 0 2-.9 2-2V2c0-1.1-.9-2-2-2z" />
                   </svg>
-                  <span>格式刷</span>
                 </button>
               </div>
             </div>
