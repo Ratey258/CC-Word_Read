@@ -156,24 +156,6 @@ const changeFontFamily = (family: string) =>
   settingsStore.setFontFamily(family)
 }
 
-const increaseFontSize = () =>
-{
-  const currentIndex = fontSizes.indexOf(settings.value.editor.fontSize)
-  if (currentIndex < fontSizes.length - 1)
-  {
-    changeFontSize(fontSizes[currentIndex + 1])
-  }
-}
-
-const decreaseFontSize = () =>
-{
-  const currentIndex = fontSizes.indexOf(settings.value.editor.fontSize)
-  if (currentIndex > 0)
-  {
-    changeFontSize(fontSizes[currentIndex - 1])
-  }
-}
-
 const toggleBold = () => console.log('Toggle Bold')
 const toggleItalic = () => console.log('Toggle Italic')
 const toggleUnderline = () => console.log('Toggle Underline')
@@ -478,52 +460,16 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
                     {{ size }}
                   </option>
                 </select>
-                <button 
-                  class="ribbon__font-size-btn"
-                  title="增大字号"
-                  @click="increaseFontSize"
-                >
-                  <svg
-                    viewBox="0 0 16 16"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path 
-                      d="M3.414 7.657L1.707 5.95 1 6.657l2.707 2.707.707.707L7.07 7.414l-.707-.707-1.707 1.707V4h-1v4.414zm5 .686L11.121 6l1.415 1.414L14.95 5l-1.414-1.414L11.121 6 8.707 3.586 7.293 5l2.414 2.414-2.414 2.414L8.707 11l2.414-2.414z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                </button>
-                <button 
-                  class="ribbon__font-size-btn"
-                  title="减小字号"
-                  @click="decreaseFontSize"
-                >
-                  <svg
-                    viewBox="0 0 16 16"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path 
-                      d="M3.414 8.343L1.707 10.05 1 9.343l2.707-2.707.707-.707L7.07 8.586l-.707.707-1.707-1.707V12h-1V7.586zm5-.686L11.121 10l1.415-1.414L14.95 11l-1.414 1.414L11.121 10 8.707 12.414 7.293 11l2.414-2.414-2.414-2.414L8.707 5l2.414 2.414z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                </button>
               </div>
 
               <!-- 第二行：格式化按钮 -->
               <div class="ribbon__font-row">
                 <button 
-                  class="ribbon__button--small" 
+                  class="ribbon__button--small ribbon__button--bold" 
                   title="粗体 (Ctrl+B)"
                   @click="toggleBold"
                 >
-                  <svg
-                    class="icon"
-                    viewBox="0 0 16 16"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M9.5 11c.83 0 1.5-.67 1.5-1.5 0-.4-.16-.77-.43-1.04.27-.27.43-.64.43-1.04 0-.83-.67-1.5-1.5-1.5H5v7h4.5zM7 7h2.5c.28 0 .5.22.5.5s-.22.5-.5.5H7V7zm2.5 3H7V9h2.5c.28 0 .5.22.5.5s-.22.5-.5.5z" />
-                  </svg>
+                  <span class="ribbon__text-icon">B</span>
                 </button>
                 <button 
                   class="ribbon__button--small" 
@@ -1113,24 +1059,10 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
           </div>
         </div>
 
-        <!-- 论文辅助组 -->
+        <!-- 论文助手组 -->
         <div class="ribbon__group ribbon__group--compact">
           <div class="ribbon__group-content">
             <div class="ribbon__row">
-              <button
-                class="ribbon__button--large"
-                title="论文写作"
-              >
-                <svg
-                  class="icon"
-                  viewBox="0 0 16 16"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M12.854.146a.5.5 0 00-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 000-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 01.5.5v.5h.5a.5.5 0 01.5.5v.5h.5a.5.5 0 01.5.5v.5h.5a.5.5 0 01.5.5v.207l6.5-6.5z" />
-                  <path d="M3 9v6h6V9H3zm1 1v4H1.5v-4H4z" />
-                </svg>
-                <span class="ribbon__button--large-label">论文<br>写作</span>
-              </button>
               <button
                 class="ribbon__button--large"
                 title="论文查重"
@@ -1142,12 +1074,12 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
                 >
                   <path d="M14 14V4.5L9.5 0H4a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2zM9.5 3A1.5 1.5 0 0011 4.5h2V14a1 1 0 01-1 1H4a1 1 0 01-1-1V2a1 1 0 011-1h5.5v2z" />
                 </svg>
-                <span class="ribbon__button--large-label">论文<br>查重</span>
+                <span class="ribbon__button--large-label">论文查重</span>
               </button>
             </div>
           </div>
           <div class="ribbon__group-label">
-            论文辅助
+            论文助手
           </div>
         </div>
 
@@ -1167,7 +1099,7 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
                 <path d="M14 14V4.5L9.5 0H4a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2zM9.5 3A1.5 1.5 0 0011 4.5h2V14a1 1 0 01-1 1H4a1 1 0 01-1-1V2a1 1 0 011-1h5.5v2z" />
                 <path d="M4.603 14.087a.81.81 0 01-.438-.42c-.195-.388-.13-.776.08-1.102.198-.307.526-.568.897-.787a7.68 7.68 0 011.482-.645 19.697 19.697 0 001.062-2.227 7.269 7.269 0 01-.43-1.295c-.086-.4-.119-.796-.046-1.136.075-.354.274-.672.65-.823.192-.077.4-.12.602-.077a.7.7 0 01.477.365c.088.164.12.356.127.538.007.188-.012.396-.047.614-.084.51-.27 1.134-.52 1.794a10.954 10.954 0 00.98 1.686 5.753 5.753 0 011.334.05c.364.066.734.195.96.465.12.144.193.32.2.518.007.192-.047.382-.138.563a1.04 1.04 0 01-.354.416.856.856 0 01-.51.138c-.331-.014-.654-.196-.933-.417a5.712 5.712 0 01-.911-.95 11.651 11.651 0 00-1.997.406 11.307 11.307 0 01-1.02 1.51c-.292.35-.609.656-.927.787a.793.793 0 01-.58.029zm1.379-1.901c-.166.076-.32.156-.459.238-.328.194-.541.383-.647.547-.094.145-.096.25-.04.361.01.022.02.036.026.044a.266.266 0 00.035-.012c.137-.056.355-.235.635-.572a8.18 8.18 0 00.45-.606z" />
               </svg>
-              <span class="ribbon__button--large-label">转<br>PDF</span>
+              <span class="ribbon__button--large-label">转PDF</span>
             </button>
           </div>
           <div class="ribbon__group-label">

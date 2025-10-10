@@ -242,14 +242,14 @@
 .ribbon__button-large,
 .ribbon__button--large
 {
-  width: 42px;
-  min-width: 42px;
+  width: 54px;
+  min-width: 54px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   gap: 4px;
-  padding: 7px 5px 5px 5px;
+  padding: 7px 3px 5px 3px;
   border-radius: 3px;
   position: relative;
   transition: all 100ms ease-out;
@@ -285,11 +285,10 @@
   text-align: center;
   line-height: 1.1;
   max-width: 100%;
-  word-wrap: break-word;
   color: var(--word-text-primary);
   margin-top: 0px;
   overflow: visible;
-  white-space: normal;
+  white-space: nowrap;
   padding: 0 1px;
 }
 
@@ -358,6 +357,16 @@
 .ribbon__button--small span
 {
   display: none;
+}
+
+/* 文本图标样式 */
+.ribbon__text-icon
+{
+  display: inline-block !important;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  color: inherit;
 }
 
 .ribbon__button-small .icon,
