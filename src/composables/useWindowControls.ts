@@ -114,8 +114,12 @@ export function useWindowControls() {
 
   /**
    * 关闭窗口
+   * 根据 Tauri 2.x 官方文档，推荐使用 destroy() 而不是 close()
+   * destroy() 会立即销毁窗口，而 close() 可能需要特殊处理
    */
   const close = async (): Promise<void> => {
+    console.log('🔴 [Window] 开始关闭窗口...')
+    
     if (!isTauri()) {
       console.log('ℹ️ [浏览器模式] 尝试关闭标签页')
       // 在浏览器中，window.close() 只能关闭通过脚本打开的窗口
@@ -124,9 +128,10 @@ export function useWindowControls() {
     }
 
     try {
-      const window = getCurrentWebviewWindow()
-      await window.close()
-      console.log('✅ [Window] 关闭成功')
+      const appWindow = getCurrentWebviewWindow()
+      console.log('🔴 [Window] 调用 destroy() 关闭窗口...')
+      await appWindow.destroy()
+      console.log('✅ [Window] 窗口已成功关闭')
     } catch (error) {
       console.error('❌ [Window] 关闭失败:', error)
     }

@@ -64,9 +64,15 @@ const handleToggleMaximize = () => {
   toggleMaximize()
 }
 
-const handleClose = () => {
+const handleClose = async () => {
   console.log('🔘 [TitleBar] 点击关闭按钮')
-  close()
+  console.log('🔘 [TitleBar] supportsWindowControls:', supportsWindowControls.value)
+  try {
+    await close()
+    console.log('🔘 [TitleBar] 关闭函数执行完毕')
+  } catch (error) {
+    console.error('🔘 [TitleBar] 关闭失败:', error)
+  }
 }
 </script>
 
