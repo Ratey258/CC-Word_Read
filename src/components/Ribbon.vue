@@ -57,7 +57,7 @@ const showFileMenu = ref(false)
 const showRenameDialog = ref(false)
 
 // Font options
-const fontSizes = [10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72]
+const fontSizes = [10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28]
 const fontFamilies = [
   { label: 'Calibri', value: 'Calibri, "Microsoft YaHei", "Segoe UI", sans-serif' },
   { label: '宋体', value: '宋体' },
