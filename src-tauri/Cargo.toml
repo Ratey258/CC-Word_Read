@@ -42,4 +42,12 @@ strip = true
 
 [profile.dev]
 incremental = true
+opt-level = 1
+
+# 针对发布构建的优化配置
+[profile.release-fast]
+inherits = "release"
+codegen-units = 16  # 并行编译，加快构建速度
+lto = "thin"        # 使用轻量级 LTO
+opt-level = 2       # 平衡优化级别和编译速度
 

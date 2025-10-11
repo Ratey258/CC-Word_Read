@@ -1,0 +1,17 @@
+# Cargo 构建优化配置
+
+[build]
+# 使用多个编译线程（根据 CPU 核心数自动调整）
+jobs = 8
+
+[target.x86_64-pc-windows-msvc]
+# Windows 链接器优化
+rustflags = [
+  "-C", "link-arg=-fuse-ld=lld",  # 使用更快的链接器
+  "-C", "target-cpu=native",       # 针对当前 CPU 优化
+]
+
+# 网络配置
+[net]
+git-fetch-with-cli = false
+

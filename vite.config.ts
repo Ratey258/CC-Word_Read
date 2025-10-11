@@ -38,9 +38,18 @@ export default defineConfig({
     emptyOutDir: true,
     // 资源文件输出目录
     assetsDir: 'assets',
-    // 构建信息输出
-    reportCompressedSize: true,
-    chunkSizeWarningLimit: 1000
+    // 构建信息输出（CI 环境关闭压缩大小报告以加速）
+    reportCompressedSize: !process.env.CI,
+    chunkSizeWarningLimit: 1000,
+    // 优化构建性能
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor': ['vue', 'vue-router', 'pinia'],
+          'mammoth': ['mammoth']
+        }
+      }
+    }
   },
 
   // 路径别名
