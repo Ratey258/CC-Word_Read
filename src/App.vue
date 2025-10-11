@@ -8,10 +8,15 @@ import BookmarkPanel from '@/components/BookmarkPanel.vue'
 import AddBookmarkDialog from '@/components/AddBookmarkDialog.vue'
 import AboutDialog from '@/components/AboutDialog.vue'
 import UpdateChecker from '@/components/UpdateChecker.vue'
+import SuccessDialog from '@/components/SuccessDialog.vue'
 import { useFileImporter } from '@/composables/useFileImporter'
+import { useUIStore } from '@/stores/ui'
 
 // File import composable
 const { isDragging, handleDragEnter, handleDragLeave, handleDrop } = useFileImporter()
+
+// UI store
+const uiStore = useUIStore()
 
 // 书签面板
 const showBookmarkPanel = ref(false)
@@ -99,6 +104,16 @@ onMounted(() => {
 
     <!-- 更新检查器 -->
     <UpdateChecker ref="updateChecker" />
+
+    <!-- 成功对话框 -->
+    <SuccessDialog
+      :show="uiStore.successDialog.show"
+      :title="uiStore.successDialog.title"
+      :message="uiStore.successDialog.message"
+      :confirm-text="uiStore.successDialog.confirmText"
+      @close="uiStore.hideSuccessDialog"
+      @confirm="uiStore.hideSuccessDialog"
+    />
 
     <!-- 拖放遮罩层 -->
     <div

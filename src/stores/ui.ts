@@ -53,6 +53,16 @@ export const useUIStore = defineStore('ui', () => {
   /** 是否显示欢迎页 */
   const showWelcome = ref<boolean>(true)
   
+  /** 成功对话框配置 */
+  const successDialog = ref<{
+    show: boolean
+    title?: string
+    message?: string
+    confirmText?: string
+  }>({
+    show: false
+  })
+  
   // ===== Getters =====
   
   /** 是否有打开的对话框 */
@@ -239,6 +249,30 @@ export const useUIStore = defineStore('ui', () => {
   }
   
   /**
+   * 显示成功对话框
+   * @param options 对话框配置
+   */
+  function showSuccessDialog(options: {
+    title?: string
+    message?: string
+    confirmText?: string
+  } = {}): void {
+    successDialog.value = {
+      show: true,
+      title: options.title,
+      message: options.message,
+      confirmText: options.confirmText
+    }
+  }
+  
+  /**
+   * 隐藏成功对话框
+   */
+  function hideSuccessDialog(): void {
+    successDialog.value.show = false
+  }
+  
+  /**
    * 重置 UI 状态
    */
   function reset(): void {
@@ -264,6 +298,7 @@ export const useUIStore = defineStore('ui', () => {
     loadingText,
     notifications,
     showWelcome,
+    successDialog,
     
     // Getters
     hasActiveDialog,
@@ -288,6 +323,8 @@ export const useUIStore = defineStore('ui', () => {
     showWarning,
     showInfo,
     hideWelcome,
+    showSuccessDialog,
+    hideSuccessDialog,
     reset
   }
 })

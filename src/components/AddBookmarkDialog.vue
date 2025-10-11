@@ -2,9 +2,11 @@
 import { ref, watch } from 'vue'
 import { useBookmarkStore } from '@/stores/bookmark'
 import { useNovelStore } from '@/stores/novel'
+import { useUIStore } from '@/stores/ui'
 
 const bookmarkStore = useBookmarkStore()
 const novelStore = useNovelStore()
+const uiStore = useUIStore()
 
 const props = defineProps<{
   show: boolean
@@ -44,14 +46,23 @@ function handleOverlayClick(event: MouseEvent): void {
 function handleSubmit(): void {
   if (!novelStore.currentNovel) return
   
+  const bookmarkTitle = title.value.trim() || '未命名书签'
+  
   bookmarkStore.addBookmark({
     novelId: novelStore.currentNovel.id,
     position: novelStore.currentPosition,
-    title: title.value.trim() || '未命名书签',
+    title: bookmarkTitle,
     note: note.value.trim()
   })
   
   handleClose()
+  
+  // 显示成功对话框
+  uiStore.showSuccessDialog({
+    title: '书签添加成功',
+    message: `已成功添加书签「${bookmarkTitle}」`,
+    confirmText: '好的'
+  })
 }
 
 function handleCancel(): void {
