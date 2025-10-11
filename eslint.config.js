@@ -72,6 +72,8 @@ export default [
         __dirname: 'readonly',
         __filename: 'readonly',
         globalThis: 'readonly',
+        // Vite 全局变量
+        __APP_VERSION__: 'readonly',
         // ES2021 globals
         Promise: 'readonly',
         Set: 'readonly',

@@ -203,6 +203,12 @@ function setupEditorObserver(): void {
 
 // 监听小说加载
 watch(currentNovel, (novel, oldNovel) => {
+  console.log('[Editor] ========== watch triggered ==========')
+  console.log('[Editor] 新小说 ID:', novel?.id)
+  console.log('[Editor] 旧小说 ID:', oldNovel?.id)
+  console.log('[Editor] isRestoring 标志:', isRestoringFromHistory.value)
+  console.log('[Editor] novelStore.isRestoringFromHistory:', novelStore.isRestoringFromHistory)
+  
   if (novel && editorRef.value) {
     // 如果正在从历史记录恢复，不清空编辑器
     // 因为 useHistory 会在加载后手动恢复已读内容
@@ -218,12 +224,14 @@ watch(currentNovel, (novel, oldNovel) => {
     const isNewNovel = !oldNovel || oldNovel.id !== novel.id
     
     if (isNewNovel) {
+      console.log('[Editor] 加载新小说，清空编辑器')
       // 清空编辑器并聚焦
       editorRef.value.textContent = ''
       editorRef.value.focus()
       // 更新内容长度
       updateEditorContentLength()
     } else {
+      console.log('[Editor] 同一本小说，保持编辑器内容')
       // 同一本小说，可能是位置更新，不清空内容
       editorRef.value.focus()
       // 更新内容长度

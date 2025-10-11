@@ -174,6 +174,11 @@ const handleCheckUpdates = () => {
   closeFileMenu()
 }
 
+const handleShowAbout = () => {
+  window.dispatchEvent(new CustomEvent('show-about'))
+  closeFileMenu()
+}
+
 const handleRenameConfirm = (newName: string) => {
   novelStore.setDisplayName(newName)
 }
@@ -480,6 +485,20 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
             </div>
             <div class="file-menu__item-description">
               检查并安装应用程序更新
+            </div>
+          </div>
+        </button>
+        <button 
+          class="file-menu__item"
+          @click="handleShowAbout"
+        >
+          <span class="file-menu__item-icon">ℹ️</span>
+          <div class="file-menu__item-content">
+            <div class="file-menu__item-title">
+              关于
+            </div>
+            <div class="file-menu__item-description">
+              查看应用版本和作者信息
             </div>
           </div>
         </button>

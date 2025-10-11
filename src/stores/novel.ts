@@ -3,7 +3,7 @@
  */
 
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref, computed, nextTick } from 'vue'
 import type { Novel, NovelMetadata, Bookmark, ReadingProgress } from '@/types/novel'
 import { STORAGE_KEYS } from '@/utils/constants'
 import { useHistoryStore } from './history'
@@ -70,10 +70,16 @@ export const useNovelStore = defineStore('novel', () => {
    * @param filePath 文件路径（可选，Tauri环境）
    * @param isHistoryRestore 是否是从历史记录恢复（默认 false）
    */
-  function loadNovel(novel: Novel, filePath?: string, isHistoryRestore = false): void {
-    // 如果是从历史记录恢复，设置标志
+  async function loadNovel(novel: Novel, filePath?: string, isHistoryRestore = false): Promise<void> {
+    // 如果是从历史记录恢复，先设置标志并等待 Vue 处理
     if (isHistoryRestore) {
+      console.log('[NovelStore] 设置历史恢复标志')
       isRestoringFromHistory.value = true
+      // 使用 nextTick 确保 Vue 已经更新所有依赖这个状态的组件
+      await nextTick()
+      // 再等待一次，确保所有 watch 都已经执行完毕
+      await nextTick()
+      console.log('[NovelStore] Vue 已处理响应式更新')
     }
     
     currentNovel.value = novel
@@ -95,12 +101,8 @@ export const useNovelStore = defineStore('novel', () => {
       historyStore.addToHistory(novel, filePath)
     }
     
-    // 在下一个 tick 后重置标志
-    if (isHistoryRestore) {
-      setTimeout(() => {
-        isRestoringFromHistory.value = false
-      }, 200)
-    }
+    // 注意：isRestoringFromHistory 标志由调用方在恢复完成后重置
+    // 不在这里重置，以确保整个恢复流程（包括恢复已读内容等）完成后才重置
   }
   
   /**
@@ -244,13 +246,13 @@ export const useNovelStore = defineStore('novel', () => {
   /**
    * 从本地存储加载
    */
-  function loadFromStorage(): void {
+  async function loadFromStorage(): Promise<void> {
     const data = localStorage.getItem(STORAGE_KEYS.CURRENT_NOVEL)
     if (!data) return
     
     try {
       const novel: Novel = JSON.parse(data)
-      loadNovel(novel)
+      await loadNovel(novel)
       loadProgress()
       loadBookmarks()
     } catch (error) {

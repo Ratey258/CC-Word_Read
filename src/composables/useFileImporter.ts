@@ -141,7 +141,7 @@ export function useFileImporter() {
       }
 
       // 加载小说（传递文件路径以便历史记录使用）
-      novelStore.loadNovel(novel, path || undefined)
+      await novelStore.loadNovel(novel, path || undefined)
 
       const formatInfo = parsedDoc.hasFormatting ? '（已保留格式）' : ''
       uiStore.showSuccess(`导入成功：${novel.metadata.title}${formatInfo}`)
@@ -196,7 +196,7 @@ export function useFileImporter() {
     }
 
     // 加载小说
-    novelStore.loadNovel(novel)
+    await novelStore.loadNovel(novel)
     uiStore.showSuccess(`导入成功：${novel.metadata.title}`)
     uiStore.hideWelcome()
   }
@@ -272,7 +272,7 @@ export function useFileImporter() {
       }
     }
 
-    novelStore.loadNovel(novel)
+    await novelStore.loadNovel(novel)
     uiStore.showSuccess('已加载示例文件')
     uiStore.hideWelcome()
   }

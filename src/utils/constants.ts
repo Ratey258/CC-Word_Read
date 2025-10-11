@@ -7,7 +7,7 @@
  */
 export const APP_INFO = {
   NAME: 'CC Word Reader',
-  VERSION: '3.0.0',
+  VERSION: __APP_VERSION__, // 从 package.json 自动注入
   DESCRIPTION: 'Word风格的小说阅读伪装工具'
 } as const
 

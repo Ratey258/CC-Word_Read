@@ -1,7 +1,7 @@
 {
   "name": "cc-word-read-v3",
   "private": true,
-  "version": "0.3.1",
+  "version": "0.3.11",
   "type": "module",
   "description": "CC Word Reading Tool - Vue 3 + TypeScript + Tauri",
   "scripts": {
@@ -17,7 +17,9 @@
     "lint": "eslint . --fix",
     "format": "prettier --write src/",
     "test:unit": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "version:sync": "tsx scripts/sync-version.ts",
+    "version": "npm run version:sync && git add src-tauri/tauri.conf.json src-tauri/Cargo.toml"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.8.0",
@@ -34,6 +36,7 @@
     "@eslint/js": "^9.37.0",
     "@playwright/test": "^1.56.0",
     "@tauri-apps/cli": "^2.8.4",
+    "@types/node": "^24.7.1",
     "@typescript-eslint/eslint-plugin": "^8.46.0",
     "@typescript-eslint/parser": "^8.46.0",
     "@vitejs/plugin-vue": "^6.0.1",
@@ -44,6 +47,7 @@
     "eslint-plugin-vue": "^10.5.0",
     "prettier": "^3.6.2",
     "rimraf": "^6.0.1",
+    "tsx": "^4.20.6",
     "typescript": "~5.9.3",
     "vite": "^7.1.9",
     "vitest": "^3.2.4",

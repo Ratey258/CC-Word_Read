@@ -16,7 +16,7 @@ export function useProgress() {
   // ===== State =====
   
   /** 自动保存定时器 */
-  let autoSaveTimer: ReturnType<typeof setInterval> | null = null
+  let autoSaveTimer: number | null = null
 
   // ===== Computed =====
 

@@ -31,6 +31,13 @@ export function useHistory() {
    * @param item 历史记录项
    */
   async function loadFromHistory(item: HistoryItem): Promise<void> {
+    // 立即设置历史恢复标志，在任何异步操作之前
+    // 这是最关键的保护，必须在第一行就设置
+    console.log('[History] ========== 开始历史恢复流程 ==========')
+    console.log('[History] 立即设置历史恢复标志')
+    novelStore.isRestoringFromHistory = true
+    console.log('[History] 标志已设置，当前值:', novelStore.isRestoringFromHistory)
+    
     try {
       console.log('[History] 开始加载历史记录:', item.title, item.id)
       uiStore.showLoading('正在加载小说...')
@@ -114,7 +121,7 @@ export function useHistory() {
       // 加载小说（这会重置位置到0）
       // 传递文件路径以便下次可以重新导入
       // 传递 isHistoryRestore=true 以避免 Editor 清空内容
-      novelStore.loadNovel(novel, item.filePath || undefined, true)
+      await novelStore.loadNovel(novel, item.filePath || undefined, true)
       
       // 等待 Vue 更新 DOM
       await new Promise(resolve => setTimeout(resolve, 100))
@@ -161,6 +168,13 @@ export function useHistory() {
       uiStore.showError('加载失败，请重新导入文件')
     } finally {
       uiStore.hideLoading()
+      
+      // 在整个恢复流程结束后重置标志
+      // 延迟一段时间以确保所有异步操作都已完成
+      setTimeout(() => {
+        console.log('[History] 恢复流程完成，重置历史恢复标志')
+        novelStore.isRestoringFromHistory = false
+      }, 500)
     }
   }
   
@@ -221,6 +235,10 @@ export function useHistory() {
     try {
       uiStore.showLoading('请选择新的文件位置...')
       
+      // 提前设置历史恢复标志
+      console.log('[History] 设置历史恢复标志（重新定位文件）')
+      novelStore.isRestoringFromHistory = true
+      
       // 打开文件选择对话框
       const { useFileSystem } = await import('./useFileSystem')
       const fileSystem = useFileSystem()
@@ -279,7 +297,7 @@ export function useHistory() {
       
       // 加载到当前阅读器（这会重置位置到0）
       // 传递 isHistoryRestore=true 以避免 Editor 清空内容
-      novelStore.loadNovel(novel, newPath || undefined, true)
+      await novelStore.loadNovel(novel, newPath || undefined, true)
       
       // 等待 Vue 更新 DOM
       await new Promise(resolve => setTimeout(resolve, 100))

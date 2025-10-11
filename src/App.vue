@@ -6,6 +6,7 @@ import Editor from '@/components/Editor.vue'
 import StatusBar from '@/components/StatusBar.vue'
 import BookmarkPanel from '@/components/BookmarkPanel.vue'
 import AddBookmarkDialog from '@/components/AddBookmarkDialog.vue'
+import AboutDialog from '@/components/AboutDialog.vue'
 import UpdateChecker from '@/components/UpdateChecker.vue'
 import { useFileImporter } from '@/composables/useFileImporter'
 
@@ -15,6 +16,7 @@ const { isDragging, handleDragEnter, handleDragLeave, handleDrop } = useFileImpo
 // 书签面板
 const showBookmarkPanel = ref(false)
 const showAddBookmark = ref(false)
+const showAboutDialog = ref(false)
 
 // 更新检查器引用
 const updateChecker = ref<InstanceType<typeof UpdateChecker> | null>(null)
@@ -35,6 +37,14 @@ function handleCloseAddBookmark(): void {
   showAddBookmark.value = false
 }
 
+function handleShowAbout(): void {
+  showAboutDialog.value = true
+}
+
+function handleCloseAbout(): void {
+  showAboutDialog.value = false
+}
+
 function handleCheckUpdates(): void {
   updateChecker.value?.checkForUpdates(true)
 }
@@ -45,6 +55,9 @@ onMounted(() => {
   // 监听书签事件
   window.addEventListener('show-bookmarks', handleShowBookmarks)
   window.addEventListener('add-bookmark', handleAddBookmark)
+  
+  // 监听关于对话框事件
+  window.addEventListener('show-about', handleShowAbout)
   
   // 监听检查更新事件
   window.addEventListener('check-updates', handleCheckUpdates)
@@ -76,6 +89,12 @@ onMounted(() => {
     <AddBookmarkDialog 
       :show="showAddBookmark"
       @close="handleCloseAddBookmark"
+    />
+
+    <!-- 关于对话框 -->
+    <AboutDialog 
+      :show="showAboutDialog"
+      @close="handleCloseAbout"
     />
 
     <!-- 更新检查器 -->
