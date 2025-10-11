@@ -30,7 +30,7 @@
         "displayLanguageSelector": false
       }
     },
-    "createUpdaterArtifacts": false
+    "createUpdaterArtifacts": true
   },
   "plugins": {
     "updater": {
