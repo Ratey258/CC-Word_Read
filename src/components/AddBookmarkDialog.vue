@@ -60,7 +60,7 @@ function handleCancel(): void {
 </script>
 
 <template>
-  <Transition name="modal">
+  <Transition name="dialog">
     <div 
       v-if="show"
       class="dialog-overlay"
@@ -296,25 +296,28 @@ function handleCancel(): void {
   opacity: 0.6;
 }
 
-/* Transitions */
-.modal-enter-active,
-.modal-leave-active {
-  transition: opacity 0.2s ease;
+/* Dialog transition animation */
+.dialog-enter-active,
+.dialog-leave-active {
+  transition: opacity var(--duration-normal) var(--easing-standard);
 }
 
-.modal-enter-active .dialog,
-.modal-leave-active .dialog {
-  transition: transform 0.2s ease;
+.dialog-enter-active .dialog,
+.dialog-leave-active .dialog {
+  transition: 
+    transform var(--duration-normal) var(--easing-emphasized),
+    opacity var(--duration-normal) var(--easing-standard);
 }
 
-.modal-enter-from,
-.modal-leave-to {
+.dialog-enter-from,
+.dialog-leave-to {
   opacity: 0;
 }
 
-.modal-enter-from .dialog,
-.modal-leave-to .dialog {
-  transform: scale(0.95);
+.dialog-enter-from .dialog,
+.dialog-leave-to .dialog {
+  opacity: 0;
+  transform: scale(0.95) translateY(-10px);
 }
 </style>
 

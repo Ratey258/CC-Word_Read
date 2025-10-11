@@ -147,28 +147,13 @@ const handleDialogClick = (event: MouseEvent) => {
 .dialog
 {
   background-color: var(--word-white);
-  border-radius: 8px;
+  border-radius: var(--border-radius-lg);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   width: 100%;
   max-width: 480px;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  animation: slideUp 200ms ease-out;
-}
-
-@keyframes slideUp
-{
-  from
-  {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to
-  {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .dialog__header
@@ -314,11 +299,19 @@ const handleDialogClick = (event: MouseEvent) => {
   background-color: var(--word-accent-active);
 }
 
-/* 对话框过渡动画 */
+/* Dialog transition animation */
 .dialog-enter-active,
 .dialog-leave-active
 {
-  transition: opacity 200ms ease;
+  transition: opacity var(--duration-normal) var(--easing-standard);
+}
+
+.dialog-enter-active .dialog,
+.dialog-leave-active .dialog
+{
+  transition: 
+    transform var(--duration-normal) var(--easing-emphasized),
+    opacity var(--duration-normal) var(--easing-standard);
 }
 
 .dialog-enter-from,
@@ -327,17 +320,11 @@ const handleDialogClick = (event: MouseEvent) => {
   opacity: 0;
 }
 
-.dialog-enter-active .dialog,
-.dialog-leave-active .dialog
-{
-  transition: transform 200ms ease, opacity 200ms ease;
-}
-
 .dialog-enter-from .dialog,
 .dialog-leave-to .dialog
 {
   opacity: 0;
-  transform: translateY(20px);
+  transform: scale(0.95) translateY(-10px);
 }
 </style>
 

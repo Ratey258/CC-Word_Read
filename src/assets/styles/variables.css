@@ -27,10 +27,12 @@
   --word-gray-active: #E1DFDD;
   --word-gray-border: #E1E1E1;
   --word-gray-separator: #E1DFDD;
+  --word-gray-light: #FAFAFA;       /* 浅灰色背景 */
   
   /* 文字颜色 */
   --word-text-primary: #323130;
   --word-text-secondary: #605E5C;
+  --word-text-tertiary: #8A8886;    /* 三级文本颜色 */
   --word-text-disabled: #A19F9D;
   --word-text-white: #FFFFFF;
   
@@ -39,6 +41,10 @@
   --word-white-bg: #FAFAFA;
   
   /* 强调色 */
+  --word-accent: #0078D4;           /* 主题色（同蓝色） */
+  --word-accent-hover: #106EBE;     /* 主题色悬停 */
+  --word-accent-active: #005A9E;    /* 主题色激活 */
+  --word-accent-dark: #005A9E;      /* 主题色深色 */
   --word-red-close: #E81123;
   --word-red-hover: #F1707A;
   --word-green: #107C10;
@@ -78,9 +84,19 @@
   --spacing-lg: 12px;
   --spacing-xl: 16px;
   
-  /* 圆角 */
-  --border-radius-sm: 2px;
-  --border-radius-md: 4px;
+  /* 圆角系统（参考 Word 2021 + Fluent Design） */
+  --border-radius-none: 0px;           /* 无圆角（文档、页面） */
+  --border-radius-sm: 3px;             /* 小圆角（小按钮、分隔符） */
+  --border-radius-md: 4px;             /* 中圆角（输入框、标准按钮） */
+  --border-radius-lg: 6px;             /* 大圆角（大按钮、选择器） */
+  --border-radius-xl: 8px;             /* 超大圆角（卡片、面板） */
+  --border-radius-2xl: 10px;           /* 特大圆角（对话框、模态框） */
+  --border-radius-3xl: 12px;           /* 极大圆角（通知、提示） */
+  --border-radius-full: 50%;           /* 完全圆角（头像、徽章） */
+  
+  /* 特殊圆角组合 */
+  --border-radius-tab: 4px 4px 0 0;    /* 标签页 */
+  --border-radius-dropdown: 0 0 6px 6px; /* 下拉菜单 */
   
   /* ========== 字体系统 ========== */
   
@@ -102,12 +118,39 @@
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
   
-  /* ========== 动画系统 ========== */
+  /* ========== 动画系统（Fluent Design 曲线）========== */
   
-  /* 过渡动画 */
-  --transition-fast: 100ms ease-out;
-  --transition-normal: 150ms ease-out;
-  --transition-slow: 250ms ease-out;
+  /* 过渡时长 */
+  --duration-instant: 50ms;      /* 即时反馈 */
+  --duration-fast: 100ms;        /* 快速动画 */
+  --duration-normal: 150ms;      /* 标准动画 */
+  --duration-slow: 250ms;        /* 慢速动画 */
+  --duration-slower: 350ms;      /* 更慢动画 */
+  --duration-slowest: 500ms;     /* 最慢动画 */
+  
+  /* 动画曲线 */
+  --easing-standard: cubic-bezier(0.4, 0, 0.2, 1);   /* 标准曲线 */
+  --easing-decelerate: cubic-bezier(0, 0, 0.2, 1);   /* 减速曲线（进入） */
+  --easing-accelerate: cubic-bezier(0.4, 0, 1, 1);   /* 加速曲线（退出） */
+  --easing-emphasized: cubic-bezier(0.2, 0, 0, 1);   /* 强调曲线（Material Design） */
+  --easing-sharp: cubic-bezier(0.4, 0, 0.6, 1);      /* 锐利曲线 */
+  --easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55); /* 弹性曲线 */
+  
+  /* 组合动画 */
+  --transition-button: background-color var(--duration-fast) var(--easing-standard),
+                       transform var(--duration-fast) var(--easing-standard),
+                       box-shadow var(--duration-fast) var(--easing-standard);
+  
+  --transition-modal: opacity var(--duration-normal) var(--easing-decelerate),
+                      transform var(--duration-normal) var(--easing-decelerate);
+  
+  --transition-dropdown: opacity var(--duration-fast) var(--easing-decelerate),
+                         transform var(--duration-fast) var(--easing-decelerate);
+  
+  /* 兼容旧变量（向后兼容） */
+  --transition-fast: var(--duration-fast) ease-out;
+  --transition-normal: var(--duration-normal) ease-out;
+  --transition-slow: var(--duration-slow) ease-out;
   
   /* ========== Z-Index 层级 ========== */
   

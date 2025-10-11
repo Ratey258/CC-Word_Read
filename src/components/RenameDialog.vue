@@ -1,66 +1,68 @@
 <template>
   <Teleport to="body">
-    <div
-      v-if="show"
-      class="rename-dialog-overlay"
-      @click.self="handleCancel"
-    >
-      <div class="rename-dialog">
-        <div class="rename-dialog__header">
-          <span class="rename-dialog__title">修改显示文件名</span>
-          <button
-            class="rename-dialog__close"
-            @click="handleCancel"
-          >
-            ×
-          </button>
-        </div>
-        
-        <div class="rename-dialog__body">
-          <div class="rename-dialog__info">
-            <p class="info-label">
-              实际文件名：
-            </p>
-            <p class="info-value">
-              {{ realFileName }}
-            </p>
-          </div>
-          
-          <div class="rename-dialog__input-group">
-            <label for="display-name">显示文件名：</label>
-            <input
-              id="display-name"
-              v-model="newDisplayName"
-              type="text"
-              class="rename-dialog__input"
-              placeholder="请输入要显示的文件名"
-              @keyup.enter="handleConfirm"
-              @keyup.esc="handleCancel"
+    <Transition name="dialog">
+      <div
+        v-if="show"
+        class="rename-dialog-overlay"
+        @click.self="handleCancel"
+      >
+        <div class="rename-dialog">
+          <div class="rename-dialog__header">
+            <span class="rename-dialog__title">修改显示文件名</span>
+            <button
+              class="rename-dialog__close"
+              @click="handleCancel"
             >
+              ×
+            </button>
           </div>
           
-          <div class="rename-dialog__hint">
-            <p>提示：修改显示文件名不会影响实际文件，只会改变在标题栏中显示的名称。</p>
+          <div class="rename-dialog__body">
+            <div class="rename-dialog__info">
+              <p class="info-label">
+                实际文件名：
+              </p>
+              <p class="info-value">
+                {{ realFileName }}
+              </p>
+            </div>
+            
+            <div class="rename-dialog__input-group">
+              <label for="display-name">显示文件名：</label>
+              <input
+                id="display-name"
+                v-model="newDisplayName"
+                type="text"
+                class="rename-dialog__input"
+                placeholder="请输入要显示的文件名"
+                @keyup.enter="handleConfirm"
+                @keyup.esc="handleCancel"
+              >
+            </div>
+            
+            <div class="rename-dialog__hint">
+              <p>提示：修改显示文件名不会影响实际文件，只会改变在标题栏中显示的名称。</p>
+            </div>
           </div>
-        </div>
-        
-        <div class="rename-dialog__footer">
-          <button
-            class="rename-dialog__btn rename-dialog__btn--cancel"
-            @click="handleCancel"
-          >
-            取消
-          </button>
-          <button
-            class="rename-dialog__btn rename-dialog__btn--confirm"
-            :disabled="!newDisplayName.trim()"
-            @click="handleConfirm"
-          >
-            确定
-          </button>
+          
+          <div class="rename-dialog__footer">
+            <button
+              class="rename-dialog__btn rename-dialog__btn--cancel"
+              @click="handleCancel"
+            >
+              取消
+            </button>
+            <button
+              class="rename-dialog__btn rename-dialog__btn--confirm"
+              :disabled="!newDisplayName.trim()"
+              @click="handleConfirm"
+            >
+              确定
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </Transition>
   </Teleport>
 </template>
 
@@ -135,8 +137,8 @@ function handleCancel(): void {
 
 .rename-dialog
 {
-  background: white;
-  border-radius: 4px;
+  background: var(--word-white);
+  border-radius: var(--border-radius-sm);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   width: 500px;
   max-width: 90vw;
@@ -149,7 +151,7 @@ function handleCancel(): void {
   align-items: center;
   justify-content: space-between;
   padding: 16px 20px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--word-gray-border);
   background: linear-gradient(to bottom, #f9f9f9, #f0f0f0);
 }
 
@@ -157,7 +159,7 @@ function handleCancel(): void {
 {
   font-size: 14px;
   font-weight: 600;
-  color: #333;
+  color: var(--word-text-primary);
 }
 
 .rename-dialog__close
@@ -165,7 +167,7 @@ function handleCancel(): void {
   background: none;
   border: none;
   font-size: 24px;
-  color: #666;
+  color: var(--word-text-secondary);
   cursor: pointer;
   padding: 0;
   width: 24px;
@@ -179,8 +181,8 @@ function handleCancel(): void {
 
 .rename-dialog__close:hover
 {
-  background: rgba(0, 0, 0, 0.05);
-  color: #333;
+  background: var(--word-gray-hover);
+  color: var(--word-text-primary);
 }
 
 .rename-dialog__body
@@ -192,22 +194,22 @@ function handleCancel(): void {
 {
   margin-bottom: 20px;
   padding: 12px;
-  background: #f5f5f5;
-  border-radius: 4px;
-  border-left: 3px solid #2b579a;
+  background: var(--word-gray-light);
+  border-radius: var(--border-radius-sm);
+  border-left: 3px solid var(--word-blue-primary);
 }
 
 .info-label
 {
   font-size: 12px;
-  color: #666;
+  color: var(--word-text-secondary);
   margin: 0 0 4px 0;
 }
 
 .info-value
 {
   font-size: 14px;
-  color: #333;
+  color: var(--word-text-primary);
   font-weight: 500;
   margin: 0;
   word-break: break-all;
@@ -222,7 +224,7 @@ function handleCancel(): void {
 {
   display: block;
   font-size: 13px;
-  color: #333;
+  color: var(--word-text-primary);
   margin-bottom: 8px;
   font-weight: 500;
 }
@@ -232,8 +234,9 @@ function handleCancel(): void {
   width: 100%;
   padding: 8px 12px;
   font-size: 14px;
-  border: 1px solid #d0d0d0;
-  border-radius: 3px;
+  font-family: var(--font-family-ui);
+  border: 1px solid var(--word-gray-border);
+  border-radius: var(--border-radius-sm);
   outline: none;
   transition: border-color 0.2s;
   box-sizing: border-box;
@@ -241,13 +244,13 @@ function handleCancel(): void {
 
 .rename-dialog__input:focus
 {
-  border-color: #2b579a;
+  border-color: var(--word-accent);
 }
 
 .rename-dialog__hint
 {
   font-size: 12px;
-  color: #666;
+  color: var(--word-text-secondary);
   line-height: 1.5;
 }
 
@@ -259,7 +262,7 @@ function handleCancel(): void {
 .rename-dialog__footer
 {
   padding: 12px 20px;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid var(--word-gray-border);
   display: flex;
   justify-content: flex-end;
   gap: 8px;
@@ -270,8 +273,9 @@ function handleCancel(): void {
 {
   padding: 6px 20px;
   font-size: 13px;
-  border: 1px solid #d0d0d0;
-  border-radius: 3px;
+  font-family: var(--font-family-ui);
+  border: 1px solid var(--word-gray-border);
+  border-radius: var(--border-radius-sm);
   cursor: pointer;
   transition: all 0.2s;
   font-weight: 500;
@@ -279,35 +283,63 @@ function handleCancel(): void {
 
 .rename-dialog__btn--cancel
 {
-  background: white;
-  color: #333;
+  background: var(--word-white);
+  color: var(--word-text-primary);
 }
 
 .rename-dialog__btn--cancel:hover
 {
-  background: #f5f5f5;
+  background: var(--word-gray-light);
   border-color: #b0b0b0;
 }
 
 .rename-dialog__btn--confirm
 {
-  background: #2b579a;
-  color: white;
-  border-color: #2b579a;
+  background: var(--word-blue-primary);
+  color: var(--word-white);
+  border-color: var(--word-blue-primary);
 }
 
 .rename-dialog__btn--confirm:hover:not(:disabled)
 {
-  background: #1f4278;
-  border-color: #1f4278;
+  background: var(--word-blue-hover);
+  border-color: var(--word-blue-hover);
 }
 
 .rename-dialog__btn--confirm:disabled
 {
-  background: #ccc;
-  border-color: #ccc;
+  background: var(--word-gray-border);
+  border-color: var(--word-gray-border);
   cursor: not-allowed;
   opacity: 0.6;
+}
+
+/* Dialog transition animation */
+.dialog-enter-active,
+.dialog-leave-active
+{
+  transition: opacity var(--duration-normal) var(--easing-standard);
+}
+
+.dialog-enter-active .rename-dialog,
+.dialog-leave-active .rename-dialog
+{
+  transition: 
+    transform var(--duration-normal) var(--easing-emphasized),
+    opacity var(--duration-normal) var(--easing-standard);
+}
+
+.dialog-enter-from,
+.dialog-leave-to
+{
+  opacity: 0;
+}
+
+.dialog-enter-from .rename-dialog,
+.dialog-leave-to .rename-dialog
+{
+  opacity: 0;
+  transform: scale(0.95) translateY(-10px);
 }
 </style>
 
