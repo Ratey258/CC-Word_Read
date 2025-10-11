@@ -256,29 +256,41 @@ onMounted(() => {
     // 设置编辑器观察器
     setupEditorObserver()
     
-    // 如果刷新页面后有小说和阅读位置，恢复已读内容
-    if (currentNovel.value && novelStore.currentPosition > 0) {
-      const readContent = currentNovel.value.content.substring(0, novelStore.currentPosition)
-      editorRef.value.textContent = readContent
-      console.log('[Editor] 页面刷新，已恢复已读内容，长度:', readContent.length)
-      
-      // 更新内容长度
-      updateEditorContentLength()
-      
-      // 将光标移到末尾
-      setTimeout(() => {
-        if (editorRef.value) {
-          const range = document.createRange()
-          const selection = window.getSelection()
-          if (selection && editorRef.value.childNodes.length > 0) {
-            range.selectNodeContents(editorRef.value)
-            range.collapse(false) // 折叠到末尾
-            selection.removeAllRanges()
-            selection.addRange(range)
-          }
+    // 等待一小段时间，确保 store 的 loadFromStorage() 已经完成
+    // 这样可以确保 currentPosition 已经从 localStorage 恢复
+    setTimeout(() => {
+      // 如果刷新页面后有小说和阅读位置，恢复已读内容
+      if (editorRef.value && currentNovel.value && novelStore.currentPosition > 0) {
+        // 检查编辑器是否已经有内容（可能已经被 watch 或其他地方恢复了）
+        const currentContent = editorRef.value.textContent || ''
+        
+        // 只在编辑器为空或内容不匹配时才恢复
+        if (currentContent.length === 0 || currentContent.length !== novelStore.currentPosition) {
+          const readContent = currentNovel.value.content.substring(0, novelStore.currentPosition)
+          editorRef.value.textContent = readContent
+          console.log('[Editor] 页面刷新，已恢复已读内容，长度:', readContent.length)
+          
+          // 更新内容长度
+          updateEditorContentLength()
+          
+          // 将光标移到末尾
+          setTimeout(() => {
+            if (editorRef.value) {
+              const range = document.createRange()
+              const selection = window.getSelection()
+              if (selection && editorRef.value.childNodes.length > 0) {
+                range.selectNodeContents(editorRef.value)
+                range.collapse(false) // 折叠到末尾
+                selection.removeAllRanges()
+                selection.addRange(range)
+              }
+            }
+          }, 50)
+        } else {
+          console.log('[Editor] 编辑器内容已存在，跳过恢复')
         }
-      }, 50)
-    }
+      }
+    }, 100) // 延迟100ms，确保异步加载完成
   }
   
   // 如果有小说且未开始阅读，按任意键开始阅读

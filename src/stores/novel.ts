@@ -252,11 +252,24 @@ export const useNovelStore = defineStore('novel', () => {
     
     try {
       const novel: Novel = JSON.parse(data)
-      await loadNovel(novel)
+      // 页面刷新时也需要设置恢复标志，避免 Editor 清空内容
+      console.log('[NovelStore] 从存储加载，设置恢复标志')
+      isRestoringFromHistory.value = true
+      await nextTick()
+      await nextTick()
+      
+      await loadNovel(novel, undefined, true) // 传递 isHistoryRestore=true
       loadProgress()
       loadBookmarks()
+      
+      // 延迟重置标志，确保 Editor 已恢复内容
+      setTimeout(() => {
+        console.log('[NovelStore] 存储加载完成，重置恢复标志')
+        isRestoringFromHistory.value = false
+      }, 500)
     } catch (error) {
       console.error('加载小说失败:', error)
+      isRestoringFromHistory.value = false
     }
   }
   
