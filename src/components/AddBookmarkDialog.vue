@@ -297,16 +297,24 @@ function handleCancel(): void {
 }
 
 /* Dialog transition animation */
-.dialog-enter-active,
-.dialog-leave-active {
-  transition: opacity var(--duration-normal) var(--easing-standard);
+.dialog-enter-active {
+  transition: opacity var(--duration-slow) var(--easing-decelerate);
 }
 
-.dialog-enter-active .dialog,
+.dialog-leave-active {
+  transition: opacity var(--duration-normal) var(--easing-accelerate);
+}
+
+.dialog-enter-active .dialog {
+  transition: 
+    transform var(--duration-slow) var(--easing-emphasized),
+    opacity var(--duration-slow) var(--easing-decelerate);
+}
+
 .dialog-leave-active .dialog {
   transition: 
-    transform var(--duration-normal) var(--easing-emphasized),
-    opacity var(--duration-normal) var(--easing-standard);
+    transform var(--duration-normal) var(--easing-accelerate),
+    opacity var(--duration-normal) var(--easing-accelerate);
 }
 
 .dialog-enter-from,
@@ -314,10 +322,14 @@ function handleCancel(): void {
   opacity: 0;
 }
 
-.dialog-enter-from .dialog,
+.dialog-enter-from .dialog {
+  opacity: 0;
+  transform: scale(0.9) translateY(-20px);
+}
+
 .dialog-leave-to .dialog {
   opacity: 0;
-  transform: scale(0.95) translateY(-10px);
+  transform: scale(0.95);
 }
 </style>
 

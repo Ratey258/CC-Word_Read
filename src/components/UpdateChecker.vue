@@ -439,16 +439,24 @@ button.btn-secondary:hover {
 }
 
 /* Dialog transition animation */
-.dialog-enter-active,
-.dialog-leave-active {
-  transition: opacity var(--duration-normal) var(--easing-standard);
+.dialog-enter-active {
+  transition: opacity var(--duration-slow) var(--easing-decelerate);
 }
 
-.dialog-enter-active .update-dialog,
+.dialog-leave-active {
+  transition: opacity var(--duration-normal) var(--easing-accelerate);
+}
+
+.dialog-enter-active .update-dialog {
+  transition: 
+    transform var(--duration-slow) var(--easing-emphasized),
+    opacity var(--duration-slow) var(--easing-decelerate);
+}
+
 .dialog-leave-active .update-dialog {
   transition: 
-    transform var(--duration-normal) var(--easing-emphasized),
-    opacity var(--duration-normal) var(--easing-standard);
+    transform var(--duration-normal) var(--easing-accelerate),
+    opacity var(--duration-normal) var(--easing-accelerate);
 }
 
 .dialog-enter-from,
@@ -456,10 +464,14 @@ button.btn-secondary:hover {
   opacity: 0;
 }
 
-.dialog-enter-from .update-dialog,
+.dialog-enter-from .update-dialog {
+  opacity: 0;
+  transform: scale(0.9) translateY(-20px);
+}
+
 .dialog-leave-to .update-dialog {
   opacity: 0;
-  transform: scale(0.95) translateY(-10px);
+  transform: scale(0.95);
 }
 </style>
 
