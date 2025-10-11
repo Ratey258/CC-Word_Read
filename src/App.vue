@@ -4,7 +4,6 @@ import TitleBar from '@/components/TitleBar.vue'
 import Ribbon from '@/components/Ribbon.vue'
 import Editor from '@/components/Editor.vue'
 import StatusBar from '@/components/StatusBar.vue'
-import ShortcutsHelp from '@/components/ShortcutsHelp.vue'
 import BookmarkPanel from '@/components/BookmarkPanel.vue'
 import AddBookmarkDialog from '@/components/AddBookmarkDialog.vue'
 import UpdateChecker from '@/components/UpdateChecker.vue'
@@ -13,23 +12,12 @@ import { useFileImporter } from '@/composables/useFileImporter'
 // File import composable
 const { isDragging, handleDragEnter, handleDragLeave, handleDrop } = useFileImporter()
 
-// 快捷键帮助面板
-const showShortcutsHelp = ref(false)
-
 // 书签面板
 const showBookmarkPanel = ref(false)
 const showAddBookmark = ref(false)
 
 // 更新检查器引用
 const updateChecker = ref<InstanceType<typeof UpdateChecker> | null>(null)
-
-function handleShowShortcutsHelp(): void {
-  showShortcutsHelp.value = true
-}
-
-function handleCloseShortcutsHelp(): void {
-  showShortcutsHelp.value = false
-}
 
 function handleShowBookmarks(): void {
   showBookmarkPanel.value = true
@@ -54,9 +42,6 @@ function handleCheckUpdates(): void {
 onMounted(() => {
   console.log('CC Word Reader v3 - Vue 3 App mounted successfully!')
   
-  // 监听快捷键帮助事件
-  window.addEventListener('show-shortcuts-help', handleShowShortcutsHelp)
-  
   // 监听书签事件
   window.addEventListener('show-bookmarks', handleShowBookmarks)
   window.addEventListener('add-bookmark', handleAddBookmark)
@@ -80,12 +65,6 @@ onMounted(() => {
     <Ribbon />
     <Editor />
     <StatusBar />
-
-    <!-- 快捷键帮助 -->
-    <ShortcutsHelp 
-      :show="showShortcutsHelp"
-      @close="handleCloseShortcutsHelp"
-    />
 
     <!-- 书签面板 -->
     <BookmarkPanel 

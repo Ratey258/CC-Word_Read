@@ -6,7 +6,6 @@ import { useReaderStore } from '@/stores/reader'
 import { useSettingsStore } from '@/stores/settings'
 import { useUIStore } from '@/stores/ui'
 import { useNovelReader } from '@/composables/useNovelReader'
-import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 import { usePageCalculator } from '@/composables/usePageCalculator'
 
 // Stores
@@ -19,7 +18,7 @@ const uiStore = useUIStore()
 const pageRef = ref<HTMLDivElement>()
 
 // Reactive state
-const { currentNovel } = storeToRefs(novelStore)
+const { currentNovel, isRestoringFromHistory } = storeToRefs(novelStore)
 const { isReading } = storeToRefs(readerStore)
 const { settings } = storeToRefs(settingsStore)
 const { isRibbonCollapsed } = storeToRefs(uiStore)
@@ -35,9 +34,6 @@ const {
   handleCompositionEnd,
   clearEditor
 } = useNovelReader()
-
-// 注册全局快捷键
-useKeyboardShortcuts()
 
 // 页码计算器
 const { totalPages } = usePageCalculator()
@@ -208,6 +204,15 @@ function setupEditorObserver(): void {
 // 监听小说加载
 watch(currentNovel, (novel, oldNovel) => {
   if (novel && editorRef.value) {
+    // 如果正在从历史记录恢复，不清空编辑器
+    // 因为 useHistory 会在加载后手动恢复已读内容
+    if (isRestoringFromHistory.value) {
+      console.log('[Editor] 正在从历史记录恢复，跳过清空编辑器')
+      editorRef.value.focus()
+      updateEditorContentLength()
+      return
+    }
+    
     // 如果是新加载的小说（不是刷新页面恢复的），清空编辑器
     // 判断依据：旧小说为null或者小说ID不同
     const isNewNovel = !oldNovel || oldNovel.id !== novel.id

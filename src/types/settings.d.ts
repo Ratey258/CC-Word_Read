@@ -62,23 +62,5 @@ export interface AppSettings {
   autoSave: boolean
   /** 自动保存间隔（秒） */
   autoSaveInterval: number
-  /** 是否启用快捷键 */
-  enableShortcuts: boolean
-}
-
-/**
- * 快捷键配置
- */
-export interface ShortcutConfig {
-  /** 导入文件 */
-  import: string
-  /** 保存进度 */
-  save: string
-  /** 暂停/继续 */
-  togglePause: string
-  /** 跳转 */
-  jumpTo: string
-  /** 清空内容 */
-  clear: string
 }
 

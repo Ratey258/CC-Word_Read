@@ -57,22 +57,42 @@ export function useHistory() {
       } else if (item.filePath) {
         // 如果有文件路径，尝试重新读取文件
         console.log('[History] 从文件路径重新读取:', item.filePath)
-        const content = await reimportFromPath(item.filePath)
-        if (!content) {
-          uiStore.showError('无法读取文件，请重新导入')
+        const result = await reimportFromPath(item.filePath)
+        
+        if (!result.content) {
+          // 根据错误类型提供不同的处理方式
           uiStore.hideLoading()
+          
+          if (result.error === 'not-found') {
+            // 文件不存在 - 提供重新选择或删除的选项
+            const action = await showFileNotFoundDialog(item)
+            if (action === 'reselect') {
+              // 用户选择重新选择文件
+              await handleRelocateFile(item)
+            } else if (action === 'remove') {
+              // 用户选择删除历史记录
+              historyStore.removeHistoryItem(item.id)
+              uiStore.showSuccess('已删除无效的历史记录')
+            }
+          } else if (result.error === 'permission') {
+            uiStore.showError('没有权限访问该文件，请检查文件权限')
+          } else if (result.error === 'format') {
+            uiStore.showWarning('该文件格式需要重新导入，请使用"打开文件"功能')
+          } else {
+            uiStore.showError(result.errorMessage || '无法读取文件，请重新导入')
+          }
           return
         }
         
         novel = {
           id: item.id,
-          content: content,
-          totalLength: content.length,
+          content: result.content,
+          totalLength: result.content.length,
           metadata: {
             title: item.title,
             author: item.author,
             format: item.format,
-            fileSize: new Blob([content]).size,
+            fileSize: new Blob([result.content]).size,
             createdAt: item.createdAt,
             updatedAt: Date.now(),
             chapters: undefined
@@ -91,9 +111,10 @@ export function useHistory() {
       }
       
       console.log('[History] 加载小说，内容长度:', novel.content.length)
-      // 加载小说（这会重置位置到0并添加到历史记录）
+      // 加载小说（这会重置位置到0）
       // 传递文件路径以便下次可以重新导入
-      novelStore.loadNovel(novel, item.filePath || undefined)
+      // 传递 isHistoryRestore=true 以避免 Editor 清空内容
+      novelStore.loadNovel(novel, item.filePath || undefined, true)
       
       // 等待 Vue 更新 DOM
       await new Promise(resolve => setTimeout(resolve, 100))
@@ -144,38 +165,258 @@ export function useHistory() {
   }
   
   /**
+   * 显示文件不存在对话框
+   * @param item 历史记录项
+   * @returns 用户选择的操作
+   */
+  async function showFileNotFoundDialog(item: HistoryItem): Promise<'reselect' | 'remove' | 'cancel'> {
+    return new Promise((resolve) => {
+      const fileName = item.filePath?.split(/[\\/]/).pop() || item.title
+      const message = `文件未找到：${fileName}\n\n原路径：${item.filePath}\n\n该文件可能已被移动或删除。`
+      const options = '\n\n请选择：\n1. 重新选择文件位置\n2. 删除此历史记录\n3. 取消'
+      
+      // 使用自定义对话框（如果可用）或浏览器原生对话框
+      if (window.__TAURI__) {
+        import('@tauri-apps/plugin-dialog').then(({ ask, confirm }) => {
+          // 先询问是否重新选择
+          ask(message + '\n\n是否要重新选择该文件？', {
+            title: '文件未找到',
+            kind: 'warning',
+            okLabel: '重新选择',
+            cancelLabel: '删除记录'
+          }).then(reselect => {
+            if (reselect) {
+              resolve('reselect')
+            } else {
+              // 确认是否删除
+              confirm('确定要删除此历史记录吗？', {
+                title: '确认删除',
+                kind: 'warning',
+                okLabel: '删除',
+                cancelLabel: '取消'
+              }).then(shouldRemove => {
+                resolve(shouldRemove ? 'remove' : 'cancel')
+              })
+            }
+          })
+        })
+      } else {
+        // 浏览器环境使用原生对话框
+        const choice = confirm(message + options)
+        if (choice) {
+          const remove = confirm('确定要删除此历史记录吗？')
+          resolve(remove ? 'remove' : 'cancel')
+        } else {
+          resolve('cancel')
+        }
+      }
+    })
+  }
+
+  /**
+   * 处理重新定位文件
+   * @param item 历史记录项
+   */
+  async function handleRelocateFile(item: HistoryItem): Promise<void> {
+    try {
+      uiStore.showLoading('请选择新的文件位置...')
+      
+      // 打开文件选择对话框
+      const { useFileSystem } = await import('./useFileSystem')
+      const fileSystem = useFileSystem()
+      
+      const result = await fileSystem.openFileDialog({
+        title: '选择文档文件',
+        filters: [
+          {
+            name: '支持的文件',
+            extensions: ['txt', 'docx', 'md']
+          }
+        ]
+      })
+      
+      if (!result) {
+        uiStore.hideLoading()
+        return
+      }
+      
+      // 读取新文件内容
+      const { name: fileName, path: newPath, content: rawContent } = result
+      
+      // 解析文件
+      const parsedDoc = await documentParser.parseDocument(rawContent, fileName)
+      
+      // 验证内容
+      const { validateNovelContent } = await import('@/utils/validator')
+      const validation = validateNovelContent(parsedDoc.text)
+      if (!validation.valid) {
+        uiStore.hideLoading()
+        uiStore.showError(validation.message || '文件内容无效')
+        return
+      }
+      
+      // 提取文件格式
+      const format = getFileFormat(fileName)
+      
+      // 创建 Novel 对象
+      const novel: Novel = {
+        id: item.id, // 保持相同的 ID
+        content: parsedDoc.text,
+        totalLength: parsedDoc.text.length,
+        metadata: {
+          title: item.title, // 保持原标题
+          author: item.author,
+          format: format,
+          fileSize: new Blob([parsedDoc.text]).size,
+          createdAt: item.createdAt,
+          updatedAt: Date.now(),
+          chapters: undefined
+        }
+      }
+      
+      // 保存原有的阅读位置
+      const savedPosition = item.progress.currentPosition
+      
+      // 加载到当前阅读器（这会重置位置到0）
+      // 传递 isHistoryRestore=true 以避免 Editor 清空内容
+      novelStore.loadNovel(novel, newPath || undefined, true)
+      
+      // 等待 Vue 更新 DOM
+      await new Promise(resolve => setTimeout(resolve, 100))
+      
+      // 恢复阅读进度
+      if (savedPosition > 0 && savedPosition < novel.totalLength) {
+        console.log('[History] 恢复阅读位置:', savedPosition)
+        
+        // 获取编辑器元素
+        const editorEl = document.querySelector('.document-content') as HTMLElement
+        if (editorEl) {
+          // 填充已读内容到编辑器
+          const readContent = novel.content.substring(0, savedPosition)
+          editorEl.textContent = readContent
+          console.log('[History] 已恢复已读内容，长度:', readContent.length)
+          
+          // 将光标移到末尾
+          const range = document.createRange()
+          const selection = window.getSelection()
+          if (selection && editorEl.childNodes.length > 0) {
+            range.selectNodeContents(editorEl)
+            range.collapse(false) // 折叠到末尾
+            selection.removeAllRanges()
+            selection.addRange(range)
+          }
+        }
+        
+        // 更新位置
+        novelStore.updatePosition(savedPosition)
+        
+        // 更新历史记录以恢复正确的进度
+        await new Promise(resolve => setTimeout(resolve, 50))
+        historyStore.updateProgress(item.id, savedPosition)
+      }
+      
+      uiStore.hideLoading()
+      
+      // 计算进度百分比
+      const progressPercentage = Math.round((savedPosition / novel.totalLength) * 100)
+      uiStore.showSuccess(`文件已重新加载，阅读进度已保留 (${progressPercentage}%)`)
+    } catch (error) {
+      console.error('[History] 重新定位文件失败:', error)
+      uiStore.hideLoading()
+      uiStore.showError('文件选择取消或失败')
+    }
+  }
+
+  /**
+   * 检查文件是否存在
+   * @param filePath 文件路径
+   * @returns 文件是否存在
+   */
+  async function checkFileExists(filePath: string): Promise<boolean> {
+    try {
+      if (!window.__TAURI__) {
+        return false
+      }
+      
+      const { exists } = await import('@tauri-apps/plugin-fs')
+      return await exists(filePath)
+    } catch (error) {
+      console.error('[History] 检查文件存在性失败:', error)
+      return false
+    }
+  }
+
+  /**
    * 从文件路径重新导入文件
    * @param filePath 文件路径
-   * @returns 文件内容，失败返回 null
+   * @returns 文件内容和错误信息
    */
-  async function reimportFromPath(filePath: string): Promise<string | null> {
+  async function reimportFromPath(filePath: string): Promise<{
+    content: string | null
+    error?: 'not-found' | 'permission' | 'format' | 'unknown'
+    errorMessage?: string
+  }> {
     try {
       // 检查是否在 Tauri 环境
       if (!window.__TAURI__) {
         console.warn('[History] 不在 Tauri 环境，无法从路径读取')
-        return null
+        return { 
+          content: null, 
+          error: 'unknown',
+          errorMessage: '浏览器环境不支持路径访问'
+        }
+      }
+      
+      // 检查文件是否存在
+      const fileExists = await checkFileExists(filePath)
+      if (!fileExists) {
+        console.warn('[History] 文件不存在:', filePath)
+        return { 
+          content: null, 
+          error: 'not-found',
+          errorMessage: '文件不存在或已被移动/删除'
+        }
       }
       
       // 提取文件名和格式
       const fileName = filePath.split(/[\\/]/).pop() || ''
       const format = getFileFormat(fileName)
       
+      // 如果是 docx 或其他需要解析的格式
+      if (format === 'docx') {
+        console.warn('[History] DOCX 格式需要重新导入')
+        return { 
+          content: null, 
+          error: 'format',
+          errorMessage: 'DOCX 格式需要重新导入'
+        }
+      }
+      
       // 读取文件内容
       const { readTextFile } = await import('@tauri-apps/plugin-fs')
       const content = await readTextFile(filePath)
       
-      // 如果是 docx 或其他需要解析的格式
-      if (format === 'docx') {
-        console.warn('[History] DOCX 格式需要重新导入')
-        return null
-      }
-      
       // 对于文本文件，可以直接使用
       const parsedDoc = await documentParser.parseDocument(content, fileName)
-      return parsedDoc.text
+      return { content: parsedDoc.text }
     } catch (error) {
       console.error('[History] 从路径重新导入失败:', error)
-      return null
+      
+      // 分析错误类型
+      const errorMsg = (error as Error)?.message || String(error)
+      if (errorMsg.includes('permission') || errorMsg.includes('denied')) {
+        return { 
+          content: null, 
+          error: 'permission',
+          errorMessage: '没有权限访问该文件'
+        }
+      }
+      
+      return { 
+        content: null, 
+        error: 'unknown',
+        errorMessage: `读取文件失败: ${errorMsg}`
+      }
     }
   }
   

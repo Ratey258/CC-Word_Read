@@ -32,6 +32,9 @@ export const useNovelStore = defineStore('novel', () => {
   /** 显示的文件名（用于标题栏显示） */
   const displayName = ref<string>('文档-Word')
   
+  /** 是否正在从历史记录恢复（用于避免 Editor 清空内容） */
+  const isRestoringFromHistory = ref<boolean>(false)
+  
   // ===== Getters =====
   
   /** 小说总长度 */
@@ -65,8 +68,14 @@ export const useNovelStore = defineStore('novel', () => {
    * 加载小说
    * @param novel 小说对象
    * @param filePath 文件路径（可选，Tauri环境）
+   * @param isHistoryRestore 是否是从历史记录恢复（默认 false）
    */
-  function loadNovel(novel: Novel, filePath?: string): void {
+  function loadNovel(novel: Novel, filePath?: string, isHistoryRestore = false): void {
+    // 如果是从历史记录恢复，设置标志
+    if (isHistoryRestore) {
+      isRestoringFromHistory.value = true
+    }
+    
     currentNovel.value = novel
     content.value = novel.content
     currentPosition.value = 0
@@ -80,9 +89,18 @@ export const useNovelStore = defineStore('novel', () => {
     // 添加到最近打开列表
     addToRecentFiles(novel.metadata)
     
-    // 添加到历史记录
-    const historyStore = useHistoryStore()
-    historyStore.addToHistory(novel, filePath)
+    // 添加到历史记录（仅在非历史恢复时添加）
+    if (!isHistoryRestore) {
+      const historyStore = useHistoryStore()
+      historyStore.addToHistory(novel, filePath)
+    }
+    
+    // 在下一个 tick 后重置标志
+    if (isHistoryRestore) {
+      setTimeout(() => {
+        isRestoringFromHistory.value = false
+      }, 200)
+    }
   }
   
   /**
@@ -308,6 +326,7 @@ export const useNovelStore = defineStore('novel', () => {
     bookmarks,
     recentFiles,
     displayName,
+    isRestoringFromHistory,
     
     // Getters
     totalLength,

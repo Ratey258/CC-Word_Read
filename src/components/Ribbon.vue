@@ -374,7 +374,6 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
               支持 TXT、Word (.docx)、Markdown 格式，完美保留原文档格式
             </div>
           </div>
-          <kbd class="file-menu__item-shortcut">Ctrl+O</kbd>
         </button>
         <button 
           class="file-menu__item"

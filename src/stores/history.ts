@@ -17,7 +17,11 @@ const DEFAULT_CONFIG: HistoryConfig = {
   retentionDays: 30,
   // 浏览器环境必须缓存内容（无法通过路径重新读取）
   // Tauri 环境可以不缓存（可以通过路径重新读取）
-  cacheContent: !window.__TAURI__
+  cacheContent: !window.__TAURI__,
+  // 在 Tauri 环境下启用文件存在性验证
+  validateFileExists: !!window.__TAURI__,
+  // 默认不自动删除无效记录，让用户选择
+  autoRemoveInvalid: false
 }
 
 export const useHistoryStore = defineStore('history', () => {
@@ -38,11 +42,13 @@ export const useHistoryStore = defineStore('history', () => {
   const hasHistory = computed(() => historyItems.value.length > 0)
   
   /** 最近打开的记录（最多10条） */
-  const recentItems = computed(() => 
-    historyItems.value
+  const recentItems = computed(() => {
+    // 先复制数组再排序，避免修改原数组
+    const items = [...historyItems.value]
+    return items
       .sort((a, b) => b.lastAccessedAt - a.lastAccessedAt)
       .slice(0, 10)
-  )
+  })
   
   // ===== Actions =====
   
@@ -52,8 +58,9 @@ export const useHistoryStore = defineStore('history', () => {
    * @param filePath 文件路径（可选，Tauri环境）
    */
   function addToHistory(novel: Novel, filePath?: string): void {
-    // 优先通过文件路径查找现有记录，如果没有路径则通过 ID 查找
+    // 查找现有记录：优先通过文件路径，其次通过标题+文件大小，最后通过ID
     let existingIndex = -1
+    
     if (filePath) {
       // 标准化路径进行比较
       const normalizedPath = filePath.replace(/\\/g, '/')
@@ -64,7 +71,15 @@ export const useHistoryStore = defineStore('history', () => {
       })
     }
     
-    // 如果通过路径没找到，再尝试通过 ID 查找
+    // 如果通过路径没找到，尝试通过标题和文件大小查找（更可靠的去重）
+    if (existingIndex < 0 && novel.metadata.title && novel.metadata.fileSize) {
+      existingIndex = historyItems.value.findIndex(item => 
+        item.title === novel.metadata.title && 
+        item.fileSize === novel.metadata.fileSize
+      )
+    }
+    
+    // 最后尝试通过 ID 查找
     if (existingIndex < 0) {
       existingIndex = historyItems.value.findIndex(item => item.id === novel.id)
     }
@@ -179,8 +194,12 @@ export const useHistoryStore = defineStore('history', () => {
    * 清空所有历史记录
    */
   function clearHistory(): void {
+    console.log('[HistoryStore] 清空历史记录')
     historyItems.value = []
+    // 确保立即保存到 localStorage
     saveToStorage()
+    // 额外验证：确保 localStorage 已清空
+    console.log('[HistoryStore] 清空后验证:', localStorage.getItem(STORAGE_KEYS.HISTORY))
   }
   
   /**
@@ -196,6 +215,83 @@ export const useHistoryStore = defineStore('history', () => {
       const age = now - item.lastAccessedAt
       return age < maxAge
     })
+  }
+  
+  /**
+   * 去重历史记录（删除重复项，保留最新的）
+   */
+  function deduplicateHistory(): void {
+    const seen = new Map<string, number>()
+    const uniqueItems: HistoryItem[] = []
+    
+    // 按最后访问时间降序排序（最新的在前）
+    const sorted = [...historyItems.value].sort((a, b) => b.lastAccessedAt - a.lastAccessedAt)
+    
+    for (const item of sorted) {
+      // 生成唯一标识：优先使用路径，其次使用标题+文件大小
+      const key = item.filePath 
+        ? item.filePath.replace(/\\/g, '/') 
+        : `${item.title}|${item.fileSize}`
+      
+      if (!seen.has(key)) {
+        seen.set(key, 1)
+        uniqueItems.push(item)
+      } else {
+        console.log('[HistoryStore] 发现重复项:', item.title, key)
+      }
+    }
+    
+    if (uniqueItems.length < historyItems.value.length) {
+      console.log('[HistoryStore] 去重:', historyItems.value.length, '->', uniqueItems.length)
+      historyItems.value = uniqueItems
+      saveToStorage()
+    }
+  }
+  
+  /**
+   * 验证并清理无效的历史记录（文件不存在的记录）
+   * 仅在 Tauri 环境且启用 validateFileExists 配置时有效
+   */
+  async function validateAndCleanup(): Promise<void> {
+    if (!config.value.validateFileExists || !window.__TAURI__) {
+      return
+    }
+    
+    console.log('[HistoryStore] 开始验证文件存在性...')
+    
+    try {
+      const { exists } = await import('@tauri-apps/plugin-fs')
+      const invalidItems: HistoryItem[] = []
+      
+      // 检查每个有路径的历史记录
+      for (const item of historyItems.value) {
+        if (item.filePath) {
+          const fileExists = await exists(item.filePath)
+          if (!fileExists) {
+            console.log('[HistoryStore] 文件不存在:', item.filePath)
+            invalidItems.push(item)
+          }
+        }
+      }
+      
+      if (invalidItems.length > 0) {
+        console.log(`[HistoryStore] 发现 ${invalidItems.length} 个无效记录`)
+        
+        if (config.value.autoRemoveInvalid) {
+          // 自动删除无效记录
+          historyItems.value = historyItems.value.filter(
+            item => !invalidItems.some(invalid => invalid.id === item.id)
+          )
+          saveToStorage()
+          console.log(`[HistoryStore] 已自动清理 ${invalidItems.length} 个无效记录`)
+        } else {
+          // 只记录，不自动删除
+          console.log('[HistoryStore] 自动清理已禁用，无效记录将在用户访问时处理')
+        }
+      }
+    } catch (error) {
+      console.error('[HistoryStore] 验证文件存在性失败:', error)
+    }
   }
   
   /**
@@ -280,14 +376,24 @@ export const useHistoryStore = defineStore('history', () => {
       if (data.items && Array.isArray(data.items)) {
         historyItems.value = data.items
         console.log('[HistoryStore] 成功加载', data.items.length, '条历史记录')
+        
+        // 加载后立即去重
+        deduplicateHistory()
       }
       if (data.config) {
         config.value = { ...DEFAULT_CONFIG, ...data.config }
       }
       
-      // 加载后自动清理
+      // 加载后自动清理过期记录
       if (config.value.autoCleanup) {
         cleanupOldItems()
+      }
+      
+      // 验证并清理无效文件（异步执行，不阻塞加载）
+      if (config.value.validateFileExists) {
+        validateAndCleanup().catch(error => {
+          console.error('[HistoryStore] 验证清理失败:', error)
+        })
       }
     } catch (error) {
       console.error('[HistoryStore] 加载历史记录失败:', error)
@@ -325,6 +431,8 @@ export const useHistoryStore = defineStore('history', () => {
     removeHistoryItem,
     clearHistory,
     cleanupOldItems,
+    deduplicateHistory,
+    validateAndCleanup,
     sortHistory,
     searchHistory,
     updateConfig,

@@ -247,7 +247,7 @@ export function useFileImporter() {
   async function importSampleNovel(): Promise<void> {
     const sampleContent = `CC-Word Read - 上班摸鱼小说阅读器
 
-版本：v0.3.0  |  作者：春卷
+作者：春卷
 
 这是一款伪装成 Microsoft Word 的小说阅读器，让你在工作时也能安心摸鱼。
 

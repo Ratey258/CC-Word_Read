@@ -47,6 +47,10 @@ export interface HistoryConfig {
   retentionDays: number
   /** 是否缓存内容 */
   cacheContent: boolean
+  /** 是否在加载时验证文件存在性（仅 Tauri 环境） */
+  validateFileExists: boolean
+  /** 是否自动清理无效文件的历史记录 */
+  autoRemoveInvalid: boolean
 }
 
 /**

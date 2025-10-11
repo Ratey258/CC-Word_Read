@@ -96,24 +96,6 @@ export const STORAGE_KEYS = {
 } as const
 
 /**
- * 快捷键定义
- */
-export const SHORTCUTS = {
-  /** 导入文件 */
-  IMPORT: 'Ctrl+O',
-  /** 保存进度 */
-  SAVE: 'Ctrl+S',
-  /** 暂停/继续 */
-  TOGGLE_PAUSE: 'Ctrl+P',
-  /** 跳转 */
-  JUMP_TO: 'Ctrl+G',
-  /** 清空内容 */
-  CLEAR: 'Ctrl+L',
-  /** 退出 */
-  QUIT: 'Ctrl+Q'
-} as const
-
-/**
  * 事件名称
  */
 export const EVENTS = {

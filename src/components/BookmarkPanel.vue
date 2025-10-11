@@ -116,8 +116,7 @@ function getProgressPercent(position: number): number {
               </svg>
             </div>
             <p class="bookmark-empty__text">
-              暂无书签<br>
-              <span class="bookmark-empty__hint">按 Ctrl+D 添加书签</span>
+              暂无书签
             </p>
           </div>
 

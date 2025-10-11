@@ -4,8 +4,8 @@
 
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import type { AppSettings, Theme, Language, ShortcutConfig } from '@/types/settings'
-import { STORAGE_KEYS, SHORTCUTS, EDITOR_DEFAULTS, WINDOW_DEFAULTS } from '@/utils/constants'
+import type { AppSettings, Theme, Language } from '@/types/settings'
+import { STORAGE_KEYS, EDITOR_DEFAULTS, WINDOW_DEFAULTS } from '@/utils/constants'
 
 export const useSettingsStore = defineStore('settings', () => {
   // ===== State =====
@@ -30,17 +30,7 @@ export const useSettingsStore = defineStore('settings', () => {
       zoomLevel: WINDOW_DEFAULTS.ZOOM_LEVEL
     },
     autoSave: true,
-    autoSaveInterval: 5,
-    enableShortcuts: true
-  })
-  
-  /** 快捷键配置 */
-  const shortcuts = ref<ShortcutConfig>({
-    import: SHORTCUTS.IMPORT,
-    save: SHORTCUTS.SAVE,
-    togglePause: SHORTCUTS.TOGGLE_PAUSE,
-    jumpTo: SHORTCUTS.JUMP_TO,
-    clear: SHORTCUTS.CLEAR
+    autoSaveInterval: 5
   })
   
   // ===== Actions =====
@@ -161,15 +151,6 @@ export const useSettingsStore = defineStore('settings', () => {
     }
   }
   
-  /**
-   * 更新快捷键
-   * @param key 快捷键名称
-   * @param value 快捷键值
-   */
-  function updateShortcut(key: keyof ShortcutConfig, value: string): void {
-    shortcuts.value[key] = value
-    saveSettings()
-  }
   
   /**
    * 重置为默认设置
@@ -194,16 +175,7 @@ export const useSettingsStore = defineStore('settings', () => {
         zoomLevel: WINDOW_DEFAULTS.ZOOM_LEVEL
       },
       autoSave: true,
-      autoSaveInterval: 5,
-      enableShortcuts: true
-    }
-    
-    shortcuts.value = {
-      import: SHORTCUTS.IMPORT,
-      save: SHORTCUTS.SAVE,
-      togglePause: SHORTCUTS.TOGGLE_PAUSE,
-      jumpTo: SHORTCUTS.JUMP_TO,
-      clear: SHORTCUTS.CLEAR
+      autoSaveInterval: 5
     }
     
     saveSettings()
@@ -216,8 +188,7 @@ export const useSettingsStore = defineStore('settings', () => {
    */
   function saveSettings(): void {
     const data = {
-      settings: settings.value,
-      shortcuts: shortcuts.value
+      settings: settings.value
     }
     localStorage.setItem(STORAGE_KEYS.APP_SETTINGS, JSON.stringify(data))
   }
@@ -233,9 +204,6 @@ export const useSettingsStore = defineStore('settings', () => {
       const parsed = JSON.parse(data)
       if (parsed.settings) {
         settings.value = parsed.settings
-      }
-      if (parsed.shortcuts) {
-        shortcuts.value = parsed.shortcuts
       }
       
       // 应用设置
@@ -263,7 +231,6 @@ export const useSettingsStore = defineStore('settings', () => {
   return {
     // State
     settings,
-    shortcuts,
     
     // Actions
     setTheme,
@@ -276,7 +243,6 @@ export const useSettingsStore = defineStore('settings', () => {
     toggleFullscreen,
     toggleAutoSave,
     setAutoSaveInterval,
-    updateShortcut,
     resetToDefaults,
     saveSettings,
     loadSettings
