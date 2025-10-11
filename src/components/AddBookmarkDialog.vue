@@ -72,24 +72,15 @@ function handleCancel(): void {
 
 <template>
   <Transition name="dialog">
-    <div 
-      v-if="show"
-      class="dialog-overlay"
-      @click="handleOverlayClick"
-    >
+    <div v-if="show" class="dialog-overlay" @click="handleOverlayClick">
       <div class="dialog">
         <div class="dialog-header">
-          <h2 class="dialog-title">
-            添加书签
-          </h2>
+          <h2 class="dialog-title">添加书签</h2>
         </div>
 
         <div class="dialog-content">
           <div class="form-group">
-            <label
-              for="bookmark-title"
-              class="form-label"
-            >
+            <label for="bookmark-title" class="form-label">
               标题 <span class="form-required">*</span>
             </label>
             <input
@@ -100,14 +91,11 @@ function handleCancel(): void {
               placeholder="书签标题"
               maxlength="50"
               autofocus
-            >
+            />
           </div>
 
           <div class="form-group">
-            <label
-              for="bookmark-note"
-              class="form-label"
-            >备注</label>
+            <label for="bookmark-note" class="form-label">备注</label>
             <textarea
               id="bookmark-note"
               v-model="note"
@@ -115,7 +103,7 @@ function handleCancel(): void {
               placeholder="添加备注（可选）"
               rows="3"
               maxlength="200"
-            />
+            ></textarea>
           </div>
 
           <div class="form-info">
@@ -131,14 +119,11 @@ function handleCancel(): void {
         </div>
 
         <div class="dialog-footer">
-          <button
-            class="dialog-button dialog-button--secondary"
-            @click="handleCancel"
-          >
+          <button class="dialog-button dialog-button--secondary" @click="handleCancel">
             取消
           </button>
-          <button 
-            class="dialog-button dialog-button--primary" 
+          <button
+            class="dialog-button dialog-button--primary"
             :disabled="!title.trim()"
             @click="handleSubmit"
           >

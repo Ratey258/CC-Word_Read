@@ -321,7 +321,7 @@ onMounted(() => {
       class="document-page"
       :style="pageStyles.page"
     >
-      <div 
+      <div
         ref="editorRef"
         class="document-content"
         contenteditable="true"
@@ -333,7 +333,7 @@ onMounted(() => {
         @compositionstart="handleCompositionStart"
         @compositionupdate="handleCompositionUpdate"
         @compositionend="handleCompositionEnd"
-      />
+      ></div>
     </div>
   </div>
 </template>

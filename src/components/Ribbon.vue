@@ -406,7 +406,7 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
         </button>
       </div>
 
-      <div class="file-menu__divider" />
+      <div class="file-menu__divider"></div>
 
       <!-- 最近打开 -->
       <div 
@@ -493,7 +493,7 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
         </button>
       </div>
 
-      <div class="file-menu__divider" />
+      <div class="file-menu__divider"></div>
 
       <div class="file-menu__section">
         <h3 class="file-menu__section-title">
@@ -516,7 +516,7 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
         </button>
       </div>
 
-      <div class="file-menu__divider" />
+      <div class="file-menu__divider"></div>
 
       <div class="file-menu__section">
         <h3 class="file-menu__section-title">
@@ -1070,7 +1070,7 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
                     />
                   </svg>
                 </button>
-                <div class="ribbon__separator" />
+                <div class="ribbon__separator"></div>
                 <button
                   class="ribbon__button--small"
                   title="显示/隐藏编辑标记"

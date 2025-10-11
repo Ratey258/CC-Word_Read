@@ -85,8 +85,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <div 
-    id="app" 
+  <div
+    id="app"
     class="app-container"
     :class="{ 'app-container--dragging': isDragging }"
     @dragenter.prevent="handleDragEnter"
@@ -100,22 +100,13 @@ onMounted(() => {
     <StatusBar />
 
     <!-- 书签面板 -->
-    <BookmarkPanel 
-      :show="showBookmarkPanel"
-      @close="handleCloseBookmarks"
-    />
+    <BookmarkPanel :show="showBookmarkPanel" @close="handleCloseBookmarks" />
 
     <!-- 添加书签对话框 -->
-    <AddBookmarkDialog 
-      :show="showAddBookmark"
-      @close="handleCloseAddBookmark"
-    />
+    <AddBookmarkDialog :show="showAddBookmark" @close="handleCloseAddBookmark" />
 
     <!-- 关于对话框 -->
-    <AboutDialog 
-      :show="showAboutDialog"
-      @close="handleCloseAbout"
-    />
+    <AboutDialog :show="showAboutDialog" @close="handleCloseAbout" />
 
     <!-- 更新检查器 -->
     <UpdateChecker ref="updateChecker" />
@@ -138,16 +129,10 @@ onMounted(() => {
     />
 
     <!-- 拖放遮罩层 -->
-    <div
-      v-if="isDragging"
-      class="drop-overlay"
-    >
+    <div v-if="isDragging" class="drop-overlay">
       <div class="drop-overlay__content">
         <div class="drop-overlay__icon">
-          <svg
-            viewBox="0 0 64 64"
-            xmlns="http://www.w3.org/2000/svg"
-          >
+          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
             <path
               d="M48 8H16c-2.2 0-4 1.8-4 4v40c0 2.2 1.8 4 4 4h32c2.2 0 4-1.8 4-4V12c0-2.2-1.8-4-4-4zm0 44H16V12h32v40z"
               fill="currentColor"
@@ -162,12 +147,8 @@ onMounted(() => {
             />
           </svg>
         </div>
-        <h3 class="drop-overlay__title">
-          拖放文件到此处
-        </h3>
-        <p class="drop-overlay__description">
-          支持 TXT 文本文件
-        </p>
+        <h3 class="drop-overlay__title">拖放文件到此处</h3>
+        <p class="drop-overlay__description">支持 TXT 文本文件</p>
       </div>
     </div>
   </div>

@@ -1,139 +1,72 @@
 <template>
   <Transition name="dialog">
-    <div
-      v-if="showUpdateDialog"
-      class="update-overlay"
-      @click.self="closeDialog"
-    >
+    <div v-if="showUpdateDialog" class="update-overlay" @click.self="closeDialog">
       <div class="update-dialog">
         <div class="update-header">
           <h3>{{ updateTitle }}</h3>
-          <button
-            v-if="!isUpdating"
-            class="close-btn"
-            @click="closeDialog"
-          >
+          <button v-if="!isUpdating" class="close-btn" @click="closeDialog">
             ×
           </button>
         </div>
         
         <div class="update-content">
-          <div
-            v-if="updateStatus === 'checking'"
-            class="update-status"
-          >
-            <div class="spinner" />
+          <div v-if="updateStatus === 'checking'" class="update-status">
+            <div class="spinner"></div>
             <p>正在检查更新...</p>
           </div>
           
-          <div
-            v-else-if="updateStatus === 'available'"
-            class="update-available"
-          >
-            <div class="update-icon">
-              ✨
-            </div>
-            <h4
-              v-if="updateInfo"
-              class="version-info"
-            >
+          <div v-else-if="updateStatus === 'available'" class="update-available">
+            <div class="update-icon">✨</div>
+            <h4 v-if="updateInfo" class="version-info">
               {{ updateInfo.current_version }} → {{ updateInfo.version }}
             </h4>
-            <p
-              v-if="updateInfo?.date"
-              class="update-date"
-            >
+            <p v-if="updateInfo?.date" class="update-date">
               发布时间: {{ formatDate(updateInfo.date) }}
             </p>
-            <div
-              v-if="updateInfo?.notes"
-              class="update-notes"
-            >
-              <div class="notes-label">
-                更新内容：
-              </div>
-              <div class="notes-content">
-                {{ updateInfo.notes }}
-              </div>
+            <div v-if="updateInfo?.notes" class="update-notes">
+              <div class="notes-label">更新内容：</div>
+              <div class="notes-content">{{ updateInfo.notes }}</div>
             </div>
             <div class="update-actions">
-              <button
-                class="btn-primary"
-                @click="installUpdate"
-              >
+              <button class="btn-primary" @click="installUpdate">
                 立即更新
               </button>
-              <button
-                class="btn-secondary"
-                @click="closeDialog"
-              >
+              <button class="btn-secondary" @click="closeDialog">
                 稍后提醒
               </button>
             </div>
           </div>
           
-          <div
-            v-else-if="updateStatus === 'downloading'"
-            class="update-downloading"
-          >
+          <div v-else-if="updateStatus === 'downloading'" class="update-downloading">
             <div class="progress-container">
-              <div
-                class="progress-bar"
-                :style="{ width: downloadProgress + '%' }"
-              />
+              <div class="progress-bar" :style="{ width: downloadProgress + '%' }"></div>
             </div>
             <p>正在下载更新... {{ downloadProgress }}%</p>
           </div>
           
-          <div
-            v-else-if="updateStatus === 'installing'"
-            class="update-installing"
-          >
-            <div class="spinner" />
+          <div v-else-if="updateStatus === 'installing'" class="update-installing">
+            <div class="spinner"></div>
             <p>正在安装更新，请稍候...</p>
           </div>
           
-          <div
-            v-else-if="updateStatus === 'success'"
-            class="update-success"
-          >
-            <div class="update-icon">
-              🎉
-            </div>
+          <div v-else-if="updateStatus === 'success'" class="update-success">
+            <div class="update-icon">🎉</div>
             <p>更新安装成功！</p>
-            <p class="update-hint">
-              应用将自动重启以完成更新
-            </p>
+            <p class="update-hint">应用将自动重启以完成更新</p>
           </div>
           
-          <div
-            v-else-if="updateStatus === 'latest'"
-            class="update-latest"
-          >
-            <div class="update-icon">
-              ✅
-            </div>
+          <div v-else-if="updateStatus === 'latest'" class="update-latest">
+            <div class="update-icon">✅</div>
             <p>您已使用最新版本</p>
-            <button
-              class="btn-secondary"
-              @click="closeDialog"
-            >
+            <button class="btn-secondary" @click="closeDialog">
               确定
             </button>
           </div>
           
-          <div
-            v-else-if="updateStatus === 'error'"
-            class="update-error"
-          >
-            <div class="update-icon">
-              ❌
-            </div>
+          <div v-else-if="updateStatus === 'error'" class="update-error">
+            <div class="update-icon">❌</div>
             <p>{{ errorMessage }}</p>
-            <button
-              class="btn-secondary"
-              @click="closeDialog"
-            >
+            <button class="btn-secondary" @click="closeDialog">
               关闭
             </button>
           </div>

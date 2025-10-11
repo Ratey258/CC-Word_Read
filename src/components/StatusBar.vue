@@ -74,7 +74,7 @@ const switchView = (view: 'print' | 'web' | 'reading') => {
         <span class="status-bar__text">第 {{ currentPage }} 页，共 {{ totalPages }} 页</span>
       </div>
 
-      <div class="status-bar__divider" />
+      <div class="status-bar__divider"></div>
 
       <!-- 字数统计 -->
       <div
@@ -85,10 +85,7 @@ const switchView = (view: 'print' | 'web' | 'reading') => {
         <span class="status-bar__text">{{ formatNumber(wordCount) }} 字</span>
       </div>
 
-      <div
-        v-if="hasNovel"
-        class="status-bar__divider"
-      />
+      <div v-if="hasNovel" class="status-bar__divider"></div>
 
       <!-- 字符位置 -->
       <div
@@ -107,7 +104,7 @@ const switchView = (view: 'print' | 'web' | 'reading') => {
         <span class="status-bar__text">简体中文(中国大陆)</span>
       </div>
 
-      <div class="status-bar__divider" />
+      <div class="status-bar__divider"></div>
 
       <!-- 视图切换 -->
       <div class="status-bar__views">
@@ -154,7 +151,7 @@ const switchView = (view: 'print' | 'web' | 'reading') => {
         </button>
       </div>
 
-      <div class="status-bar__divider" />
+      <div class="status-bar__divider"></div>
 
       <!-- 缩放控制 -->
       <div class="status-bar__zoom">
@@ -173,7 +170,7 @@ const switchView = (view: 'print' | 'web' | 'reading') => {
           </svg>
         </button>
 
-        <input 
+        <input
           type="range"
           class="status-bar__zoom-slider"
           min="50"
@@ -182,7 +179,7 @@ const switchView = (view: 'print' | 'web' | 'reading') => {
           :value="zoomPercentage"
           title="缩放级别"
           @input="handleZoomChange"
-        >
+        />
 
         <button 
           class="status-bar__zoom-display"

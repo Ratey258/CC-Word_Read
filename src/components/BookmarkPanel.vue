@@ -243,10 +243,7 @@ function getProgressPercent(position: number): number {
               >
                 所有书签
               </button>
-              <div
-                class="bookmark-tab-indicator"
-                :style="indicatorStyle"
-              />
+              <div class="bookmark-tab-indicator" :style="indicatorStyle"></div>
             </div>
           </div>
           <button 

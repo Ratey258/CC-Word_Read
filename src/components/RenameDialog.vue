@@ -37,7 +37,7 @@
                 placeholder="请输入要显示的文件名"
                 @keyup.enter="handleConfirm"
                 @keyup.esc="handleCancel"
-              >
+              />
             </div>
             
             <div class="rename-dialog__hint">

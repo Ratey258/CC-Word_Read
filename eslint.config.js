@@ -151,6 +151,27 @@ export default [
       'vue/no-v-html': 'warn',
       'vue/require-default-prop': 'off',
       'vue/require-explicit-emits': 'warn',
+      // 主流格式规范 - 折中方案
+      'vue/max-attributes-per-line': ['error', {
+        singleline: 3,  // 单行最多 3 个属性
+        multiline: 1    // 多行时每行 1 个属性
+      }],
+      'vue/first-attribute-linebreak': ['error', {
+        singleline: 'ignore',  // 单行不强制换行
+        multiline: 'below'     // 多行时第一个属性换行
+      }],
+      'vue/html-closing-bracket-newline': ['error', {
+        singleline: 'never',   // 单行不换行
+        multiline: 'always'    // 多行换行
+      }],
+      'vue/singleline-html-element-content-newline': 'off',  // 允许单行内容
+      'vue/html-self-closing': ['error', {
+        html: {
+          void: 'always',      // void 元素使用自闭合 (br, img, etc.)
+          normal: 'never',     // 普通 HTML 元素不使用自闭合
+          component: 'always'  // Vue 组件使用自闭合
+        }
+      }]
     }
   },
   

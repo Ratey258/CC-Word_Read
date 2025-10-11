@@ -101,11 +101,11 @@ onMounted(() => {
       class="onboarding-overlay"
     >
       <!-- 背景遮罩 -->
-      <div class="onboarding-backdrop" />
+      <div class="onboarding-backdrop"></div>
 
       <!-- 指向文件按钮的动画指针 -->
       <Transition name="pointer">
-        <div 
+        <div
           v-if="showPointer && fileButtonRect"
           class="onboarding-pointer"
           :style="{
@@ -114,8 +114,8 @@ onMounted(() => {
           }"
         >
           <!-- 脉冲光圈 -->
-          <div class="pointer-pulse" />
-          <div class="pointer-pulse pointer-pulse--delayed" />
+          <div class="pointer-pulse"></div>
+          <div class="pointer-pulse pointer-pulse--delayed"></div>
           
           <!-- 箭头 -->
           <div class="pointer-arrow">

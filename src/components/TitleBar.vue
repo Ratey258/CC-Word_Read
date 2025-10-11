@@ -117,7 +117,7 @@ const handleClose = async () => {
         :class="{ 'title-bar__autosave--on': settings.autoSave }"
         @click="toggleAutoSave"
       >
-        <div class="title-bar__autosave-toggle" />
+        <div class="title-bar__autosave-toggle"></div>
         <span>自动保存</span>
       </div>
 
@@ -187,7 +187,7 @@ const handleClose = async () => {
           placeholder="搜索"
           :value="searchQuery"
           @input="handleSearchInput"
-        >
+        />
       </div>
     </div>
 

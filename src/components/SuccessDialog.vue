@@ -50,11 +50,7 @@ function handleConfirm(): void {
 
 <template>
   <Transition name="dialog">
-    <div 
-      v-if="show"
-      class="dialog-overlay"
-      @click="handleOverlayClick"
-    >
+    <div v-if="show" class="dialog-overlay" @click="handleOverlayClick">
       <div class="success-dialog">
         <!-- 成功图标 -->
         <Transition name="icon">
@@ -69,22 +65,15 @@ function handleConfirm(): void {
         <!-- 内容 -->
         <Transition name="content">
           <div v-if="showContent" class="success-content">
-            <h2 class="success-title">
-              {{ title || '操作成功' }}
-            </h2>
-            <p v-if="message" class="success-message">
-              {{ message }}
-            </p>
+            <h2 class="success-title">{{ title || '操作成功' }}</h2>
+            <p v-if="message" class="success-message">{{ message }}</p>
           </div>
         </Transition>
 
         <!-- 按钮 -->
         <Transition name="content">
           <div v-if="showContent" class="success-footer">
-            <button 
-              class="success-button"
-              @click="handleConfirm"
-            >
+            <button class="success-button" @click="handleConfirm">
               {{ confirmText || '确定' }}
             </button>
           </div>
