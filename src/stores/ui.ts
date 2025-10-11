@@ -63,6 +63,9 @@ export const useUIStore = defineStore('ui', () => {
     show: false
   })
   
+  /** 是否显示新手引导 */
+  const showOnboarding = ref<boolean>(false)
+  
   // ===== Getters =====
   
   /** 是否有打开的对话框 */
@@ -273,6 +276,20 @@ export const useUIStore = defineStore('ui', () => {
   }
   
   /**
+   * 显示新手引导
+   */
+  function showOnboardingGuide(): void {
+    showOnboarding.value = true
+  }
+  
+  /**
+   * 隐藏新手引导
+   */
+  function hideOnboardingGuide(): void {
+    showOnboarding.value = false
+  }
+  
+  /**
    * 重置 UI 状态
    */
   function reset(): void {
@@ -299,6 +316,7 @@ export const useUIStore = defineStore('ui', () => {
     notifications,
     showWelcome,
     successDialog,
+    showOnboarding,
     
     // Getters
     hasActiveDialog,
@@ -325,6 +343,8 @@ export const useUIStore = defineStore('ui', () => {
     hideWelcome,
     showSuccessDialog,
     hideSuccessDialog,
+    showOnboardingGuide,
+    hideOnboardingGuide,
     reset
   }
 })

@@ -9,14 +9,17 @@ import AddBookmarkDialog from '@/components/AddBookmarkDialog.vue'
 import AboutDialog from '@/components/AboutDialog.vue'
 import UpdateChecker from '@/components/UpdateChecker.vue'
 import SuccessDialog from '@/components/SuccessDialog.vue'
+import OnboardingGuide from '@/components/OnboardingGuide.vue'
 import { useFileImporter } from '@/composables/useFileImporter'
 import { useUIStore } from '@/stores/ui'
+import { useSettingsStore } from '@/stores/settings'
 
 // File import composable
 const { isDragging, handleDragEnter, handleDragLeave, handleDrop } = useFileImporter()
 
-// UI store
+// Stores
 const uiStore = useUIStore()
+const settingsStore = useSettingsStore()
 
 // 书签面板
 const showBookmarkPanel = ref(false)
@@ -54,6 +57,10 @@ function handleCheckUpdates(): void {
   updateChecker.value?.checkForUpdates(true)
 }
 
+function handleCompleteOnboarding(): void {
+  uiStore.hideOnboardingGuide()
+}
+
 onMounted(() => {
   console.log('CC Word Reader v3 - Vue 3 App mounted successfully!')
   
@@ -66,6 +73,14 @@ onMounted(() => {
   
   // 监听检查更新事件
   window.addEventListener('check-updates', handleCheckUpdates)
+  
+  // 检查是否首次使用，显示引导
+  if (settingsStore.isFirstTime) {
+    // 延迟一点显示，让界面先渲染完成
+    setTimeout(() => {
+      uiStore.showOnboardingGuide()
+    }, 500)
+  }
 })
 </script>
 
@@ -113,6 +128,13 @@ onMounted(() => {
       :confirm-text="uiStore.successDialog.confirmText"
       @close="uiStore.hideSuccessDialog"
       @confirm="uiStore.hideSuccessDialog"
+    />
+
+    <!-- 新手引导 -->
+    <OnboardingGuide
+      :show="uiStore.showOnboarding"
+      @close="uiStore.hideOnboardingGuide"
+      @complete="handleCompleteOnboarding"
     />
 
     <!-- 拖放遮罩层 -->

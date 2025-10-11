@@ -33,6 +33,9 @@ export const useSettingsStore = defineStore('settings', () => {
     autoSaveInterval: 5
   })
   
+  /** 是否首次使用 */
+  const isFirstTime = ref<boolean>(true)
+  
   // ===== Actions =====
   
   /**
@@ -151,6 +154,14 @@ export const useSettingsStore = defineStore('settings', () => {
     }
   }
   
+  /**
+   * 标记已完成首次使用引导
+   */
+  function completeOnboarding(): void {
+    isFirstTime.value = false
+    saveSettings()
+  }
+  
   
   /**
    * 重置为默认设置
@@ -188,7 +199,8 @@ export const useSettingsStore = defineStore('settings', () => {
    */
   function saveSettings(): void {
     const data = {
-      settings: settings.value
+      settings: settings.value,
+      isFirstTime: isFirstTime.value
     }
     localStorage.setItem(STORAGE_KEYS.APP_SETTINGS, JSON.stringify(data))
   }
@@ -204,6 +216,11 @@ export const useSettingsStore = defineStore('settings', () => {
       const parsed = JSON.parse(data)
       if (parsed.settings) {
         settings.value = parsed.settings
+      }
+      
+      // 加载首次使用标记
+      if (parsed.isFirstTime !== undefined) {
+        isFirstTime.value = parsed.isFirstTime
       }
       
       // 应用设置
@@ -231,6 +248,7 @@ export const useSettingsStore = defineStore('settings', () => {
   return {
     // State
     settings,
+    isFirstTime,
     
     // Actions
     setTheme,
@@ -243,6 +261,7 @@ export const useSettingsStore = defineStore('settings', () => {
     toggleFullscreen,
     toggleAutoSave,
     setAutoSaveInterval,
+    completeOnboarding,
     resetToDefaults,
     saveSettings,
     loadSettings
