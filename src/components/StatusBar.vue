@@ -57,8 +57,8 @@ const handleZoomReset = () => {
 }
 
 const switchView = (view: 'print' | 'web' | 'reading') => {
-  console.log('Switch view to:', view)
-  // TODO: 实现视图切换
+  // 装饰性视图切换按钮，保持 Word 风格界面
+  console.log('View mode:', view)
 }
 </script>
 
