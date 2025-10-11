@@ -169,6 +169,11 @@ const handleRenameDisplay = () => {
   showRenameDialog.value = true
 }
 
+const handleCheckUpdates = () => {
+  window.dispatchEvent(new CustomEvent('check-updates'))
+  closeFileMenu()
+}
+
 const handleRenameConfirm = (newName: string) => {
   novelStore.setDisplayName(newName)
 }
@@ -454,6 +459,28 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
             </div>
             <div class="file-menu__item-description">
               自定义标题栏中显示的文件名
+            </div>
+          </div>
+        </button>
+      </div>
+
+      <div class="file-menu__divider" />
+
+      <div class="file-menu__section">
+        <h3 class="file-menu__section-title">
+          应用
+        </h3>
+        <button 
+          class="file-menu__item"
+          @click="handleCheckUpdates"
+        >
+          <span class="file-menu__item-icon">🔄</span>
+          <div class="file-menu__item-content">
+            <div class="file-menu__item-title">
+              检查更新
+            </div>
+            <div class="file-menu__item-description">
+              检查并安装应用程序更新
             </div>
           </div>
         </button>

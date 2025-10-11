@@ -7,6 +7,7 @@ import StatusBar from '@/components/StatusBar.vue'
 import ShortcutsHelp from '@/components/ShortcutsHelp.vue'
 import BookmarkPanel from '@/components/BookmarkPanel.vue'
 import AddBookmarkDialog from '@/components/AddBookmarkDialog.vue'
+import UpdateChecker from '@/components/UpdateChecker.vue'
 import { useFileImporter } from '@/composables/useFileImporter'
 
 // File import composable
@@ -18,6 +19,9 @@ const showShortcutsHelp = ref(false)
 // 书签面板
 const showBookmarkPanel = ref(false)
 const showAddBookmark = ref(false)
+
+// 更新检查器引用
+const updateChecker = ref<InstanceType<typeof UpdateChecker> | null>(null)
 
 function handleShowShortcutsHelp(): void {
   showShortcutsHelp.value = true
@@ -43,6 +47,10 @@ function handleCloseAddBookmark(): void {
   showAddBookmark.value = false
 }
 
+function handleCheckUpdates(): void {
+  updateChecker.value?.checkForUpdates(true)
+}
+
 onMounted(() => {
   console.log('CC Word Reader v3 - Vue 3 App mounted successfully!')
   
@@ -52,6 +60,9 @@ onMounted(() => {
   // 监听书签事件
   window.addEventListener('show-bookmarks', handleShowBookmarks)
   window.addEventListener('add-bookmark', handleAddBookmark)
+  
+  // 监听检查更新事件
+  window.addEventListener('check-updates', handleCheckUpdates)
 })
 </script>
 
@@ -87,6 +98,9 @@ onMounted(() => {
       :show="showAddBookmark"
       @close="handleCloseAddBookmark"
     />
+
+    <!-- 更新检查器 -->
+    <UpdateChecker ref="updateChecker" />
 
     <!-- 拖放遮罩层 -->
     <div

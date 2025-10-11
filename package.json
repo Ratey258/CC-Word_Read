@@ -1,7 +1,7 @@
 {
   "name": "cc-word-read-v3",
   "private": true,
-  "version": "0.3.0",
+  "version": "0.3.1",
   "type": "module",
   "description": "CC Word Reading Tool - Vue 3 + TypeScript + Tauri",
   "scripts": {
