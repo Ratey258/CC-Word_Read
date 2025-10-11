@@ -169,6 +169,16 @@ const handleRenameDisplay = () => {
   showRenameDialog.value = true
 }
 
+const handleAddBookmark = () => {
+  window.dispatchEvent(new CustomEvent('add-bookmark'))
+  closeFileMenu()
+}
+
+const handleShowBookmarks = () => {
+  window.dispatchEvent(new CustomEvent('show-bookmarks'))
+  closeFileMenu()
+}
+
 const handleCheckUpdates = () => {
   window.dispatchEvent(new CustomEvent('check-updates'))
   closeFileMenu()
@@ -446,6 +456,44 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
         </div>
       </div>
 
+
+      <div class="file-menu__section">
+        <h3 class="file-menu__section-title">
+          书签
+        </h3>
+        <button 
+          class="file-menu__item"
+          :disabled="!hasNovel"
+          @click="handleAddBookmark"
+        >
+          <span class="file-menu__item-icon">🔖</span>
+          <div class="file-menu__item-content">
+            <div class="file-menu__item-title">
+              添加书签
+            </div>
+            <div class="file-menu__item-description">
+              为当前阅读位置添加书签标记
+            </div>
+          </div>
+        </button>
+        <button 
+          class="file-menu__item"
+          :disabled="!hasNovel"
+          @click="handleShowBookmarks"
+        >
+          <span class="file-menu__item-icon">📚</span>
+          <div class="file-menu__item-content">
+            <div class="file-menu__item-title">
+              查看书签
+            </div>
+            <div class="file-menu__item-description">
+              查看和管理已保存的书签
+            </div>
+          </div>
+        </button>
+      </div>
+
+      <div class="file-menu__divider" />
 
       <div class="file-menu__section">
         <h3 class="file-menu__section-title">
