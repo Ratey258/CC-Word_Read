@@ -124,44 +124,10 @@ export function smoothScrollTo(
 }
 
 /**
- * 防抖函数
- * @param fn 要执行的函数
- * @param delay 延迟时间（毫秒）
+ * 防抖和节流函数 - 直接从 lodash-es 导出
+ * 
+ * 防抖 (debounce): 延迟执行，在延迟时间内重复调用会重新计时
+ * 节流 (throttle): 限制执行频率，在指定时间内最多执行一次
  */
-export function debounce<T extends (...args: unknown[]) => unknown>(
-  fn: T,
-  delay: number
-): (...args: Parameters<T>) => void {
-  let timer: ReturnType<typeof setTimeout> | null = null
-  
-  return function (this: unknown, ...args: Parameters<T>) {
-    if (timer) clearTimeout(timer)
-    
-    timer = setTimeout(() => {
-      fn.apply(this, args)
-      timer = null
-    }, delay)
-  }
-}
-
-/**
- * 节流函数
- * @param fn 要执行的函数
- * @param delay 延迟时间（毫秒）
- */
-export function throttle<T extends (...args: unknown[]) => unknown>(
-  fn: T,
-  delay: number
-): (...args: Parameters<T>) => void {
-  let lastTime = 0
-  
-  return function (this: unknown, ...args: Parameters<T>) {
-    const now = Date.now()
-    
-    if (now - lastTime >= delay) {
-      fn.apply(this, args)
-      lastTime = now
-    }
-  }
-}
+export { debounce, throttle } from 'lodash-es'
 

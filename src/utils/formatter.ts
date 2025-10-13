@@ -4,6 +4,7 @@
 
 import { format, formatDistance, formatRelative } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
+import { truncate as _truncate } from 'lodash-es'
 
 /**
  * 格式化文件大小
@@ -25,9 +26,10 @@ export function formatFileSize(bytes: number, decimals = 2): string {
 /**
  * 格式化数字（千分位）
  * @param num 数字
+ * @param locale 地区代码，默认中文
  */
-export function formatNumber(num: number): string {
-  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+export function formatNumber(num: number, locale = 'zh-CN'): string {
+  return new Intl.NumberFormat(locale).format(num)
 }
 
 /**
@@ -109,10 +111,10 @@ export function formatRelativeDate(timestamp: number): string {
  * @param suffix 后缀
  */
 export function truncate(text: string, maxLength: number, suffix = '...'): string {
-  if (text.length <= maxLength) {
-    return text
-  }
-  return text.substring(0, maxLength - suffix.length) + suffix
+  return _truncate(text, {
+    length: maxLength,
+    omission: suffix
+  })
 }
 
 /**

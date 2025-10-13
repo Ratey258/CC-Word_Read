@@ -196,26 +196,11 @@ export function validateShortcut(shortcut: string): { valid: boolean; message?: 
 /**
  * 是否为空值
  * @param value 值
+ * 
+ * 使用 lodash-es 的 isEmpty 实现
+ * 支持检测: null, undefined, '', [], {}, Map, Set 等
  */
-export function isEmpty(value: unknown): boolean {
-  if (value === null || value === undefined) {
-    return true
-  }
-
-  if (typeof value === 'string') {
-    return value.trim().length === 0
-  }
-
-  if (Array.isArray(value)) {
-    return value.length === 0
-  }
-
-  if (typeof value === 'object') {
-    return Object.keys(value).length === 0
-  }
-
-  return false
-}
+export { isEmpty } from 'lodash-es'
 
 /**
  * 是否为有效的 URL
