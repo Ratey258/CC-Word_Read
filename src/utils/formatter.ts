@@ -2,6 +2,9 @@
  * 格式化工具函数
  */
 
+import { format, formatDistance, formatRelative } from 'date-fns'
+import { zhCN } from 'date-fns/locale'
+
 /**
  * 格式化文件大小
  * @param bytes 字节数
@@ -60,52 +63,43 @@ export function formatDuration(ms: number): string {
 /**
  * 格式化日期时间
  * @param timestamp 时间戳（毫秒）
- * @param format 格式化模板
+ * @param pattern 格式化模板（支持 date-fns 所有格式）
+ * @param useLocale 是否使用中文本地化
+ * @example
+ * formatDateTime(Date.now(), 'yyyy-MM-dd HH:mm:ss') // "2025-10-13 14:30:00"
+ * formatDateTime(Date.now(), 'PPP', true) // "2025年10月13日"
  */
 export function formatDateTime(
   timestamp: number,
-  format = 'YYYY-MM-DD HH:mm:ss'
+  pattern = 'yyyy-MM-dd HH:mm:ss',
+  useLocale = false
 ): string {
-  const date = new Date(timestamp)
-
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  const hours = String(date.getHours()).padStart(2, '0')
-  const minutes = String(date.getMinutes()).padStart(2, '0')
-  const seconds = String(date.getSeconds()).padStart(2, '0')
-
-  return format
-    .replace('YYYY', String(year))
-    .replace('MM', month)
-    .replace('DD', day)
-    .replace('HH', hours)
-    .replace('mm', minutes)
-    .replace('ss', seconds)
+  return format(timestamp, pattern, useLocale ? { locale: zhCN } : undefined)
 }
 
 /**
- * 格式化相对时间
+ * 格式化相对时间（更智能）
  * @param timestamp 时间戳（毫秒）
+ * @example
+ * formatRelativeTime(Date.now() - 60000) // "1 分钟前"
+ * formatRelativeTime(Date.now() - 3600000) // "大约 1 小时前"
  */
 export function formatRelativeTime(timestamp: number): string {
-  const now = Date.now()
-  const diff = now - timestamp
+  return formatDistance(timestamp, Date.now(), {
+    addSuffix: true,
+    locale: zhCN
+  })
+}
 
-  const seconds = Math.floor(diff / 1000)
-  const minutes = Math.floor(seconds / 60)
-  const hours = Math.floor(minutes / 60)
-  const days = Math.floor(hours / 24)
-
-  if (days > 0) {
-    return `${days}天前`
-  } else if (hours > 0) {
-    return `${hours}小时前`
-  } else if (minutes > 0) {
-    return `${minutes}分钟前`
-  } else {
-    return '刚刚'
-  }
+/**
+ * 格式化相对日期（更自然）
+ * @param timestamp 时间戳（毫秒）
+ * @example
+ * formatRelativeDate(Date.now()) // "今天 14:30"
+ * formatRelativeDate(Date.now() - 86400000) // "昨天 14:30"
+ */
+export function formatRelativeDate(timestamp: number): string {
+  return formatRelative(timestamp, Date.now(), { locale: zhCN })
 }
 
 /**

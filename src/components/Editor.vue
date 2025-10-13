@@ -7,6 +7,14 @@ import { useSettingsStore } from '@/stores/settings'
 import { useUIStore } from '@/stores/ui'
 import { useNovelReader } from '@/composables/useNovelReader'
 import { usePageCalculator } from '@/composables/usePageCalculator'
+import { useEditorScroll } from '@/composables/useEditorScroll'
+import {
+  restoreEditorContent,
+  getEditorTextContent,
+  clearEditorContent,
+  isEditorEmpty
+} from '@/utils/editorHelper'
+import { throttle } from 'lodash-es'
 
 // Stores
 const novelStore = useNovelStore()
@@ -37,6 +45,9 @@ const {
 
 // 页码计算器
 const { totalPages } = usePageCalculator()
+
+// 编辑器滚动
+const { scrollToContentEnd } = useEditorScroll(editorRef, isRibbonCollapsed)
 
 // Computed
 const hasNovel = computed(() => currentNovel.value !== null)
@@ -90,85 +101,7 @@ function updateEditorContentLength(): void {
   }
 }
 
-// 滚动到内容末尾，保持最后的内容在视觉中心
-function scrollToContentEnd(): void {
-  if (!editorRef.value) return
-  
-  const editor = editorRef.value
-  const text = editor.textContent || ''
-  
-  // 如果没有内容，不需要滚动
-  if (text.length === 0) return
-  
-  // 获取文档容器（它是滚动容器）
-  const container = document.querySelector('.document-container') as HTMLElement
-  if (!container) return
-  
-  // 创建一个临时 range 来定位到内容末尾
-  const range = document.createRange()
-  
-  // 找到编辑器的最后一个文本节点
-  let lastTextNode: Node | null = null
-  const walker = document.createTreeWalker(
-    editor,
-    globalThis.NodeFilter.SHOW_TEXT,
-    null
-  )
-  
-  while (walker.nextNode()) {
-    lastTextNode = walker.currentNode
-  }
-  
-  // 如果找不到文本节点，退出
-  if (!lastTextNode) return
-  
-  // 设置 range 到最后一个字符
-  const textLength = lastTextNode.textContent?.length || 0
-  if (textLength > 0) {
-    range.setStart(lastTextNode, textLength - 1)
-    range.setEnd(lastTextNode, textLength)
-  } else {
-    range.selectNodeContents(lastTextNode)
-  }
-  
-  const rect = range.getBoundingClientRect()
-  
-  // 计算编辑器容器顶部位置（考虑 Ribbon 的高度）
-  const titlebarHeight = 32
-  const ribbonTabHeight = 27
-  const ribbonToolbarHeight = isRibbonCollapsed.value ? 0 : 93
-  const headerHeight = titlebarHeight + ribbonTabHeight + ribbonToolbarHeight
-  
-  // 计算视口可用区域（排除顶部工具栏）
-  const viewportTop = headerHeight
-  const viewportBottom = window.innerHeight
-  const viewportHeight = viewportBottom - viewportTop
-  
-  // 定义内容末尾应该保持在视口中的目标位置（视口中心偏上1/3处）
-  const targetPositionInViewport = viewportTop + viewportHeight / 3
-  
-  // 内容末尾当前在窗口中的位置
-  const contentEndTop = rect.top
-  
-  // 如果内容末尾不在合适的位置，进行滚动
-  // 允许一定的缓冲区，避免频繁滚动
-  const buffer = 50
-  const shouldScroll = 
-    contentEndTop < (targetPositionInViewport - buffer) || 
-    contentEndTop > (targetPositionInViewport + buffer)
-  
-  if (shouldScroll) {
-    // 计算需要滚动的距离
-    const scrollDelta = contentEndTop - targetPositionInViewport
-    const targetScrollTop = container.scrollTop + scrollDelta
-    
-    // 平滑滚动到目标位置（滚动容器而不是 window）
-    container.scrollTo({
-      top: Math.max(0, targetScrollTop),
-      behavior: 'smooth'
-    })
-  }
-}
+// 注意：scrollToContentEnd 已通过 useEditorScroll composable 提供
 
 // 使用 MutationObserver 监听编辑器内容变化
 let editorObserver: globalThis.MutationObserver | null = null
@@ -181,14 +114,19 @@ function setupEditorObserver(): void {
     editorObserver.disconnect()
   }
   
-  // 创建新的观察器
-  editorObserver = new globalThis.MutationObserver(() => {
+  // 节流更新函数：最多每 100ms 执行一次
+  const throttledUpdate = throttle(() => {
     updateEditorContentLength()
-    // 内容变化后，滚动到内容末尾
     globalThis.requestAnimationFrame(() => {
       scrollToContentEnd()
     })
+  }, 100, {
+    leading: true,   // 首次立即执行
+    trailing: true   // 停止后再执行最后一次
   })
+  
+  // 创建新的观察器
+  editorObserver = new globalThis.MutationObserver(throttledUpdate)
   
   // 观察编辑器的所有子节点变化和文本内容变化
   editorObserver.observe(editorRef.value, {
@@ -226,7 +164,7 @@ watch(currentNovel, (novel, oldNovel) => {
     if (isNewNovel) {
       console.log('[Editor] 加载新小说，清空编辑器')
       // 清空编辑器并聚焦
-      editorRef.value.textContent = ''
+      clearEditorContent(editorRef.value)
       editorRef.value.focus()
       // 更新内容长度
       updateEditorContentLength()
@@ -262,30 +200,16 @@ onMounted(() => {
       // 如果刷新页面后有小说和阅读位置，恢复已读内容
       if (editorRef.value && currentNovel.value && novelStore.currentPosition > 0) {
         // 检查编辑器是否已经有内容（可能已经被 watch 或其他地方恢复了）
-        const currentContent = editorRef.value.textContent || ''
+        const currentContent = getEditorTextContent(editorRef.value)
         
         // 只在编辑器为空或内容不匹配时才恢复
-        if (currentContent.length === 0 || currentContent.length !== novelStore.currentPosition) {
+        if (isEditorEmpty(editorRef.value) || currentContent.length !== novelStore.currentPosition) {
           const readContent = currentNovel.value.content.substring(0, novelStore.currentPosition)
-          editorRef.value.textContent = readContent
+          restoreEditorContent(editorRef.value, readContent, true)
           console.log('[Editor] 页面刷新，已恢复已读内容，长度:', readContent.length)
           
           // 更新内容长度
           updateEditorContentLength()
-          
-          // 将光标移到末尾
-          setTimeout(() => {
-            if (editorRef.value) {
-              const range = document.createRange()
-              const selection = window.getSelection()
-              if (selection && editorRef.value.childNodes.length > 0) {
-                range.selectNodeContents(editorRef.value)
-                range.collapse(false) // 折叠到末尾
-                selection.removeAllRanges()
-                selection.addRange(range)
-              }
-            }
-          }, 50)
         } else {
           console.log('[Editor] 编辑器内容已存在，跳过恢复')
         }

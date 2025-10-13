@@ -29,11 +29,17 @@ async fn check_for_updates(app: tauri::AppHandle) -> Result<Option<UpdateInfo>, 
                     Ok(Some(update)) => {
                         println!("✨ [更新] 发现新版本: {}", update.version);
                         
+                        // 调试：打印完整的 update 结构
+                        println!("🔍 [调试] update.date = {:?}", update.date);
+                        
                         // 转换日期为字符串
                         let date_str = if let Some(date) = update.date {
-                            println!("📅 [更新] 发布日期: {}", date);
-                            Some(date.to_string())
+                            let date_string = date.to_string();
+                            println!("📅 [更新] 发布日期 (原始): {}", date_string);
+                            // 直接使用 ISO 格式的日期字符串
+                            Some(date_string)
                         } else {
+                            println!("⚠️  [更新] 未找到发布日期字段");
                             None
                         };
                         
@@ -48,6 +54,8 @@ async fn check_for_updates(app: tauri::AppHandle) -> Result<Option<UpdateInfo>, 
                             notes: update.body.clone(),
                             current_version,
                         };
+                        
+                        println!("🔍 [调试] 最终 UpdateInfo: {:?}", update_info);
                         
                         Ok(Some(update_info))
                     }

@@ -4,6 +4,7 @@
  */
 
 import mammoth from 'mammoth'
+import { marked } from 'marked'
 
 export interface ParsedDocument {
   /** 纯文本内容 */
@@ -97,35 +98,15 @@ export function useDocumentParser() {
       .replace(/\r\n/g, '\n')
       .replace(/\r/g, '\n')
 
-    // 简单的 Markdown 转 HTML（支持基本格式）
-    let html = cleaned
+    // 配置 marked 选项
+    marked.setOptions({
+      gfm: true,              // 启用 GitHub Flavored Markdown
+      breaks: true,           // 支持单换行转 <br>
+      pedantic: false,        // 不使用严格模式
+    })
 
-    // 标题
-    html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>')
-    html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>')
-    html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>')
-
-    // 粗体
-    html = html.replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
-    html = html.replace(/__(.*?)__/gim, '<strong>$1</strong>')
-
-    // 斜体
-    html = html.replace(/\*(.*?)\*/gim, '<em>$1</em>')
-    html = html.replace(/_(.*?)_/gim, '<em>$1</em>')
-
-    // 段落
-    html = html
-      .split('\n\n')
-      .map(para => {
-        if (para.trim().startsWith('<h')) {
-          return para
-        }
-        if (para.trim() === '') {
-          return '<p><br></p>'
-        }
-        return `<p>${para.replace(/\n/g, '<br>')}</p>`
-      })
-      .join('')
+    // 使用 marked 转换为 HTML
+    const html = marked.parse(cleaned) as string
 
     return {
       text: cleaned,

@@ -18,7 +18,7 @@ declare global {
   const __TAURI_INTERNALS__: Window['__TAURI_INTERNALS__']
   
   // 从 package.json 注入的版本号（通过 Vite define 配置）
-  // eslint-disable-next-line no-var
+   
   var __APP_VERSION__: string
 }
 

@@ -59,6 +59,7 @@ jobs:
           tagName: v__VERSION__
           releaseName: 'CC-Word v__VERSION__'
           releaseBody: ${{ steps.changelog.outputs.release_notes }}
-          releaseDraft: true
+          releaseDraft: false
           prerelease: false
+          includeUpdaterJson: true
 
