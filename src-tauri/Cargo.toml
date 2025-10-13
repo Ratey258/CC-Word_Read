@@ -1,6 +1,6 @@
 [package]
 name = "cc-word-read"
-version = "0.3.16"
+version = "0.3.18"
 description = "还原Word界面的小说阅读器"
 authors = ["CC-Word_Read Team"]
 license = "MIT"
