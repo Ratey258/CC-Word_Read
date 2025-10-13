@@ -11,6 +11,10 @@ lerna-debug.log*
 node_modules
 *.local
 
+# Package manager files
+package-lock.json
+yarn.lock
+
 # Build outputs (统一在 build/ 目录)
 build/
 dist/

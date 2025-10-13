@@ -27,16 +27,16 @@
 
 ```bash
 # 安装依赖
-npm install
+pnpm install
 
 # Web 开发模式
-npm run dev
+pnpm dev
 
 # Tauri 桌面开发模式
-npm run tauri:dev
+pnpm tauri:dev
 
 # Tauri 桌面构建
-npm run tauri:build
+pnpm tauri:build
 ```
 
 ## 📖 使用指南
@@ -76,13 +76,13 @@ CC-Word_Read/
 ## 🔧 开发命令
 
 ```bash
-npm run dev              # Web 开发服务器
-npm run tauri:dev        # Tauri 开发模式
-npm run build            # 构建生产版本
-npm run tauri:build      # Tauri 生产构建
-npm run test:unit        # 单元测试
-npm run lint             # ESLint 检查
-npm run format           # 代码格式化
+pnpm dev              # Web 开发服务器
+pnpm tauri:dev        # Tauri 开发模式
+pnpm build            # 构建生产版本
+pnpm tauri:build      # Tauri 生产构建
+pnpm test:unit        # 单元测试
+pnpm lint             # ESLint 检查
+pnpm format           # 代码格式化
 ```
 
 ## 📚 文档
