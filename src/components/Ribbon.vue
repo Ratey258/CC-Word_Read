@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useNovelStore } from '@/stores/novel'
 import { useReaderStore } from '@/stores/reader'
@@ -11,6 +11,7 @@ import { useNovelReader } from '@/composables/useNovelReader'
 import { useHistory } from '@/composables/useHistory'
 import type { HistoryItem } from '@/types/history'
 import RenameDialog from './RenameDialog.vue'
+import ChapterDialog from './ChapterDialog.vue'
 
 // Stores
 const novelStore = useNovelStore()
@@ -34,6 +35,25 @@ watch(recentItems, (newVal) => {
   console.log('[Ribbon] recentItems changed:', newVal?.length, 'items')
 }, { immediate: true })
 
+// 键盘快捷键处理
+function handleKeyboardShortcuts(event: KeyboardEvent): void {
+  // Ctrl + 左箭头：上一章节
+  if (event.ctrlKey && event.key === 'ArrowLeft' && hasChapters.value) {
+    event.preventDefault()
+    novelStore.jumpToPrevChapter()
+  }
+  // Ctrl + 右箭头：下一章节
+  else if (event.ctrlKey && event.key === 'ArrowRight' && hasChapters.value) {
+    event.preventDefault()
+    novelStore.jumpToNextChapter()
+  }
+  // Ctrl + Shift + C：打开章节目录
+  else if (event.ctrlKey && event.shiftKey && event.key === 'C' && hasChapters.value) {
+    event.preventDefault()
+    handleShowChapters()
+  }
+}
+
 onMounted(() => {
   console.log('[Ribbon] Component mounted')
   console.log('[Ribbon] hasHistory:', hasHistory.value)
@@ -45,16 +65,24 @@ onMounted(() => {
     console.log('[Ribbon] No history found, attempting to reload...')
     historyStore.loadFromStorage()
   }
+  
+  // 添加键盘快捷键监听
+  document.addEventListener('keydown', handleKeyboardShortcuts)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleKeyboardShortcuts)
 })
 
 // Reactive state
 const { settings } = storeToRefs(settingsStore)
-const { hasNovel } = storeToRefs(novelStore)
+const { hasNovel, hasChapters } = storeToRefs(novelStore)
 const { isReading, isPaused } = storeToRefs(readerStore)
 const { isRibbonCollapsed } = storeToRefs(uiStore)
 
 const showFileMenu = ref(false)
 const showRenameDialog = ref(false)
+const showChapterDialog = ref(false)
 
 // Font options
 const fontSizes = [10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28]
@@ -204,6 +232,21 @@ const handleLoadFromHistory = async (item: HistoryItem) => {
 
 const handleClearHistory = () => {
   clearAllHistory()
+}
+
+// Methods - Chapter navigation
+const handleShowChapters = () => {
+  showChapterDialog.value = true
+  closeFileMenu()
+}
+
+const handleCloseChapters = () => {
+  showChapterDialog.value = false
+}
+
+const handleChapterSelect = (chapterIndex: number) => {
+  novelStore.jumpToChapter(chapterIndex)
+  showChapterDialog.value = false
 }
 
 // Methods - Font styling
@@ -488,6 +531,21 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
             </div>
             <div class="file-menu__item-description">
               查看和管理已保存的书签
+            </div>
+          </div>
+        </button>
+        <button 
+          class="file-menu__item"
+          :disabled="!hasNovel || !hasChapters"
+          @click="handleShowChapters"
+        >
+          <span class="file-menu__item-icon">📋</span>
+          <div class="file-menu__item-content">
+            <div class="file-menu__item-title">
+              章节目录
+            </div>
+            <div class="file-menu__item-description">
+              查看章节列表并快速跳转到指定章节
             </div>
           </div>
         </button>
@@ -1403,6 +1461,13 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
   <RenameDialog
     v-model:show="showRenameDialog"
     @confirm="handleRenameConfirm"
+  />
+
+  <!-- 章节目录对话框 -->
+  <ChapterDialog
+    :show="showChapterDialog"
+    @close="handleCloseChapters"
+    @select="handleChapterSelect"
   />
 </template>
 

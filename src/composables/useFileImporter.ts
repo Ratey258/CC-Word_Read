@@ -137,7 +137,9 @@ export function useFileImporter() {
           format,
           // 保存 HTML 格式内容（如果有）
           htmlContent: parsedDoc.hasFormatting ? parsedDoc.html : undefined
-        }
+        },
+        // 章节信息将在 Novel Store 的 loadNovel 方法中自动解析
+        chapters: undefined
       }
 
       // 加载小说（传递文件路径以便历史记录使用）
@@ -192,7 +194,9 @@ export function useFileImporter() {
         updatedAt: Date.now(),
         fileSize: file.size,
         format: validation.format || 'unknown'
-      }
+      },
+      // 章节信息将在 Novel Store 的 loadNovel 方法中自动解析
+      chapters: undefined
     }
 
     // 加载小说
@@ -269,7 +273,9 @@ export function useFileImporter() {
         updatedAt: Date.now(),
         fileSize: new Blob([sampleContent]).size,
         format: 'txt'
-      }
+      },
+      // 章节信息将在 Novel Store 的 loadNovel 方法中自动解析
+      chapters: undefined
     }
 
     await novelStore.loadNovel(novel)

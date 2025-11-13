@@ -3,6 +3,26 @@
  */
 
 /**
+ * 章节信息
+ */
+export interface Chapter {
+  /** 章节ID */
+  id: string
+  /** 章节标题 */
+  title: string
+  /** 章节在文本中的开始位置 */
+  startPosition: number
+  /** 章节在文本中的结束位置 */
+  endPosition: number
+  /** 章节字数 */
+  wordCount: number
+  /** 章节序号 */
+  index: number
+  /** 章节级别（1为一级标题，2为二级标题等） */
+  level: number
+}
+
+/**
  * 小说元数据
  */
 export interface NovelMetadata {
@@ -41,6 +61,8 @@ export interface Novel {
   metadata: NovelMetadata
   /** 总字数 */
   totalLength: number
+  /** 章节列表 */
+  chapters?: Chapter[]
 }
 
 /**

@@ -4,9 +4,10 @@
 
 import { defineStore } from 'pinia'
 import { ref, computed, nextTick } from 'vue'
-import type { Novel, NovelMetadata, Bookmark, ReadingProgress } from '@/types/novel'
+import type { Novel, NovelMetadata, Bookmark, ReadingProgress, Chapter } from '@/types/novel'
 import { STORAGE_KEYS } from '@/utils/constants'
 import { useHistoryStore } from './history'
+import { parseChapters, findChapterByPosition } from '@/utils/chapterParser'
 
 export const useNovelStore = defineStore('novel', () => {
   // ===== State =====
@@ -35,6 +36,12 @@ export const useNovelStore = defineStore('novel', () => {
   /** 是否正在从历史记录恢复（用于避免 Editor 清空内容） */
   const isRestoringFromHistory = ref<boolean>(false)
   
+  /** 章节列表 */
+  const chapters = ref<Chapter[]>([])
+  
+  /** 当前章节索引 */
+  const currentChapterIndex = ref<number>(-1)
+  
   // ===== Getters =====
   
   /** 小说总长度 */
@@ -62,6 +69,24 @@ export const useNovelStore = defineStore('novel', () => {
   /** 小说元数据 */
   const metadata = computed(() => currentNovel.value?.metadata || null)
   
+  /** 是否有章节 */
+  const hasChapters = computed(() => chapters.value.length > 0)
+  
+  /** 当前章节 */
+  const currentChapter = computed(() => {
+    if (currentChapterIndex.value >= 0 && currentChapterIndex.value < chapters.value.length) {
+      return chapters.value[currentChapterIndex.value]
+    }
+    // 如果没有设置当前章节，根据阅读位置自动查找
+    if (hasChapters.value && currentPosition.value >= 0) {
+      return findChapterByPosition(chapters.value, currentPosition.value)
+    }
+    return null
+  })
+  
+  /** 章节总数 */
+  const chapterCount = computed(() => chapters.value.length)
+  
   // ===== Actions =====
   
   /**
@@ -85,6 +110,20 @@ export const useNovelStore = defineStore('novel', () => {
     currentNovel.value = novel
     content.value = novel.content
     currentPosition.value = 0
+    
+    // 解析章节（如果小说对象中没有章节信息）
+    if (!novel.chapters || novel.chapters.length === 0) {
+      chapters.value = parseChapters(novel.content)
+      // 更新小说对象中的章节信息
+      if (currentNovel.value) {
+        currentNovel.value.chapters = chapters.value
+      }
+    } else {
+      chapters.value = novel.chapters
+    }
+    
+    // 重置当前章节索引
+    currentChapterIndex.value = -1
     
     // 保持默认显示名称为"文档-Word"，不使用导入的文件名
     displayName.value = '文档-Word'
@@ -113,6 +152,8 @@ export const useNovelStore = defineStore('novel', () => {
     content.value = ''
     currentPosition.value = 0
     bookmarks.value = []
+    chapters.value = []
+    currentChapterIndex.value = -1
     displayName.value = '文档-Word'
   }
   
@@ -325,6 +366,74 @@ export const useNovelStore = defineStore('novel', () => {
     editorContentLength.value = length
   }
   
+  /**
+   * 跳转到指定章节
+   * @param chapterIndex 章节索引
+   */
+  function jumpToChapter(chapterIndex: number): void {
+    if (chapterIndex >= 0 && chapterIndex < chapters.value.length) {
+      const chapter = chapters.value[chapterIndex]
+      currentChapterIndex.value = chapterIndex
+      
+      // 触发清空编辑器事件
+      window.dispatchEvent(new CustomEvent('clear-editor'))
+      
+      // 稍微延迟更新位置，确保编辑器已经清空
+      setTimeout(() => {
+        updatePosition(chapter.startPosition)
+      }, 50)
+    }
+  }
+  
+  /**
+   * 跳转到下一章节
+   */
+  function jumpToNextChapter(): void {
+    if (hasChapters.value) {
+      const currentIndex = currentChapterIndex.value >= 0 ? currentChapterIndex.value : 
+        chapters.value.findIndex(chapter => 
+          currentPosition.value >= chapter.startPosition && currentPosition.value < chapter.endPosition
+        )
+      
+      const nextIndex = currentIndex + 1
+      if (nextIndex < chapters.value.length) {
+        jumpToChapter(nextIndex)
+      }
+    }
+  }
+  
+  /**
+   * 跳转到上一章节
+   */
+  function jumpToPrevChapter(): void {
+    if (hasChapters.value) {
+      const currentIndex = currentChapterIndex.value >= 0 ? currentChapterIndex.value : 
+        chapters.value.findIndex(chapter => 
+          currentPosition.value >= chapter.startPosition && currentPosition.value < chapter.endPosition
+        )
+      
+      const prevIndex = currentIndex - 1
+      if (prevIndex >= 0) {
+        jumpToChapter(prevIndex)
+      }
+    }
+  }
+  
+  /**
+   * 重新解析章节
+   */
+  function reparseChapters(): void {
+    if (content.value) {
+      chapters.value = parseChapters(content.value)
+      if (currentNovel.value) {
+        currentNovel.value.chapters = chapters.value
+      }
+      // 重置当前章节索引
+      currentChapterIndex.value = -1
+      saveToStorage()
+    }
+  }
+  
   // ===== 初始化 =====
   
   // 自动加载数据
@@ -342,6 +451,8 @@ export const useNovelStore = defineStore('novel', () => {
     recentFiles,
     displayName,
     isRestoringFromHistory,
+    chapters,
+    currentChapterIndex,
     
     // Getters
     totalLength,
@@ -350,6 +461,9 @@ export const useNovelStore = defineStore('novel', () => {
     remainingChars,
     hasNovel,
     metadata,
+    hasChapters,
+    currentChapter,
+    chapterCount,
     
     // Actions
     loadNovel,
@@ -366,7 +480,11 @@ export const useNovelStore = defineStore('novel', () => {
     saveBookmarks,
     loadBookmarks,
     loadFromStorage,
-    loadRecentFiles
+    loadRecentFiles,
+    jumpToChapter,
+    jumpToNextChapter,
+    jumpToPrevChapter,
+    reparseChapters
   }
 })
 
