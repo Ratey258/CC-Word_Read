@@ -360,15 +360,15 @@ watch(() => props.show, (show) => {
 }
 
 .chapter-dialog {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  background: var(--word-white);
+  border-radius: var(--border-radius-2xl);
+  box-shadow: var(--word-shadow-lg);
   width: 90vw;
   max-width: 600px;
   max-height: 80vh;
   display: flex;
   flex-direction: column;
-  animation: slideIn 200ms ease-out;
+  animation: slideIn var(--duration-normal) var(--easing-decelerate);
 }
 
 .chapter-dialog__header {
@@ -376,41 +376,42 @@ watch(() => props.show, (show) => {
   align-items: center;
   justify-content: space-between;
   padding: 20px 24px 16px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--word-gray-border);
 }
 
 .chapter-dialog__title {
   font-size: 18px;
-  font-weight: 600;
-  color: #1f2937;
+  font-weight: var(--font-weight-semibold);
+  color: var(--word-text-primary);
   margin: 0;
   display: flex;
   align-items: center;
   gap: 8px;
+  font-family: var(--font-family-ui);
 }
 
 .chapter-dialog__title-icon {
-  color: #0078d4;
+  color: var(--word-accent);
 }
 
 .chapter-dialog__close {
   background: none;
   border: none;
   padding: 8px;
-  border-radius: 4px;
+  border-radius: var(--border-radius-md);
   cursor: pointer;
-  color: #6b7280;
-  transition: all 150ms ease;
+  color: var(--word-text-tertiary);
+  transition: var(--transition-button);
 }
 
 .chapter-dialog__close:hover {
-  background-color: #f3f4f6;
-  color: #374151;
+  background-color: var(--word-gray-hover);
+  color: var(--word-text-primary);
 }
 
 .chapter-dialog__search {
   padding: 16px 24px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--word-gray-border);
 }
 
 .chapter-dialog__search-wrapper {
@@ -429,15 +430,16 @@ watch(() => props.show, (show) => {
 .chapter-dialog__search-input {
   width: 100%;
   padding: 10px 12px 10px 40px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 14px;
-  transition: border-color 150ms ease;
+  border: 1px solid var(--word-gray-border);
+  border-radius: var(--border-radius-lg);
+  font-size: var(--font-size-xl);
+  font-family: var(--font-family-ui);
+  transition: border-color var(--duration-fast) var(--easing-standard);
 }
 
 .chapter-dialog__search-input:focus {
   outline: none;
-  border-color: #0078d4;
+  border-color: var(--word-accent);
   box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.1);
 }
 
@@ -530,11 +532,11 @@ watch(() => props.show, (show) => {
 }
 
 .chapter-dialog__item-progress {
-  font-size: 12px;
-  color: #6b7280;
-  background-color: #f3f4f6;
+  font-size: var(--font-size-xs);
+  color: var(--word-text-tertiary);
+  background-color: var(--word-gray-light);
   padding: 2px 6px;
-  border-radius: 10px;
+  border-radius: var(--border-radius-3xl);
 }
 
 .chapter-dialog__item-meta {
@@ -561,18 +563,21 @@ watch(() => props.show, (show) => {
   align-items: center;
   justify-content: space-between;
   padding: 16px 24px;
-  border-top: 1px solid #e5e7eb;
-  background-color: #f9fafb;
+  border-top: 1px solid var(--word-gray-border);
+  background-color: var(--word-gray-light);
+  border-radius: 0 0 var(--border-radius-2xl) var(--border-radius-2xl);
 }
 
 .chapter-dialog__stats {
-  font-size: 12px;
-  color: #6b7280;
+  font-size: var(--font-size-md);
+  color: var(--word-text-tertiary);
+  font-family: var(--font-family-ui);
 }
 
 .chapter-dialog__shortcuts {
-  color: #9ca3af;
+  color: var(--word-text-tertiary);
   font-style: italic;
+  opacity: 0.8;
 }
 
 .chapter-dialog__actions {
@@ -582,23 +587,24 @@ watch(() => props.show, (show) => {
 
 .chapter-dialog__button {
   padding: 8px 16px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-family-ui);
   cursor: pointer;
-  transition: all 150ms ease;
+  transition: var(--transition-button);
   border: 1px solid transparent;
 }
 
 .chapter-dialog__button--secondary {
-  background-color: white;
-  color: #374151;
-  border-color: #d1d5db;
+  background-color: var(--word-white);
+  color: var(--word-text-primary);
+  border-color: var(--word-gray-border);
 }
 
 .chapter-dialog__button--secondary:hover {
-  background-color: #f9fafb;
-  border-color: #9ca3af;
+  background-color: var(--word-gray-hover);
+  border-color: var(--word-text-tertiary);
 }
 
 /* 滚动条样式 */
@@ -612,7 +618,7 @@ watch(() => props.show, (show) => {
 
 .chapter-dialog__list::-webkit-scrollbar-thumb {
   background: #cbd5e1;
-  border-radius: 4px;
+  border-radius: var(--border-radius-md);
 }
 
 .chapter-dialog__list::-webkit-scrollbar-thumb:hover {
