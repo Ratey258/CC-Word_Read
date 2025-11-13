@@ -10,6 +10,7 @@ import AboutDialog from '@/components/AboutDialog.vue'
 import UpdateChecker from '@/components/UpdateChecker.vue'
 import SuccessDialog from '@/components/SuccessDialog.vue'
 import OnboardingGuide from '@/components/OnboardingGuide.vue'
+import NotificationContainer from '@/components/NotificationContainer.vue'
 import { useFileImporter } from '@/composables/useFileImporter'
 import { useUIStore } from '@/stores/ui'
 import { useSettingsStore } from '@/stores/settings'
@@ -127,6 +128,9 @@ onMounted(() => {
       @close="uiStore.hideOnboardingGuide"
       @complete="handleCompleteOnboarding"
     />
+
+    <!-- 通知容器 -->
+    <NotificationContainer />
 
     <!-- 拖放遮罩层 -->
     <div v-if="isDragging" class="drop-overlay">

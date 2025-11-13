@@ -145,8 +145,7 @@ export function useFileImporter() {
       // 加载小说（传递文件路径以便历史记录使用）
       await novelStore.loadNovel(novel, path || undefined)
 
-      const formatInfo = parsedDoc.hasFormatting ? '（已保留格式）' : ''
-      uiStore.showSuccess(`导入成功：${novel.metadata.title}${formatInfo}`)
+      uiStore.showSuccess(`${novel.metadata.title}`)
       uiStore.hideWelcome()
     } catch (error) {
       console.error('文件导入失败:', error)
@@ -201,7 +200,7 @@ export function useFileImporter() {
 
     // 加载小说
     await novelStore.loadNovel(novel)
-    uiStore.showSuccess(`导入成功：${novel.metadata.title}`)
+    uiStore.showSuccess(`${novel.metadata.title}`)
     uiStore.hideWelcome()
   }
 
@@ -279,7 +278,7 @@ export function useFileImporter() {
     }
 
     await novelStore.loadNovel(novel)
-    uiStore.showSuccess('已加载示例文件')
+    uiStore.showSuccess('使用指南')
     uiStore.hideWelcome()
   }
 

@@ -47,7 +47,7 @@ export function useNovelReader() {
     }
 
     readerStore.startReading()
-    uiStore.showSuccess('开始阅读')
+    // 移除"开始阅读"通知，避免暴露
 
     // 聚焦编辑器
     editorRef.value?.focus()
@@ -67,7 +67,7 @@ export function useNovelReader() {
    */
   function resumeReading(): void {
     readerStore.resumeReading()
-    uiStore.showSuccess('继续阅读')
+    // 移除"继续阅读"通知，避免暴露
   }
 
   /**
@@ -107,7 +107,7 @@ export function useNovelReader() {
     // 检查是否读完
     if (novelStore.remainingChars === 0) {
       stopReading()
-      uiStore.showSuccess('阅读完成！')
+      // 移除"阅读完成"通知，避免暴露
     }
 
     return chars

@@ -7,6 +7,7 @@ import { ref, computed, nextTick } from 'vue'
 import type { Novel, NovelMetadata, Bookmark, ReadingProgress, Chapter } from '@/types/novel'
 import { STORAGE_KEYS } from '@/utils/constants'
 import { useHistoryStore } from './history'
+import { useUIStore } from './ui'
 import { parseChapters, findChapterByPosition } from '@/utils/chapterParser'
 
 export const useNovelStore = defineStore('novel', () => {
@@ -374,6 +375,10 @@ export const useNovelStore = defineStore('novel', () => {
     if (chapterIndex >= 0 && chapterIndex < chapters.value.length) {
       const chapter = chapters.value[chapterIndex]
       currentChapterIndex.value = chapterIndex
+      
+      // 显示章节跳转通知
+      const uiStore = useUIStore()
+      uiStore.showSuccess(`${chapter.title}`)
       
       // 触发清空编辑器事件
       window.dispatchEvent(new CustomEvent('clear-editor'))
