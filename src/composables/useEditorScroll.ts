@@ -8,6 +8,9 @@ export function useEditorScroll(
   editorRef: Ref<HTMLElement | null>,
   isRibbonCollapsed: Ref<boolean>
 ) {
+  function getScrollContainer(): HTMLElement | null {
+    return document.querySelector('.document-container') as HTMLElement | null
+  }
   /**
    * 获取编辑器中的最后一个文本节点
    */
@@ -55,7 +58,7 @@ export function useEditorScroll(
     if (text.length === 0) return
     
     // 获取文档容器（它是滚动容器）
-    const container = document.querySelector('.document-container') as HTMLElement
+    const container = getScrollContainer()
     if (!container) return
     
     // 获取最后一个文本节点
@@ -98,8 +101,45 @@ export function useEditorScroll(
     }
   }
 
+  function scrollCursorIntoView(options: { immediate?: boolean } = {}): void {
+    if (!editorRef.value) return
+    const selection = window.getSelection()
+    if (!selection || selection.rangeCount === 0) return
+    const range = selection.getRangeAt(0).cloneRange()
+    const editor = editorRef.value
+
+    if (!editor.contains(range.startContainer)) {
+      return
+    }
+
+    range.collapse(false)
+    const rect = range.getBoundingClientRect()
+    const container = getScrollContainer()
+    if (!container) return
+
+    const { viewportTop, viewportHeight } = getViewportInfo()
+    const caretTop = rect.top
+    const caretBottom = rect.bottom || caretTop
+    const safeTop = viewportTop + viewportHeight * 0.2
+    const safeBottom = viewportTop + viewportHeight * 0.8
+
+    if (caretTop >= safeTop && caretBottom <= safeBottom) {
+      return
+    }
+
+    const caretCenter = caretTop + (rect.height || 0) / 2
+    const targetCenter = viewportTop + viewportHeight / 2
+    const scrollDelta = caretCenter - targetCenter
+
+    container.scrollTo({
+      top: Math.max(0, container.scrollTop + scrollDelta),
+      behavior: options.immediate ? 'auto' : 'smooth'
+    })
+  }
+
   return {
-    scrollToContentEnd
+    scrollToContentEnd,
+    scrollCursorIntoView
   }
 }
 

@@ -14,6 +14,7 @@ import {
   clearEditorContent,
   isEditorEmpty
 } from '@/utils/editorHelper'
+import { moveCursorToEnd } from '@/utils/cursor'
 import { throttle } from 'lodash-es'
 
 // Stores
@@ -47,7 +48,7 @@ const {
 const { totalPages } = usePageCalculator()
 
 // 编辑器滚动
-const { scrollToContentEnd } = useEditorScroll(editorRef, isRibbonCollapsed)
+const { scrollToContentEnd, scrollCursorIntoView } = useEditorScroll(editorRef, isRibbonCollapsed)
 
 // Computed
 const hasNovel = computed(() => currentNovel.value !== null)
@@ -77,6 +78,60 @@ const pageStyles = computed(() => {
     }
   }
 })
+
+function handleSelectionChange(): void {
+  const editor = editorRef.value
+  if (!editor) return
+  const selection = window.getSelection()
+  if (!selection || selection.rangeCount === 0) return
+  const anchorNode = selection.anchorNode
+  if (anchorNode && editor.contains(anchorNode)) {
+    scrollCursorIntoView({ immediate: true })
+  }
+}
+
+function focusEditorAtPoint(clientX: number, clientY: number): void {
+  const editor = editorRef.value
+  if (!editor) return
+
+  editor.focus({ preventScroll: true })
+
+  const caretPosition = document.caretPositionFromPoint?.(clientX, clientY)
+  const selection = window.getSelection()
+
+  if (caretPosition && caretPosition.offsetNode && editor.contains(caretPosition.offsetNode)) {
+    const range = document.createRange()
+    range.setStart(caretPosition.offsetNode, caretPosition.offset)
+    range.collapse(true)
+    selection?.removeAllRanges()
+    selection?.addRange(range)
+  } else if (document.caretRangeFromPoint) {
+    const rangeFromPoint = document.caretRangeFromPoint(clientX, clientY)
+    if (rangeFromPoint && editor.contains(rangeFromPoint.startContainer)) {
+      selection?.removeAllRanges()
+      selection?.addRange(rangeFromPoint)
+    } else {
+      moveCursorToEnd(editor)
+    }
+  } else {
+    moveCursorToEnd(editor)
+  }
+
+  scrollCursorIntoView({ immediate: true })
+}
+
+function handlePageMouseDown(event: MouseEvent): void {
+  const editor = editorRef.value
+  if (!editor) return
+  const target = event.target as Node
+
+  if (editor.contains(target)) {
+    return
+  }
+
+  event.preventDefault()
+  focusEditorAtPoint(event.clientX, event.clientY)
+}
 
 // 计算编辑器容器顶部位置（根据 Ribbon 折叠状态）
 const containerStyles = computed(() => {
@@ -268,12 +323,14 @@ onMounted(() => {
   }
   
   document.addEventListener('keydown', handleAutoStart)
+  document.addEventListener('selectionchange', handleSelectionChange)
 })
 
 onUnmounted(() => {
   window.removeEventListener('clear-editor', handleClearEditorEvent)
   window.removeEventListener('show-all-content', handleShowAllContentEvent)
   document.removeEventListener('keydown', handleAutoStart)
+  document.removeEventListener('selectionchange', handleSelectionChange)
 })
 </script>
 
@@ -286,6 +343,7 @@ onUnmounted(() => {
       ref="pageRef"
       class="document-page"
       :style="pageStyles.page"
+      @mousedown.capture="handlePageMouseDown"
     >
       <div
         ref="editorRef"
