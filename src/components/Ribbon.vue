@@ -197,6 +197,16 @@ const handleRenameDisplay = () => {
   showRenameDialog.value = true
 }
 
+const handleShowAllContent = () => {
+  if (!hasNovel.value) {
+    uiStore.showWarning('请先导入文件后再显示内容')
+    return
+  }
+
+  closeFileMenu()
+  window.dispatchEvent(new CustomEvent('show-all-content'))
+}
+
 const handleAddBookmark = () => {
   window.dispatchEvent(new CustomEvent('add-bookmark'))
   closeFileMenu()
@@ -557,6 +567,21 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
         <h3 class="file-menu__section-title">
           显示
         </h3>
+        <button 
+          class="file-menu__item"
+          :disabled="!hasNovel"
+          @click="handleShowAllContent"
+        >
+          <span class="file-menu__item-icon">🧾</span>
+          <div class="file-menu__item-content">
+            <div class="file-menu__item-title">
+              显示全部内容
+            </div>
+            <div class="file-menu__item-description">
+              无需输入，直接显示已导入小说全文
+            </div>
+          </div>
+        </button>
         <button 
           class="file-menu__item"
           :disabled="!hasNovel"

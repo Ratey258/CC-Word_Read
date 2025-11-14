@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useNovelStore } from '@/stores/novel'
 import { useReaderStore } from '@/stores/reader'
@@ -183,10 +183,46 @@ function handleClearEditorEvent(): void {
   clearEditor()
 }
 
+// 直接展示全文
+function revealAllContent(): void {
+  if (!editorRef.value || !currentNovel.value) {
+    uiStore.showWarning('当前没有可显示的内容')
+    return
+  }
+
+  const novelText = currentNovel.value.content
+  if (!novelText) {
+    uiStore.showWarning('当前小说内容为空')
+    return
+  }
+
+  restoreEditorContent(editorRef.value, novelText, true)
+  updateEditorContentLength()
+  novelStore.updatePosition(novelText.length)
+  readerStore.stopReading()
+  uiStore.showSuccess('已显示全文，可直接开始阅读')
+}
+
+function handleShowAllContentEvent(): void {
+  revealAllContent()
+}
+
+const handleAutoStart = (event: KeyboardEvent) => {
+  if (hasNovel.value && !isReading.value) {
+    if (!['Control', 'Shift', 'Alt', 'Meta', 'Tab', 'Escape'].includes(event.key) &&
+        !event.ctrlKey && !event.altKey && !event.metaKey) {
+      event.preventDefault()
+      startReading()
+      document.removeEventListener('keydown', handleAutoStart)
+    }
+  }
+}
+
 // Lifecycle
 onMounted(() => {
   // 监听自定义事件
   window.addEventListener('clear-editor', handleClearEditorEvent)
+  window.addEventListener('show-all-content', handleShowAllContentEvent)
   
   if (editorRef.value) {
     editorRef.value.focus()
@@ -232,6 +268,12 @@ onMounted(() => {
   }
   
   document.addEventListener('keydown', handleAutoStart)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('clear-editor', handleClearEditorEvent)
+  window.removeEventListener('show-all-content', handleShowAllContentEvent)
+  document.removeEventListener('keydown', handleAutoStart)
 })
 </script>
 
