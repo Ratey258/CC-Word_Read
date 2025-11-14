@@ -11,6 +11,15 @@ import { useUIStore } from './ui'
 import { parseChapters, findChapterByPosition } from '@/utils/chapterParser'
 
 export const useNovelStore = defineStore('novel', () => {
+  function normalizeContent(rawContent: string): string {
+    if (!rawContent) return ''
+
+    return rawContent
+      .replace(/\r\n/g, '\n')
+      .replace(/\r/g, '\n')
+      .replace(/\n{2,}/g, '\n')
+  }
+
   // ===== State =====
   
   /** 当前小说 */
@@ -108,8 +117,13 @@ export const useNovelStore = defineStore('novel', () => {
       console.log('[NovelStore] Vue 已处理响应式更新')
     }
     
-    currentNovel.value = novel
-    content.value = novel.content
+    const normalizedContent = normalizeContent(novel.content)
+
+    currentNovel.value = {
+      ...novel,
+      content: normalizedContent
+    }
+    content.value = normalizedContent
     currentPosition.value = 0
     
     // 解析章节（如果小说对象中没有章节信息）

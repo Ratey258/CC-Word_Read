@@ -84,6 +84,21 @@ const showFileMenu = ref(false)
 const showRenameDialog = ref(false)
 const showChapterDialog = ref(false)
 
+const lineSpacingPresets = [
+  { label: '1 倍行距', value: 1 },
+  { label: '1.5 倍行距', value: 1.5 }
+]
+
+const LINE_HEIGHT_MIN = 0.8
+const LINE_HEIGHT_MAX = 4
+
+const currentLineHeight = computed(() => Number(settings.value.editor.lineHeight.toFixed(2)))
+const customLineHeight = ref(currentLineHeight.value.toFixed(1))
+
+watch(() => settings.value.editor.lineHeight, (val) => {
+  customLineHeight.value = val.toFixed(1)
+})
+
 // Font options
 const fontSizes = [10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28]
 const fontFamilies = [
@@ -215,6 +230,22 @@ const handleAddBookmark = () => {
 const handleShowBookmarks = () => {
   window.dispatchEvent(new CustomEvent('show-bookmarks'))
   closeFileMenu()
+}
+
+const handleSetLineHeight = (value: number) => {
+  settingsStore.setLineHeight(value)
+  uiStore.showSuccess(`行距已设置为 ${value.toFixed(1)} 倍`)
+}
+
+const handleApplyCustomLineHeight = () => {
+  const value = Number(customLineHeight.value)
+  if (Number.isNaN(value) || value < LINE_HEIGHT_MIN || value > LINE_HEIGHT_MAX) {
+    uiStore.showWarning(`请输入 ${LINE_HEIGHT_MIN} - ${LINE_HEIGHT_MAX} 之间的行距倍数`)
+    return
+  }
+
+  settingsStore.setLineHeight(value)
+  uiStore.showSuccess(`行距已设置为 ${value.toFixed(1)} 倍`)
 }
 
 const handleCheckUpdates = () => {
@@ -578,10 +609,45 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
               显示全部内容
             </div>
             <div class="file-menu__item-description">
-              无需输入，直接显示已导入小说全文
+              无需输入，直接显示已导入文件内容
             </div>
           </div>
         </button>
+        <div class="file-menu__subsection">
+          <div class="file-menu__subsection-header">
+            <span>行距</span>
+            <span class="file-menu__subsection-tip">当前：{{ currentLineHeight.toFixed(1) }} 倍</span>
+          </div>
+          <div class="line-spacing-options">
+            <button
+              v-for="option in lineSpacingPresets"
+              :key="option.value"
+              class="line-spacing-options__button"
+              :class="{ 'line-spacing-options__button--active': Math.abs(option.value - currentLineHeight) < 0.05 }"
+              @click="handleSetLineHeight(option.value)"
+            >
+              {{ option.label }}
+            </button>
+          </div>
+          <div class="line-spacing-custom">
+            <label class="line-spacing-custom__label" for="custom-line-height">自定义倍数</label>
+            <div class="line-spacing-custom__controls">
+              <input
+                id="custom-line-height"
+                v-model="customLineHeight"
+                type="number"
+                class="line-spacing-custom__input"
+                step="0.1"
+                :min="LINE_HEIGHT_MIN"
+                :max="LINE_HEIGHT_MAX"
+              />
+              <button class="line-spacing-custom__apply" @click="handleApplyCustomLineHeight">
+                应用
+              </button>
+            </div>
+            <p class="line-spacing-custom__hint">范围：{{ LINE_HEIGHT_MIN }} - {{ LINE_HEIGHT_MAX }} 倍</p>
+          </div>
+        </div>
         <button 
           class="file-menu__item"
           :disabled="!hasNovel"
@@ -1645,6 +1711,102 @@ const changeHighlightColor = () => console.log('Change Highlight Color')
   height: 1px;
   background-color: var(--word-gray-border);
   margin: 8px 16px;
+}
+
+.file-menu__subsection
+{
+  margin-top: 8px;
+  padding: 12px 16px;
+  border-radius: var(--border-radius-sm);
+  background-color: var(--word-gray-surface);
+}
+
+.file-menu__subsection-header
+{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: var(--word-text-secondary);
+  margin-bottom: 8px;
+}
+
+.file-menu__subsection-tip
+{
+  font-size: 12px;
+  color: var(--word-text-tertiary);
+}
+
+.line-spacing-options
+{
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.line-spacing-options__button
+{
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid var(--word-gray-border);
+  border-radius: var(--border-radius-sm);
+  background-color: var(--word-white);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 150ms;
+}
+
+.line-spacing-options__button--active
+{
+  border-color: var(--word-accent);
+  background-color: rgba(43, 87, 154, 0.08);
+  color: var(--word-accent);
+}
+
+.line-spacing-custom
+{
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.line-spacing-custom__label
+{
+  font-size: 12px;
+  color: var(--word-text-secondary);
+}
+
+.line-spacing-custom__controls
+{
+  display: flex;
+  gap: 8px;
+}
+
+.line-spacing-custom__input
+{
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid var(--word-gray-border);
+  border-radius: var(--border-radius-sm);
+  font-size: 13px;
+}
+
+.line-spacing-custom__apply
+{
+  padding: 6px 12px;
+  border-radius: var(--border-radius-sm);
+  border: none;
+  background-color: var(--word-accent);
+  color: white;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.line-spacing-custom__hint
+{
+  margin: 0;
+  font-size: 11px;
+  color: var(--word-text-tertiary);
 }
 
 /* 历史记录列表样式 */

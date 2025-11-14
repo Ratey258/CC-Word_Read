@@ -63,6 +63,16 @@ export function clearEditorContent(element: HTMLElement): void {
 }
 
 /**
+ * 清理文本中的多余空行，返回标准化内容
+ */
+export function normalizeTextContent(text: string): string {
+  return text
+    .replace(/\r\n/g, '\n')
+    .replace(/\r/g, '\n')
+    .replace(/\n{2,}/g, '\n')
+}
+
+/**
  * 在光标位置插入文本
  * @param element 编辑器元素
  * @param text 要插入的文本

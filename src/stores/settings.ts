@@ -97,6 +97,21 @@ export const useSettingsStore = defineStore('settings', () => {
     settings.value.editor.fontFamily = fontFamily
     saveSettings()
   }
+
+  /**
+   * 设置行距
+   * @param lineHeight 行距倍数（0.8 - 4.0）
+   */
+  function setLineHeight(lineHeight: number): void {
+    const normalized = Number(lineHeight)
+    if (Number.isNaN(normalized)) {
+      return
+    }
+
+    const clamped = Math.min(Math.max(normalized, 0.8), 4)
+    settings.value.editor.lineHeight = clamped
+    saveSettings()
+  }
   
   /**
    * 更新窗口设置
@@ -258,6 +273,7 @@ export const useSettingsStore = defineStore('settings', () => {
     setFontFamily,
     updateWindowSettings,
     setZoomLevel,
+    setLineHeight,
     toggleFullscreen,
     toggleAutoSave,
     setAutoSaveInterval,

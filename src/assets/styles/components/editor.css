@@ -60,6 +60,13 @@
   height: auto;
 }
 
+.document-content p,
+.document-content div
+{
+  margin: 0;
+  line-height: inherit;
+}
+
 .document-content[contenteditable="true"]
 {
   cursor: text;
