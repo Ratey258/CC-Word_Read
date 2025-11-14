@@ -128,7 +128,8 @@ export const useNovelStore = defineStore('novel', () => {
     
     // 解析章节（如果小说对象中没有章节信息）
     if (!novel.chapters || novel.chapters.length === 0) {
-      chapters.value = parseChapters(novel.content)
+      // 使用标准化后的内容解析章节，确保章节位置与实际阅读内容一致
+      chapters.value = parseChapters(normalizedContent)
       // 更新小说对象中的章节信息
       if (currentNovel.value) {
         currentNovel.value.chapters = chapters.value
