@@ -30,7 +30,8 @@ export const useSettingsStore = defineStore('settings', () => {
       zoomLevel: WINDOW_DEFAULTS.ZOOM_LEVEL
     },
     autoSave: true,
-    autoSaveInterval: 5
+    autoSaveInterval: 5,
+    autoCheckUpdates: true
   })
   
   /** 是否首次使用 */
@@ -201,7 +202,8 @@ export const useSettingsStore = defineStore('settings', () => {
         zoomLevel: WINDOW_DEFAULTS.ZOOM_LEVEL
       },
       autoSave: true,
-      autoSaveInterval: 5
+      autoSaveInterval: 5,
+      autoCheckUpdates: true
     }
     
     saveSettings()
@@ -231,6 +233,10 @@ export const useSettingsStore = defineStore('settings', () => {
       const parsed = JSON.parse(data)
       if (parsed.settings) {
         settings.value = parsed.settings
+        // 向后兼容：旧版本没有 autoCheckUpdates 时默认开启
+        if (typeof settings.value.autoCheckUpdates === 'undefined') {
+          settings.value.autoCheckUpdates = true
+        }
       }
       
       // 加载首次使用标记

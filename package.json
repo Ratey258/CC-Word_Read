@@ -29,6 +29,7 @@
     "@tauri-apps/plugin-dialog": "^2.4.0",
     "@tauri-apps/plugin-fs": "^2.4.2",
     "@tauri-apps/plugin-shell": "^2.3.1",
+    "@tauri-apps/plugin-opener": "^2.4.0",
     "date-fns": "^4.1.0",
     "lodash-es": "^4.17.21",
     "mammoth": "^1.11.0",
