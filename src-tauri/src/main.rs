@@ -153,7 +153,8 @@ fn main() {
         // 注册Tauri插件
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
-        .plugin(tauri_plugin_shell::init());
+        .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_opener::init());
     
     // 仅在非移动平台添加更新器插件
     #[cfg(not(any(target_os = "android", target_os = "ios")))]

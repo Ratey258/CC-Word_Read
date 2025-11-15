@@ -105,30 +105,47 @@ export function parseChapters(
 
   const chapters: Chapter[] = []
   const lines = content.split('\n')
-  
+  const lineStartPositions = computeLineStartPositions(lines)
+
   // 尝试不同的章节模式
   for (const pattern of CHAPTER_PATTERNS) {
-    const foundChapters = findChaptersByPattern(content, lines, pattern, {
+    const foundChapters = findChaptersByPattern(content, lines, lineStartPositions, pattern, {
       minChapterLength,
       maxTitleLength,
       enableSmartFilter
     })
-    
+
     if (foundChapters.length > 1) {
       // 如果找到了有效的章节，就使用这个模式
       return foundChapters
     }
   }
-  
+
   // 如果没有找到明确的章节模式，尝试智能分段
   if (enableSmartFilter) {
-    return smartChapterDetection(content, lines, {
+    return smartChapterDetection(content, lines, lineStartPositions, {
       minChapterLength,
       maxTitleLength
     })
   }
-  
+
   return chapters
+}
+
+/**
+ * 预计算每一行在全文中的起始位置
+ */
+function computeLineStartPositions(lines: string[]): number[] {
+  const positions: number[] = new Array(lines.length)
+  let offset = 0
+
+  for (let i = 0; i < lines.length; i++) {
+    positions[i] = offset
+    // 每行结束后原文本中会有一个换行符（最后一行是否有换行不影响起始位置计算）
+    offset += lines[i].length + 1
+  }
+
+  return positions
 }
 
 /**
@@ -137,6 +154,7 @@ export function parseChapters(
 function findChaptersByPattern(
   content: string,
   lines: string[],
+  lineStartPositions: number[],
   pattern: ChapterPattern,
   options: {
     minChapterLength: number
@@ -146,13 +164,13 @@ function findChaptersByPattern(
 ): Chapter[] {
   const chapters: Chapter[] = []
   const matches: { line: number; title: string; position: number }[] = []
-  
+
   // 查找所有匹配的行
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim()
     if (line && pattern.regex.test(line) && line.length <= options.maxTitleLength) {
       // 计算该行在整个文本中的位置
-      const position = lines.slice(0, i).join('\n').length + (i > 0 ? 1 : 0)
+      const position = lineStartPositions[i]
       matches.push({
         line: i,
         title: line,
@@ -160,21 +178,21 @@ function findChaptersByPattern(
       })
     }
   }
-  
+
   // 如果匹配数量太少，可能不是有效的章节模式
   if (matches.length < 2) {
     return chapters
   }
-  
+
   // 创建章节对象
   for (let i = 0; i < matches.length; i++) {
     const match = matches[i]
     const nextMatch = matches[i + 1]
-    
+
     const startPosition = match.position
     const endPosition = nextMatch ? nextMatch.position - 1 : content.length
     const chapterContent = content.slice(startPosition, endPosition)
-    
+
     // 检查章节长度
     if (chapterContent.length >= options.minChapterLength || i === matches.length - 1) {
       chapters.push({
@@ -188,7 +206,7 @@ function findChaptersByPattern(
       })
     }
   }
-  
+
   return chapters
 }
 
@@ -198,6 +216,7 @@ function findChaptersByPattern(
 function smartChapterDetection(
   content: string,
   lines: string[],
+  lineStartPositions: number[],
   options: {
     minChapterLength: number
     maxTitleLength: number
@@ -205,15 +224,15 @@ function smartChapterDetection(
 ): Chapter[] {
   const chapters: Chapter[] = []
   const potentialTitles: { line: number; title: string; position: number; score: number }[] = []
-  
+
   // 分析每一行，计算作为章节标题的可能性
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim()
     if (!line) continue
-    
+
     const score = calculateTitleScore(line, lines, i)
     if (score > 0.5 && line.length <= options.maxTitleLength) {
-      const position = lines.slice(0, i).join('\n').length + (i > 0 ? 1 : 0)
+      const position = lineStartPositions[i]
       potentialTitles.push({
         line: i,
         title: line,
@@ -222,7 +241,7 @@ function smartChapterDetection(
       })
     }
   }
-  
+
   // 按分数排序并选择最佳的标题
   potentialTitles.sort((a, b) => b.score - a.score)
   

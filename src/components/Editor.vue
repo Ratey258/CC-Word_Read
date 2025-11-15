@@ -48,7 +48,7 @@ const {
 const { totalPages } = usePageCalculator()
 
 // 编辑器滚动
-const { scrollToContentEnd, scrollCursorIntoView } = useEditorScroll(editorRef, isRibbonCollapsed)
+const { scrollToContentEnd, scrollCursorIntoView } = useEditorScroll(editorRef)
 
 // Computed
 const hasNovel = computed(() => currentNovel.value !== null)
@@ -80,6 +80,9 @@ const pageStyles = computed(() => {
 })
 
 function handleSelectionChange(): void {
+  // 阅读模式下，滚动由内容输出逻辑控制，这里不再额外触发，避免干扰
+  if (isReading.value) return
+
   const editor = editorRef.value
   if (!editor) return
   const selection = window.getSelection()
@@ -173,7 +176,13 @@ function setupEditorObserver(): void {
   const throttledUpdate = throttle(() => {
     updateEditorContentLength()
     globalThis.requestAnimationFrame(() => {
-      scrollToContentEnd()
+      if (isReading.value) {
+        // 阅读模式：按内容末尾滚动，适合自动输出小说时的视图跟随
+        scrollToContentEnd()
+      } else {
+        // 非阅读模式：按光标位置滚动，更接近 Word 的编辑体验
+        scrollCursorIntoView({ immediate: true })
+      }
     })
   }, 100, {
     leading: true,   // 首次立即执行
@@ -268,7 +277,6 @@ const handleAutoStart = (event: KeyboardEvent) => {
         !event.ctrlKey && !event.altKey && !event.metaKey) {
       event.preventDefault()
       startReading()
-      document.removeEventListener('keydown', handleAutoStart)
     }
   }
 }
@@ -306,20 +314,6 @@ onMounted(() => {
         }
       }
     }, 100) // 延迟100ms，确保异步加载完成
-  }
-  
-  // 如果有小说且未开始阅读，按任意键开始阅读
-  const handleAutoStart = (event: KeyboardEvent) => {
-    if (hasNovel.value && !isReading.value) {
-      // 排除修饰键和特殊键
-      if (!['Control', 'Shift', 'Alt', 'Meta', 'Tab', 'Escape'].includes(event.key) &&
-          !event.ctrlKey && !event.altKey && !event.metaKey) {
-        event.preventDefault()
-        startReading()
-        // 只执行一次后移除
-        document.removeEventListener('keydown', handleAutoStart)
-      }
-    }
   }
   
   document.addEventListener('keydown', handleAutoStart)

@@ -37,7 +37,7 @@ export function useHistory() {
     // 这是最关键的保护，必须在第一行就设置
     console.log('[History] ========== 开始历史恢复流程 ==========')
     console.log('[History] 立即设置历史恢复标志')
-    novelStore.isRestoringFromHistory = true
+    novelStore.setRestoringFromHistory(true)
     console.log('[History] 标志已设置，当前值:', novelStore.isRestoringFromHistory)
     
     try {
@@ -175,7 +175,7 @@ export function useHistory() {
       // 延迟一段时间以确保所有异步操作都已完成
       setTimeout(() => {
         console.log('[History] 恢复流程完成，重置历史恢复标志')
-        novelStore.isRestoringFromHistory = false
+        novelStore.setRestoringFromHistory(false)
       }, 500)
     }
   }
@@ -239,7 +239,7 @@ export function useHistory() {
       
       // 提前设置历史恢复标志
       console.log('[History] 设置历史恢复标志（重新定位文件）')
-      novelStore.isRestoringFromHistory = true
+      novelStore.setRestoringFromHistory(true)
       
       // 打开文件选择对话框
       const fileSystem = useFileSystem()

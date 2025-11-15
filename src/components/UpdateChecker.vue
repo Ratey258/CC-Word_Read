@@ -66,9 +66,29 @@
           <div v-else-if="updateStatus === 'error'" class="update-error">
             <div class="update-icon">❌</div>
             <p>{{ errorMessage }}</p>
-            <button class="btn-secondary" @click="closeDialog">
-              关闭
-            </button>
+
+            <div class="manual-download">
+              <p class="manual-download__title">你可以从备用地址手动下载最新安装包：</p>
+              <p class="manual-download__line">
+                <span class="manual-download__label">下载地址：</span>
+                <span class="manual-download__value">{{ manualDownloadUrl }}</span>
+                <button class="copy-btn" @click="copyText(manualDownloadUrl)">复制</button>
+              </p>
+              <p class="manual-download__line">
+                <span class="manual-download__label">访问密码：</span>
+                <code class="manual-download__value">{{ manualDownloadPassword }}</code>
+                <button class="copy-btn" @click="copyText(manualDownloadPassword)">复制</button>
+              </p>
+            </div>
+
+            <div class="update-actions">
+              <button class="btn-primary" @click="openManualDownload">
+                打开下载页面
+              </button>
+              <button class="btn-secondary" @click="closeDialog">
+                关闭
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -78,7 +98,10 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useSettingsStore } from '@/stores/settings'
+import { useUIStore } from '@/stores/ui'
 import { invoke } from '@tauri-apps/api/core'
+import { openUrl } from '@tauri-apps/plugin-opener'
 
 // 更新状态
 type UpdateStatus = 'idle' | 'checking' | 'available' | 'downloading' | 'installing' | 'success' | 'latest' | 'error'
@@ -90,6 +113,13 @@ interface UpdateInfo {
   notes: string | null
   current_version: string
 }
+
+const settingsStore = useSettingsStore()
+const uiStore = useUIStore()
+
+// 手动下载信息
+const manualDownloadUrl = 'https://wwiv.lanzoul.com/b0139b5a6h'
+const manualDownloadPassword = 'bya9'
 
 const showUpdateDialog = ref(false)
 const updateStatus = ref<UpdateStatus>('idle')
@@ -131,6 +161,49 @@ const formatDate = (dateStr: string | null) => {
   }
 }
 
+// 复制文本到剪贴板
+const copyText = async (text: string) => {
+  try {
+    let success = false
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(text)
+      success = true
+    } else {
+      const textarea = document.createElement('textarea')
+      textarea.value = text
+      textarea.style.position = 'fixed'
+      textarea.style.opacity = '0'
+      document.body.appendChild(textarea)
+      textarea.select()
+      success = document.execCommand('copy')
+      document.body.removeChild(textarea)
+    }
+
+    if (success) {
+      uiStore.showSuccess('已复制到剪贴板')
+    }
+  } catch (e) {
+    console.error('复制失败:', e)
+  }
+}
+
+// 打开手动下载页面
+const openManualDownload = async () => {
+  try {
+    if ('__TAURI__' in window) {
+      // Tauri 环境：使用 opener 插件在默认浏览器中打开链接
+      await openUrl(manualDownloadUrl)
+    } else {
+      window.open(manualDownloadUrl, '_blank', 'noopener,noreferrer')
+    }
+  } catch (e) {
+    console.error('打开手动下载链接失败:', e)
+    // 如果插件调用失败，退回到浏览器方式
+    window.open(manualDownloadUrl, '_blank', 'noopener,noreferrer')
+  }
+}
+
 // 检查更新
 const checkForUpdates = async (manual = false) => {
   if (manual) {
@@ -160,10 +233,24 @@ const checkForUpdates = async (manual = false) => {
     }
   } catch (error) {
     console.error('检查更新失败:', error)
-    errorMessage.value = String(error)
-    updateStatus.value = 'error'
-    if (manual) {
-      showUpdateDialog.value = true
+    const message = String(error)
+
+    if (message.includes('暂无可用更新')) {
+      // 视为没有新版本，而不是错误
+      updateStatus.value = 'latest'
+      updateInfo.value = null
+      if (manual) {
+        showUpdateDialog.value = true
+      } else {
+        showUpdateDialog.value = false
+      }
+    } else {
+      // 其他错误（如网络问题）给出更友好的提示
+      errorMessage.value = '当前无法连接更新服务器，请稍后再试。'
+      updateStatus.value = 'error'
+      if (manual) {
+        showUpdateDialog.value = true
+      }
     }
   }
 }
@@ -216,8 +303,10 @@ defineExpose({
   checkForUpdates
 })
 
-// 组件挂载时自动检查更新（静默检查）
+// 组件挂载时自动检查更新（静默检查，可通过设置关闭）
 onMounted(() => {
+  if (!settingsStore.settings.autoCheckUpdates) return
+
   // 延迟5秒后检查更新，避免影响启动体验
   setTimeout(() => {
     checkForUpdates(false)
@@ -330,6 +419,56 @@ onMounted(() => {
   margin: 8px 0;
   color: #333;
   font-size: 14px;
+}
+
+/* 手动下载区域布局 */
+.manual-download {
+  margin-top: 16px;
+  width: 100%;
+  text-align: left;
+}
+
+.manual-download__title {
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.manual-download__line {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  color: #333;
+  margin: 4px 0;
+}
+
+.manual-download__label {
+  flex: 0 0 72px;
+  color: #666;
+}
+
+.manual-download__value {
+  flex: 1 1 auto;
+  word-break: break-all;
+}
+
+.copy-btn {
+  flex: 0 0 auto;
+  margin-left: 12px;
+  padding: 2px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  line-height: 1.4;
+  cursor: pointer;
+  background: #f3f3f3;
+  color: #333;
+  border: 1px solid #d1d1d1;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.copy-btn:hover {
+  background: #e1e1e1;
+  border-color: #c2c2c2;
 }
 
 .update-hint {

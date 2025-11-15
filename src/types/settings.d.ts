@@ -62,5 +62,7 @@ export interface AppSettings {
   autoSave: boolean
   /** 自动保存间隔（秒） */
   autoSaveInterval: number
+  /** 是否在启动时自动检查更新 */
+  autoCheckUpdates: boolean
 }
 
