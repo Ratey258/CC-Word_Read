@@ -5,8 +5,7 @@
 import { Ref } from 'vue'
 
 export function useEditorScroll(
-  editorRef: Ref<HTMLElement | null>,
-  isRibbonCollapsed: Ref<boolean>
+  editorRef: Ref<HTMLElement | null>
 ) {
   function getScrollContainer(): HTMLElement | null {
     return document.querySelector('.document-container') as HTMLElement | null
@@ -31,17 +30,17 @@ export function useEditorScroll(
 
   /**
    * 计算视口信息
+   * 基于滚动容器本身的位置和可见高度
    */
-  function getViewportInfo() {
-    const titlebarHeight = 32
-    const ribbonTabHeight = 27
-    const ribbonToolbarHeight = isRibbonCollapsed.value ? 0 : 93
-    const headerHeight = titlebarHeight + ribbonTabHeight + ribbonToolbarHeight
-    
+  function getViewportInfo(container: HTMLElement) {
+    const rect = container.getBoundingClientRect()
+    const viewportTop = rect.top
+    const viewportHeight = rect.height || container.clientHeight
+
     return {
-      viewportTop: headerHeight,
-      viewportBottom: window.innerHeight,
-      viewportHeight: window.innerHeight - headerHeight
+      viewportTop,
+      viewportBottom: viewportTop + viewportHeight,
+      viewportHeight
     }
   }
 
@@ -77,7 +76,7 @@ export function useEditorScroll(
     }
     
     const rect = range.getBoundingClientRect()
-    const { viewportTop, viewportHeight } = getViewportInfo()
+    const { viewportTop, viewportHeight } = getViewportInfo(container)
     
     // 目标位置：视口中心偏上 1/3 处
     const targetPositionInViewport = viewportTop + viewportHeight / 3
@@ -102,22 +101,37 @@ export function useEditorScroll(
   }
 
   function scrollCursorIntoView(options: { immediate?: boolean } = {}): void {
-    if (!editorRef.value) return
-    const selection = window.getSelection()
-    if (!selection || selection.rangeCount === 0) return
-    const range = selection.getRangeAt(0).cloneRange()
     const editor = editorRef.value
+    if (!editor) return
+
+    const container = getScrollContainer()
+    if (!container) return
+
+    const selection = window.getSelection()
+    if (!selection || selection.rangeCount === 0) {
+      // 没有有效选区时，退回到内容末尾
+      scrollToContentEnd()
+      return
+    }
+
+    const range = selection.getRangeAt(0).cloneRange()
 
     if (!editor.contains(range.startContainer)) {
+      // 选区不在编辑器内，同样退回到内容末尾
+      scrollToContentEnd()
       return
     }
 
     range.collapse(false)
     const rect = range.getBoundingClientRect()
-    const container = getScrollContainer()
-    if (!container) return
 
-    const { viewportTop, viewportHeight } = getViewportInfo()
+    // 某些情况下 rect 高度为 0，此时也使用内容末尾作为参考
+    if (rect.height === 0 && editor.textContent) {
+      scrollToContentEnd()
+      return
+    }
+
+    const { viewportTop, viewportHeight } = getViewportInfo(container)
     const caretTop = rect.top
     const caretBottom = rect.bottom || caretTop
     const safeTop = viewportTop + viewportHeight * 0.2
