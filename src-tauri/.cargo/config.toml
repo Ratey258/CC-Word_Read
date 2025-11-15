@@ -8,10 +8,9 @@ jobs = 8
 # Windows 链接器优化
 rustflags = [
   "-C", "link-arg=-fuse-ld=lld",  # 使用更快的链接器
-  "-C", "target-cpu=native",       # 针对当前 CPU 优化
+  "-C", "target-cpu=x86-64",      # 使用兼容性更好的指令集，避免旧 CPU 上非法指令
 ]
 
 # 网络配置
 [net]
 git-fetch-with-cli = false
-

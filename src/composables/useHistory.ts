@@ -7,8 +7,10 @@ import { useHistoryStore } from '@/stores/history'
 import { useNovelStore } from '@/stores/novel'
 import { useUIStore } from '@/stores/ui'
 import { useDocumentParser } from './useDocumentParser'
+import { useFileSystem } from './useFileSystem'
 import type { HistoryItem } from '@/types/history'
 import type { Novel, NovelFormat } from '@/types/novel'
+import { validateNovelContent } from '@/utils/validator'
 
 export function useHistory() {
   const historyStore = useHistoryStore()
@@ -240,7 +242,6 @@ export function useHistory() {
       novelStore.isRestoringFromHistory = true
       
       // 打开文件选择对话框
-      const { useFileSystem } = await import('./useFileSystem')
       const fileSystem = useFileSystem()
       
       const result = await fileSystem.openFileDialog({
@@ -265,7 +266,6 @@ export function useHistory() {
       const parsedDoc = await documentParser.parseDocument(rawContent, fileName)
       
       // 验证内容
-      const { validateNovelContent } = await import('@/utils/validator')
       const validation = validateNovelContent(parsedDoc.text)
       if (!validation.valid) {
         uiStore.hideLoading()
