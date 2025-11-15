@@ -268,7 +268,6 @@ const handleAutoStart = (event: KeyboardEvent) => {
         !event.ctrlKey && !event.altKey && !event.metaKey) {
       event.preventDefault()
       startReading()
-      document.removeEventListener('keydown', handleAutoStart)
     }
   }
 }

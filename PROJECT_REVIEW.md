@@ -335,8 +335,8 @@
   - 为 `window` 自定义事件集中管理事件名，并逐步迁移到更显式的 Pinia action 或封装的事件 composable。
 
 - **Phase 3：开发体验与长期演进**
-  - 为调试日志增加环境控制（如 `import.meta.env.DEV` 或统一的 `logger`），减少生产环境噪音。
-  - 在 README 或单独文档中补充历史记录策略与章节识别策略说明，方便未来维护和对外沟通。
+  - 为调试日志增加环境控制（如 `import.meta.env.DEV` 或统一的 `logger`），减少生产环境噪音.
+  - 在 README 或单独文档中补充历史记录策略与章节识别策略说明，方便未来维护和对外沟通.
 
 ---
 
@@ -346,4 +346,15 @@
   - 架构清晰，前后端边界明确，工程化程度较高，适合在当前基础上继续演进；
   - 在 Windows + Tauri 的目标平台下，已经具备较好的伪装效果与阅读体验；
   - 现存问题主要集中在：少量事件监听与 `ref` 使用的细节 bug、章节解析性能与部分组件体积偏大等可维护性问题；
-  - 通过本报告中列出的若干改进措施，可以在不大幅重构的前提下明显提升项目的稳定性、可维护性和长期扩展能力。
+  - 通过本报告中列出的若干改进措施，可以在不大幅重构的前提下明显提升项目的稳定性、可维护性和长期扩展能力.
+
+### 已实施的重构进度（截至当前）
+
+- **Phase 0：立即修复的小 Bug**
+  - 已修复 `Editor.vue` 中自动开始阅读监听的绑定/解绑问题，现仅保留一份 `handleAutoStart`，并由 `onMounted` / `onUnmounted` 成对注册与移除，避免监听残留.
+  - 已在 `novel.ts` 中新增 `setRestoringFromHistory` 方法，并在 `useHistory.ts` 中统一通过该方法设置 `isRestoringFromHistory`，避免外部直接覆盖 `ref` 对象.
+  - 已核对 `UpdateChecker.vue` 与 `src-tauri/src/main.rs` 中的 `check_for_updates`、`download_and_install_update` 命令，命名与注册完全一致，无需改动.
+
+- **Phase 1：关键路径性能与健壮性（部分完成）**
+  - 已在 `chapterParser.ts` 中引入 `computeLineStartPositions`，预计算每行在全文中的起始位置，并在 `findChaptersByPattern` 与 `smartChapterDetection` 中统一使用该数组计算偏移，将章节位置计算复杂度从 O(n²) 降为 O(n).
+  - 目前未增加额外的章节解析/历史恢复单元测试，行为保持依托现有逻辑验证，如后续需要可按本报告建议补充.
