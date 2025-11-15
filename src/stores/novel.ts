@@ -161,6 +161,14 @@ export const useNovelStore = defineStore('novel', () => {
   }
   
   /**
+   * 设置历史恢复标志
+   * @param flag 是否正在从历史记录恢复
+   */
+  function setRestoringFromHistory(flag: boolean): void {
+    isRestoringFromHistory.value = flag
+  }
+  
+  /**
    * 清空当前小说
    */
   function clearNovel(): void {
@@ -489,6 +497,7 @@ export const useNovelStore = defineStore('novel', () => {
     loadNovel,
     clearNovel,
     setDisplayName,
+    setRestoringFromHistory,
     updatePosition,
     updateEditorContentLength,
     jumpTo,
@@ -507,4 +516,3 @@ export const useNovelStore = defineStore('novel', () => {
     reparseChapters
   }
 })
-

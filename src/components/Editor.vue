@@ -308,20 +308,6 @@ onMounted(() => {
     }, 100) // 延迟100ms，确保异步加载完成
   }
   
-  // 如果有小说且未开始阅读，按任意键开始阅读
-  const handleAutoStart = (event: KeyboardEvent) => {
-    if (hasNovel.value && !isReading.value) {
-      // 排除修饰键和特殊键
-      if (!['Control', 'Shift', 'Alt', 'Meta', 'Tab', 'Escape'].includes(event.key) &&
-          !event.ctrlKey && !event.altKey && !event.metaKey) {
-        event.preventDefault()
-        startReading()
-        // 只执行一次后移除
-        document.removeEventListener('keydown', handleAutoStart)
-      }
-    }
-  }
-  
   document.addEventListener('keydown', handleAutoStart)
   document.addEventListener('selectionchange', handleSelectionChange)
 })
