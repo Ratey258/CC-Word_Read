@@ -7,6 +7,9 @@ import { ref, computed } from 'vue'
 import type { HistoryItem, HistoryConfig, HistorySortBy } from '@/types/history'
 import type { Novel } from '@/types/novel'
 import { STORAGE_KEYS } from '@/utils/constants'
+import { createLogger } from '@/services/logger'
+
+const logger = createLogger('HistoryStore')
 
 /**
  * 默认历史配置
@@ -194,12 +197,13 @@ export const useHistoryStore = defineStore('history', () => {
    * 清空所有历史记录
    */
   function clearHistory(): void {
-    console.log('[HistoryStore] 清空历史记录')
+    logger.debug('清空历史记录')
     historyItems.value = []
     // 确保立即保存到 localStorage
     saveToStorage()
     // 额外验证：确保 localStorage 已清空
-    console.log('[HistoryStore] 清空后验证:', localStorage.getItem(STORAGE_KEYS.HISTORY))
+    const verification = localStorage.getItem(STORAGE_KEYS.HISTORY)
+    logger.debug('清空后验证', { hasData: !!verification })
   }
   
   /**
@@ -237,12 +241,12 @@ export const useHistoryStore = defineStore('history', () => {
         seen.set(key, 1)
         uniqueItems.push(item)
       } else {
-        console.log('[HistoryStore] 发现重复项:', item.title, key)
+        logger.debug('发现重复项', { title: item.title, key })
       }
     }
     
     if (uniqueItems.length < historyItems.value.length) {
-      console.log('[HistoryStore] 去重:', historyItems.value.length, '->', uniqueItems.length)
+      logger.info('历史记录去重', { before: historyItems.value.length, after: uniqueItems.length })
       historyItems.value = uniqueItems
       saveToStorage()
     }
@@ -257,7 +261,7 @@ export const useHistoryStore = defineStore('history', () => {
       return
     }
     
-    console.log('[HistoryStore] 开始验证文件存在性...')
+    logger.debug('开始验证文件存在性')
     
     try {
       const { exists } = await import('@tauri-apps/plugin-fs')
@@ -268,14 +272,14 @@ export const useHistoryStore = defineStore('history', () => {
         if (item.filePath) {
           const fileExists = await exists(item.filePath)
           if (!fileExists) {
-            console.log('[HistoryStore] 文件不存在:', item.filePath)
+            logger.debug('文件不存在', { filePath: item.filePath })
             invalidItems.push(item)
           }
         }
       }
       
       if (invalidItems.length > 0) {
-        console.log(`[HistoryStore] 发现 ${invalidItems.length} 个无效记录`)
+        logger.info('发现无效记录', { count: invalidItems.length })
         
         if (config.value.autoRemoveInvalid) {
           // 自动删除无效记录
@@ -283,14 +287,14 @@ export const useHistoryStore = defineStore('history', () => {
             item => !invalidItems.some(invalid => invalid.id === item.id)
           )
           saveToStorage()
-          console.log(`[HistoryStore] 已自动清理 ${invalidItems.length} 个无效记录`)
+          logger.info('已自动清理无效记录', { count: invalidItems.length })
         } else {
           // 只记录，不自动删除
-          console.log('[HistoryStore] 自动清理已禁用，无效记录将在用户访问时处理')
+          logger.debug('自动清理已禁用，无效记录将在用户访问时处理')
         }
       }
     } catch (error) {
-      console.error('[HistoryStore] 验证文件存在性失败:', error)
+      logger.error('验证文件存在性失败', error)
     }
   }
   
@@ -348,11 +352,11 @@ export const useHistoryStore = defineStore('history', () => {
         config: config.value
       }
       const jsonStr = JSON.stringify(data)
-      console.log('[HistoryStore] 保存历史记录:', historyItems.value.length, '条', jsonStr.length, '字节')
+      logger.debug('保存历史记录', { itemCount: historyItems.value.length, bytes: jsonStr.length })
       localStorage.setItem(STORAGE_KEYS.HISTORY, jsonStr)
-      console.log('[HistoryStore] 保存成功')
+      logger.debug('保存成功')
     } catch (error) {
-      console.error('[HistoryStore] 保存历史记录失败:', error)
+      logger.error('保存历史记录失败', error)
     }
   }
   
@@ -361,21 +365,22 @@ export const useHistoryStore = defineStore('history', () => {
    */
   function loadFromStorage(): void {
     try {
-      console.log('[HistoryStore] 开始加载历史记录')
-      console.log('[HistoryStore] 当前环境:', window.__TAURI__ ? 'Tauri' : '浏览器')
-      console.log('[HistoryStore] localStorage可用:', typeof localStorage !== 'undefined')
+      logger.debug('开始加载历史记录', {
+        environment: window.__TAURI__ ? 'Tauri' : '浏览器',
+        localStorageAvailable: typeof localStorage !== 'undefined'
+      })
       
       const saved = localStorage.getItem(STORAGE_KEYS.HISTORY)
-      console.log('[HistoryStore] 存储的数据:', saved ? `找到 ${saved.length} 字节` : '未找到')
+      logger.debug('存储数据状态', { found: !!saved, bytes: saved?.length })
       
       if (!saved) return
       
       const data = JSON.parse(saved)
-      console.log('[HistoryStore] 解析的数据:', data)
+      logger.debug('数据解析完成', { hasItems: !!data.items, isArray: Array.isArray(data.items) })
       
       if (data.items && Array.isArray(data.items)) {
         historyItems.value = data.items
-        console.log('[HistoryStore] 成功加载', data.items.length, '条历史记录')
+        logger.info('历史记录加载成功', { itemCount: data.items.length })
         
         // 加载后立即去重
         deduplicateHistory()
@@ -392,11 +397,11 @@ export const useHistoryStore = defineStore('history', () => {
       // 验证并清理无效文件（异步执行，不阻塞加载）
       if (config.value.validateFileExists) {
         validateAndCleanup().catch(error => {
-          console.error('[HistoryStore] 验证清理失败:', error)
+          logger.error('验证清理失败', error)
         })
       }
     } catch (error) {
-      console.error('[HistoryStore] 加载历史记录失败:', error)
+      logger.error('加载历史记录失败', error)
     }
   }
   

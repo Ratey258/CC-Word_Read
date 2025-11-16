@@ -6,6 +6,9 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { AppSettings, Theme, Language } from '@/types/settings'
 import { STORAGE_KEYS, EDITOR_DEFAULTS, WINDOW_DEFAULTS } from '@/utils/constants'
+import { createLogger } from '@/services/logger'
+
+const logger = createLogger('SettingsStore')
 
 export const useSettingsStore = defineStore('settings', () => {
   // ===== State =====
@@ -248,7 +251,7 @@ export const useSettingsStore = defineStore('settings', () => {
       applyTheme(settings.value.theme)
       applyZoom(settings.value.window.zoomLevel)
     } catch (error) {
-      console.error('加载设置失败:', error)
+      logger.error('加载设置失败', error)
     }
   }
   

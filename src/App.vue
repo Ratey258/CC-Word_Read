@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import TitleBar from '@/components/TitleBar.vue'
 import Ribbon from '@/components/Ribbon.vue'
 import Editor from '@/components/Editor.vue'
@@ -14,6 +14,10 @@ import NotificationContainer from '@/components/NotificationContainer.vue'
 import { useFileImporter } from '@/composables/useFileImporter'
 import { useUIStore } from '@/stores/ui'
 import { useSettingsStore } from '@/stores/settings'
+import { on, off } from '@/services/eventBus'
+import { createLogger } from '@/services/logger'
+
+const logger = createLogger('App')
 
 // File import composable
 const { isDragging, handleDragEnter, handleDragLeave, handleDrop } = useFileImporter()
@@ -63,17 +67,13 @@ function handleCompleteOnboarding(): void {
 }
 
 onMounted(() => {
-  console.log('CC Word Reader v3 - Vue 3 App mounted successfully!')
+  logger.info('应用组件已挂载')
   
-  // 监听书签事件
-  window.addEventListener('show-bookmarks', handleShowBookmarks)
-  window.addEventListener('add-bookmark', handleAddBookmark)
-  
-  // 监听关于对话框事件
-  window.addEventListener('show-about', handleShowAbout)
-  
-  // 监听检查更新事件
-  window.addEventListener('check-updates', handleCheckUpdates)
+  // 使用事件总线监听事件
+  on('bookmarks:show', handleShowBookmarks)
+  on('bookmarks:add', handleAddBookmark)
+  on('dialog:about', handleShowAbout)
+  on('update:check', handleCheckUpdates)
   
   // 检查是否首次使用，显示引导
   if (settingsStore.isFirstTime) {
@@ -82,6 +82,16 @@ onMounted(() => {
       uiStore.showOnboardingGuide()
     }, 500)
   }
+})
+
+onUnmounted(() => {
+  // 清理事件监听器
+  off('bookmarks:show', handleShowBookmarks)
+  off('bookmarks:add', handleAddBookmark)
+  off('dialog:about', handleShowAbout)
+  off('update:check', handleCheckUpdates)
+  
+  logger.info('应用组件已卸载')
 })
 </script>
 

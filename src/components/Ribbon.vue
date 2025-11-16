@@ -12,6 +12,10 @@ import { useHistory } from '@/composables/useHistory'
 import type { HistoryItem } from '@/types/history'
 import RenameDialog from './RenameDialog.vue'
 import ChapterDialog from './ChapterDialog.vue'
+import { emit } from '@/services/eventBus'
+import { createLogger } from '@/services/logger'
+
+const logger = createLogger('Ribbon')
 
 // Stores
 const novelStore = useNovelStore()
@@ -25,14 +29,13 @@ const { importFile, importSampleNovel } = useFileImporter()
 const { startReading, pauseReading, resumeReading, stopReading, canStartReading } = useNovelReader()
 const { recentItems, hasHistory, loadFromHistory, clearAllHistory, formatTime, formatFileSize, getFormatIcon } = useHistory()
 
-// 调试：监视历史记录变化
+// 监视历史记录变化
 watch(hasHistory, (newVal) => {
-  console.log('[Ribbon] hasHistory changed:', newVal)
-  console.log('[Ribbon] recentItems:', recentItems.value)
+  logger.debug('历史记录状态变化', { hasHistory: newVal, itemCount: recentItems.value?.length })
 }, { immediate: true })
 
 watch(recentItems, (newVal) => {
-  console.log('[Ribbon] recentItems changed:', newVal?.length, 'items')
+  logger.debug('历史记录项变化', { itemCount: newVal?.length })
 }, { immediate: true })
 
 // 键盘快捷键处理
@@ -55,14 +58,14 @@ function handleKeyboardShortcuts(event: KeyboardEvent): void {
 }
 
 onMounted(() => {
-  console.log('[Ribbon] Component mounted')
-  console.log('[Ribbon] hasHistory:', hasHistory.value)
-  console.log('[Ribbon] recentItems:', recentItems.value)
-  console.log('[Ribbon] historyStore.historyItems:', historyStore.historyItems)
+  logger.info('组件已挂载', {
+    hasHistory: hasHistory.value,
+    itemCount: recentItems.value?.length
+  })
   
   // 尝试手动重新加载历史记录
   if (!hasHistory.value) {
-    console.log('[Ribbon] No history found, attempting to reload...')
+    logger.debug('未找到历史记录，尝试重新加载')
     historyStore.loadFromStorage()
   }
   
@@ -126,8 +129,8 @@ const switchTab = (tab: string) => {
     uiStore.toggleRibbonCollapse()
   }
   
-  // 可以在这里添加其他逻辑，比如日志记录
-  console.log(`Tab clicked: ${tab}`)
+  // Tab 点击日志
+  logger.debug('Tab 点击', { tab })
 }
 
 const toggleFileMenu = () => {
@@ -219,16 +222,16 @@ const handleShowAllContent = () => {
   }
 
   closeFileMenu()
-  window.dispatchEvent(new CustomEvent('show-all-content'))
+  emit('editor:showAll')
 }
 
 const handleAddBookmark = () => {
-  window.dispatchEvent(new CustomEvent('add-bookmark'))
+  emit('bookmarks:add')
   closeFileMenu()
 }
 
 const handleShowBookmarks = () => {
-  window.dispatchEvent(new CustomEvent('show-bookmarks'))
+  emit('bookmarks:show')
   closeFileMenu()
 }
 
@@ -249,12 +252,12 @@ const handleApplyCustomLineHeight = () => {
 }
 
 const handleCheckUpdates = () => {
-  window.dispatchEvent(new CustomEvent('check-updates'))
+  emit('update:check')
   closeFileMenu()
 }
 
 const handleShowAbout = () => {
-  window.dispatchEvent(new CustomEvent('show-about'))
+  emit('dialog:about')
   closeFileMenu()
 }
 
@@ -265,10 +268,10 @@ const handleRenameConfirm = (newName: string) => {
 
 // Methods - History
 const handleLoadFromHistory = async (item: HistoryItem) => {
-  console.log('[Ribbon] 点击历史记录项:', item.title)
+  logger.debug('点击历史记录项', { title: item.title })
   closeFileMenu()
   await loadFromHistory(item)
-  console.log('[Ribbon] 历史记录加载完成')
+  logger.debug('历史记录加载完成')
 }
 
 const handleClearHistory = () => {
@@ -299,12 +302,13 @@ const changeFontFamily = (family: string) => {
   settingsStore.setFontFamily(family)
 }
 
-const toggleBold = () => console.log('Toggle Bold')
-const toggleItalic = () => console.log('Toggle Italic')
-const toggleUnderline = () => console.log('Toggle Underline')
-const toggleStrikethrough = () => console.log('Toggle Strikethrough')
-const changeTextColor = () => console.log('Change Text Color')
-const changeHighlightColor = () => console.log('Change Highlight Color')
+// 以下功能尚未实现，保留接口供未来扩展
+const toggleBold = () => logger.debug('加粗功能 - 尚未实现')
+const toggleItalic = () => logger.debug('斜体功能 - 尚未实现')
+const toggleUnderline = () => logger.debug('下划线功能 - 尚未实现')
+const toggleStrikethrough = () => logger.debug('删除线功能 - 尚未实现')
+const changeTextColor = () => logger.debug('文字颜色功能 - 尚未实现')
+const changeHighlightColor = () => logger.debug('高亮颜色功能 - 尚未实现')
 </script>
 
 <template>

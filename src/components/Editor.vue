@@ -16,6 +16,11 @@ import {
 } from '@/utils/editorHelper'
 import { moveCursorToEnd } from '@/utils/cursor'
 import { throttle } from 'lodash-es'
+import { on, off } from '@/services/eventBus'
+import { createLogger } from '@/services/logger'
+import { UI } from '@/utils/constants'
+
+const logger = createLogger('Editor')
 
 // Stores
 const novelStore = useNovelStore()
@@ -60,18 +65,14 @@ const editorStyles = computed(() => ({
 }))
 
 const pageStyles = computed(() => {
-  // A4纸张尺寸（像素，96 DPI）
-  const A4_WIDTH_PX = 816
-  const A4_HEIGHT_PX = 1123
-  
   // 根据页数计算最小高度
   // 确保至少显示1页的高度，并额外添加一页的缓冲空间以便输入时自动扩展
   const pages = Math.max(totalPages.value, 1)
-  const minHeight = A4_HEIGHT_PX * (pages + 1) // 额外添加1页空间
+  const minHeight = UI.A4_HEIGHT * (pages + 1) // 额外添加1页空间
   
   return {
     page: {
-      width: `${A4_WIDTH_PX}px`,
+      width: `${UI.A4_WIDTH}px`,
       minHeight: `${minHeight}px`,
       // 使用 auto 高度允许内容自动扩展
       height: 'auto'
@@ -138,13 +139,9 @@ function handlePageMouseDown(event: MouseEvent): void {
 
 // 计算编辑器容器顶部位置（根据 Ribbon 折叠状态）
 const containerStyles = computed(() => {
-  const titlebarHeight = 32 // var(--titlebar-height)
-  const ribbonTabHeight = 27 // var(--ribbon-tab-height)
-  const ribbonToolbarHeight = 93 // var(--ribbon-toolbar-height)
-  
   const topOffset = isRibbonCollapsed.value
-    ? titlebarHeight + ribbonTabHeight
-    : titlebarHeight + ribbonTabHeight + ribbonToolbarHeight
+    ? UI.TITLEBAR_HEIGHT + UI.RIBBON_TAB_HEIGHT
+    : UI.TITLEBAR_HEIGHT + UI.RIBBON_TAB_HEIGHT + UI.RIBBON_TOOLBAR_HEIGHT
   
   return {
     top: `${topOffset}px`
@@ -205,17 +202,17 @@ function setupEditorObserver(): void {
 
 // 监听小说加载
 watch(currentNovel, (novel, oldNovel) => {
-  console.log('[Editor] ========== watch triggered ==========')
-  console.log('[Editor] 新小说 ID:', novel?.id)
-  console.log('[Editor] 旧小说 ID:', oldNovel?.id)
-  console.log('[Editor] isRestoring 标志:', isRestoringFromHistory.value)
-  console.log('[Editor] novelStore.isRestoringFromHistory:', novelStore.isRestoringFromHistory)
+  logger.debug('watch 触发', {
+    novelId: novel?.id,
+    oldNovelId: oldNovel?.id,
+    isRestoring: isRestoringFromHistory.value
+  })
   
   if (novel && editorRef.value) {
     // 如果正在从历史记录恢复，不清空编辑器
     // 因为 useHistory 会在加载后手动恢复已读内容
     if (isRestoringFromHistory.value) {
-      console.log('[Editor] 正在从历史记录恢复，跳过清空编辑器')
+      logger.debug('正在从历史记录恢复，跳过清空编辑器')
       editorRef.value.focus()
       updateEditorContentLength()
       return
@@ -226,14 +223,14 @@ watch(currentNovel, (novel, oldNovel) => {
     const isNewNovel = !oldNovel || oldNovel.id !== novel.id
     
     if (isNewNovel) {
-      console.log('[Editor] 加载新小说，清空编辑器')
+      logger.debug('加载新小说，清空编辑器')
       // 清空编辑器并聚焦
       clearEditorContent(editorRef.value)
       editorRef.value.focus()
       // 更新内容长度
       updateEditorContentLength()
     } else {
-      console.log('[Editor] 同一本小说，保持编辑器内容')
+      logger.debug('同一本小说，保持编辑器内容')
       // 同一本小说，可能是位置更新，不清空内容
       editorRef.value.focus()
       // 更新内容长度
@@ -283,9 +280,11 @@ const handleAutoStart = (event: KeyboardEvent) => {
 
 // Lifecycle
 onMounted(() => {
-  // 监听自定义事件
-  window.addEventListener('clear-editor', handleClearEditorEvent)
-  window.addEventListener('show-all-content', handleShowAllContentEvent)
+  logger.info('编辑器组件已挂载')
+  
+  // 使用事件总线监听事件
+  on('editor:clear', handleClearEditorEvent)
+  on('editor:showAll', handleShowAllContentEvent)
   
   if (editorRef.value) {
     editorRef.value.focus()
@@ -305,12 +304,12 @@ onMounted(() => {
         if (isEditorEmpty(editorRef.value) || currentContent.length !== novelStore.currentPosition) {
           const readContent = currentNovel.value.content.substring(0, novelStore.currentPosition)
           restoreEditorContent(editorRef.value, readContent, true)
-          console.log('[Editor] 页面刷新，已恢复已读内容，长度:', readContent.length)
+          logger.info('页面刷新，已恢复已读内容', { length: readContent.length })
           
           // 更新内容长度
           updateEditorContentLength()
         } else {
-          console.log('[Editor] 编辑器内容已存在，跳过恢复')
+          logger.debug('编辑器内容已存在，跳过恢复')
         }
       }
     }, 100) // 延迟100ms，确保异步加载完成
@@ -321,10 +320,21 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  window.removeEventListener('clear-editor', handleClearEditorEvent)
-  window.removeEventListener('show-all-content', handleShowAllContentEvent)
+  // 清理事件总线监听器
+  off('editor:clear', handleClearEditorEvent)
+  off('editor:showAll', handleShowAllContentEvent)
+  
+  // 清理 DOM 事件监听器
   document.removeEventListener('keydown', handleAutoStart)
   document.removeEventListener('selectionchange', handleSelectionChange)
+  
+  // 清理 MutationObserver
+  if (editorObserver) {
+    editorObserver.disconnect()
+    editorObserver = null
+  }
+  
+  logger.info('编辑器组件已卸载')
 })
 </script>
 

@@ -121,12 +121,16 @@ export const UI = {
   PRIMARY_COLOR: '#2b579a',
   /** Ribbon 高度 */
   RIBBON_HEIGHT: 120,
+  /** Ribbon 标签高度 */
+  RIBBON_TAB_HEIGHT: 27,
+  /** Ribbon 工具栏高度 */
+  RIBBON_TOOLBAR_HEIGHT: 93,
   /** 标题栏高度 */
   TITLEBAR_HEIGHT: 32,
   /** 状态栏高度 */
   STATUSBAR_HEIGHT: 24,
   /** A4 纸张宽度（像素，96dpi） */
-  A4_WIDTH: 794,
+  A4_WIDTH: 816,
   /** A4 纸张高度（像素，96dpi） */
   A4_HEIGHT: 1123
 } as const

@@ -6,6 +6,9 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import type { Bookmark } from '@/types/bookmark'
 import { STORAGE_KEYS } from '@/utils/constants'
+import { createLogger } from '@/services/logger'
+
+const logger = createLogger('BookmarkStore')
 
 /**
  * 存储的书签类型（日期字段为时间戳）
@@ -120,7 +123,7 @@ export const useBookmarkStore = defineStore('bookmark', () => {
       }))
       localStorage.setItem(STORAGE_KEYS.BOOKMARKS, JSON.stringify(data))
     } catch (error) {
-      console.error('Failed to save bookmarks:', error)
+      logger.error('保存书签失败', error)
     }
   }
 
@@ -139,7 +142,7 @@ export const useBookmarkStore = defineStore('bookmark', () => {
         }))
       }
     } catch (error) {
-      console.error('Failed to load bookmarks:', error)
+      logger.error('加载书签失败', error)
     }
   }
 
