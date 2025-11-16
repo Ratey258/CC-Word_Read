@@ -11,6 +11,9 @@ import { useFileSystem } from './useFileSystem'
 import type { HistoryItem } from '@/types/history'
 import type { Novel, NovelFormat } from '@/types/novel'
 import { validateNovelContent } from '@/utils/validator'
+import { createLogger } from '@/services/logger'
+
+const logger = createLogger('History')
 
 export function useHistory() {
   const historyStore = useHistoryStore()
@@ -35,20 +38,20 @@ export function useHistory() {
   async function loadFromHistory(item: HistoryItem): Promise<void> {
     // 立即设置历史恢复标志，在任何异步操作之前
     // 这是最关键的保护，必须在第一行就设置
-    console.log('[History] ========== 开始历史恢复流程 ==========')
-    console.log('[History] 立即设置历史恢复标志')
+    logger.debug('开始历史恢复流程')
+    logger.debug('立即设置历史恢复标志')
     novelStore.setRestoringFromHistory(true)
-    console.log('[History] 标志已设置，当前值:', novelStore.isRestoringFromHistory)
+    logger.debug('标志已设置', { isRestoring: novelStore.isRestoringFromHistory })
     
     try {
-      console.log('[History] 开始加载历史记录:', item.title, item.id)
+      logger.info('开始加载历史记录', { title: item.title, id: item.id })
       uiStore.showLoading('正在加载小说...')
       
       let novel: Novel
       
       // 优先使用缓存内容
       if (item.content) {
-        console.log('[History] 使用缓存内容，长度:', item.content.length)
+        logger.debug('使用缓存内容', { length: item.content.length })
         novel = {
           id: item.id,
           content: item.content,
@@ -65,7 +68,7 @@ export function useHistory() {
         }
       } else if (item.filePath) {
         // 如果有文件路径，尝试重新读取文件
-        console.log('[History] 从文件路径重新读取:', item.filePath)
+        logger.debug('从文件路径重新读取', { filePath: item.filePath })
         const result = await reimportFromPath(item.filePath)
         
         if (!result.content) {
@@ -109,7 +112,7 @@ export function useHistory() {
         }
       } else {
         // 没有内容也没有路径
-        console.warn('[History] 内容未缓存且无文件路径')
+        logger.warn('内容未缓存且无文件路径')
         const isBrowser = !window.__TAURI__
         const errorMsg = isBrowser 
           ? '浏览器环境下内容未缓存，请重新导入文件'
@@ -119,7 +122,7 @@ export function useHistory() {
         return
       }
       
-      console.log('[History] 加载小说，内容长度:', novel.content.length)
+      logger.debug('加载小说', { contentLength: novel.content.length })
       // 加载小说（这会重置位置到0）
       // 传递文件路径以便下次可以重新导入
       // 传递 isHistoryRestore=true 以避免 Editor 清空内容
@@ -130,7 +133,7 @@ export function useHistory() {
       
       // 立即恢复阅读位置和已读内容
       if (item.progress.currentPosition > 0) {
-        console.log('[History] 恢复阅读位置:', item.progress.currentPosition)
+        logger.debug('恢复阅读位置', { position: item.progress.currentPosition })
         
         // 获取编辑器元素
         const editorEl = document.querySelector('.document-content') as HTMLElement
@@ -138,7 +141,7 @@ export function useHistory() {
           // 填充已读内容到编辑器
           const readContent = novel.content.substring(0, item.progress.currentPosition)
           editorEl.textContent = readContent
-          console.log('[History] 已恢复已读内容，长度:', readContent.length)
+          logger.debug('已恢复已读内容', { length: readContent.length })
           
           // 将光标移到末尾
           const range = document.createRange()
@@ -161,12 +164,12 @@ export function useHistory() {
       
       // 显示恢复信息
       const progressPercent = Math.round(item.progress.percentage)
-      console.log('[History] 加载完成，进度:', progressPercent + '%')
+      logger.info('加载完成', { progress: progressPercent + '%' })
       uiStore.showSuccess(`已恢复到 ${progressPercent}% 的阅读位置`)
       
       uiStore.hideWelcome()
     } catch (error) {
-      console.error('[History] 从历史记录加载失败:', error)
+      logger.error('从历史记录加载失败', error)
       uiStore.showError('加载失败，请重新导入文件')
     } finally {
       uiStore.hideLoading()
@@ -174,7 +177,7 @@ export function useHistory() {
       // 在整个恢复流程结束后重置标志
       // 延迟一段时间以确保所有异步操作都已完成
       setTimeout(() => {
-        console.log('[History] 恢复流程完成，重置历史恢复标志')
+        logger.debug('恢复流程完成，重置历史恢复标志')
         novelStore.setRestoringFromHistory(false)
       }, 500)
     }
@@ -238,7 +241,7 @@ export function useHistory() {
       uiStore.showLoading('请选择新的文件位置...')
       
       // 提前设置历史恢复标志
-      console.log('[History] 设置历史恢复标志（重新定位文件）')
+      logger.debug('设置历史恢复标志（重新定位文件）')
       novelStore.setRestoringFromHistory(true)
       
       // 打开文件选择对话框
@@ -304,7 +307,7 @@ export function useHistory() {
       
       // 恢复阅读进度
       if (savedPosition > 0 && savedPosition < novel.totalLength) {
-        console.log('[History] 恢复阅读位置:', savedPosition)
+        logger.debug('恢复阅读位置', { position: savedPosition })
         
         // 获取编辑器元素
         const editorEl = document.querySelector('.document-content') as HTMLElement
@@ -312,7 +315,7 @@ export function useHistory() {
           // 填充已读内容到编辑器
           const readContent = novel.content.substring(0, savedPosition)
           editorEl.textContent = readContent
-          console.log('[History] 已恢复已读内容，长度:', readContent.length)
+          logger.debug('已恢复已读内容', { length: readContent.length })
           
           // 将光标移到末尾
           const range = document.createRange()
@@ -339,7 +342,7 @@ export function useHistory() {
       const progressPercentage = Math.round((savedPosition / novel.totalLength) * 100)
       uiStore.showSuccess(`文件已重新加载，阅读进度已保留 (${progressPercentage}%)`)
     } catch (error) {
-      console.error('[History] 重新定位文件失败:', error)
+      logger.error('重新定位文件失败', error)
       uiStore.hideLoading()
       uiStore.showError('文件选择取消或失败')
     }
@@ -359,7 +362,7 @@ export function useHistory() {
       const { exists } = await import('@tauri-apps/plugin-fs')
       return await exists(filePath)
     } catch (error) {
-      console.error('[History] 检查文件存在性失败:', error)
+      logger.error('检查文件存在性失败', error)
       return false
     }
   }
@@ -377,7 +380,7 @@ export function useHistory() {
     try {
       // 检查是否在 Tauri 环境
       if (!window.__TAURI__) {
-        console.warn('[History] 不在 Tauri 环境，无法从路径读取')
+        logger.warn('不在 Tauri 环境，无法从路径读取')
         return { 
           content: null, 
           error: 'unknown',
@@ -388,7 +391,7 @@ export function useHistory() {
       // 检查文件是否存在
       const fileExists = await checkFileExists(filePath)
       if (!fileExists) {
-        console.warn('[History] 文件不存在:', filePath)
+        logger.warn('文件不存在', { filePath })
         return { 
           content: null, 
           error: 'not-found',
@@ -402,7 +405,7 @@ export function useHistory() {
       
       // 如果是 docx 或其他需要解析的格式
       if (format === 'docx') {
-        console.warn('[History] DOCX 格式需要重新导入')
+        logger.warn('DOCX 格式需要重新导入')
         return { 
           content: null, 
           error: 'format',
@@ -418,7 +421,7 @@ export function useHistory() {
       const parsedDoc = await documentParser.parseDocument(content, fileName)
       return { content: parsedDoc.text }
     } catch (error) {
-      console.error('[History] 从路径重新导入失败:', error)
+      logger.error('从路径重新导入失败', error)
       
       // 分析错误类型
       const errorMsg = (error as Error)?.message || String(error)

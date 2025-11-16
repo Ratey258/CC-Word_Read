@@ -10,6 +10,9 @@
 
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow'
+import { createLogger } from '@/services/logger'
+
+const logger = createLogger('WindowControls')
 import type { UnlistenFn } from '@tauri-apps/api/event'
 
 // 检测是否在 Tauri 环境中
@@ -31,12 +34,11 @@ const isTauri = (): boolean => {
   
   const result = hasTauriGlobal || hasTauriInternals || canGetWindow
   
-  console.log('🔍 [Tauri 检测]', {
+  logger.debug('Tauri 环境检测', {
     hasWindow: typeof window !== 'undefined',
     hasTauriGlobal,
     hasTauriInternals,
-    canGetWindow,
-    finalResult: result
+    canGetWindow
   })
   
   return result
@@ -72,16 +74,16 @@ export function useWindowControls() {
    */
   const minimize = async (): Promise<void> => {
     if (!isTauri()) {
-      console.warn('⚠️ [浏览器模式] 最小化功能仅在 Tauri 桌面应用中可用')
+      logger.warn('浏览器模式：最小化功能仅在 Tauri 桌面应用中可用')
       return
     }
 
     try {
       const window = getCurrentWebviewWindow()
       await window.minimize()
-      console.log('✅ [Window] 最小化成功')
+      logger.debug('窗口最小化成功')
     } catch (error) {
-      console.error('❌ [Window] 最小化失败:', error)
+      logger.error('窗口最小化失败', error)
     }
   }
 
@@ -92,7 +94,7 @@ export function useWindowControls() {
     if (!isTauri()) {
       // 浏览器环境：使用全屏 API
       if (!document.fullscreenElement) {
-        await document.documentElement.requestFullscreen().catch(console.error)
+        await document.documentElement.requestFullscreen().catch(err => logger.error('全屏请求失败', err))
         windowState.value.isMaximized = true
       } else {
         await document.exitFullscreen()
@@ -106,9 +108,9 @@ export function useWindowControls() {
       await window.toggleMaximize()
       // 立即更新状态
       windowState.value.isMaximized = await window.isMaximized()
-      console.log('✅ [Window] 最大化/还原成功, isMaximized:', windowState.value.isMaximized)
+      logger.debug('窗口最大化/还原成功', { isMaximized: windowState.value.isMaximized })
     } catch (error) {
-      console.error('❌ [Window] 最大化/还原失败:', error)
+      logger.error('窗口最大化/还原失败', error)
     }
   }
 
@@ -118,10 +120,10 @@ export function useWindowControls() {
    * destroy() 会立即销毁窗口，而 close() 可能需要特殊处理
    */
   const close = async (): Promise<void> => {
-    console.log('🔴 [Window] 开始关闭窗口...')
+    logger.debug('开始关闭窗口')
     
     if (!isTauri()) {
-      console.log('ℹ️ [浏览器模式] 尝试关闭标签页')
+      logger.debug('浏览器模式：尝试关闭标签页')
       // 在浏览器中，window.close() 只能关闭通过脚本打开的窗口
       window.close()
       return
@@ -129,11 +131,11 @@ export function useWindowControls() {
 
     try {
       const appWindow = getCurrentWebviewWindow()
-      console.log('🔴 [Window] 调用 destroy() 关闭窗口...')
+      logger.debug('调用 destroy() 关闭窗口')
       await appWindow.destroy()
-      console.log('✅ [Window] 窗口已成功关闭')
+      logger.debug('窗口已成功关闭')
     } catch (error) {
-      console.error('❌ [Window] 关闭失败:', error)
+      logger.error('窗口关闭失败', error)
     }
   }
 
@@ -158,9 +160,9 @@ export function useWindowControls() {
       const isFullscreen = await window.isFullscreen()
       await window.setFullscreen(!isFullscreen)
       windowState.value.isFullscreen = !isFullscreen
-      console.log('✅ [Window] 全屏切换成功, isFullscreen:', windowState.value.isFullscreen)
+      logger.debug('全屏切换成功', { isFullscreen: windowState.value.isFullscreen })
     } catch (error) {
-      console.error('❌ [Window] 全屏切换失败:', error)
+      logger.error('全屏切换失败', error)
     }
   }
 
@@ -176,9 +178,9 @@ export function useWindowControls() {
     try {
       const window = getCurrentWebviewWindow()
       await window.setTitle(title)
-      console.log('✅ [Window] 设置标题成功:', title)
+      logger.debug('设置标题成功', { title })
     } catch (error) {
-      console.error('❌ [Window] 设置标题失败:', error)
+      logger.error('设置标题失败', error)
     }
   }
 
@@ -192,9 +194,9 @@ export function useWindowControls() {
       const window = getCurrentWebviewWindow()
       await window.show()
       windowState.value.isVisible = true
-      console.log('✅ [Window] 显示窗口成功')
+      logger.debug('显示窗口成功')
     } catch (error) {
-      console.error('❌ [Window] 显示窗口失败:', error)
+      logger.error('显示窗口失败', error)
     }
   }
 
@@ -208,9 +210,9 @@ export function useWindowControls() {
       const window = getCurrentWebviewWindow()
       await window.hide()
       windowState.value.isVisible = false
-      console.log('✅ [Window] 隐藏窗口成功')
+      logger.debug('隐藏窗口成功')
     } catch (error) {
-      console.error('❌ [Window] 隐藏窗口失败:', error)
+      logger.error('隐藏窗口失败', error)
     }
   }
 
@@ -223,9 +225,9 @@ export function useWindowControls() {
     try {
       const window = getCurrentWebviewWindow()
       await window.setResizable(resizable)
-      console.log('✅ [Window] 设置可调整大小成功:', resizable)
+      logger.debug('设置可调整大小成功', { resizable })
     } catch (error) {
-      console.error('❌ [Window] 设置可调整大小失败:', error)
+      logger.error('设置可调整大小失败', error)
     }
   }
 
@@ -260,7 +262,7 @@ export function useWindowControls() {
         isVisible
       }
     } catch (error) {
-      console.error('❌ [Window] 更新窗口状态失败:', error)
+      logger.error('更新窗口状态失败', error)
     }
   }
 
@@ -302,23 +304,23 @@ export function useWindowControls() {
       // 监听窗口焦点事件
       const unlistenFocus = await window.onFocusChanged(({ payload: focused }) => {
         windowState.value.isFocused = focused
-        console.log('🔄 [Window] Focus changed:', focused)
+        logger.debug('窗口焦点变化', { focused })
       })
 
       // 监听窗口大小调整事件
       const unlistenResized = await window.onResized(() => {
         updateWindowState()
-        console.log('🔄 [Window] Window resized')
+        logger.debug('窗口大小调整')
       })
 
       // 监听窗口移动事件
       const unlistenMoved = await window.onMoved(() => {
-        console.log('🔄 [Window] Window moved')
+        logger.debug('窗口位置移动')
       })
 
       // 监听窗口关闭请求事件（可用于阻止关闭）
       const unlistenCloseRequested = await window.onCloseRequested(async (_event) => {
-        console.log('🔄 [Window] Close requested')
+        logger.debug('窗口关闭请求')
         // 如果需要阻止关闭，可以使用: _event.preventDefault()
       })
 
@@ -330,9 +332,9 @@ export function useWindowControls() {
         unlistenCloseRequested
       )
 
-      console.log('✅ [Window] 事件监听器设置成功')
+      logger.debug('事件监听器设置成功')
     } catch (error) {
-      console.error('❌ [Window] 设置事件监听器失败:', error)
+      logger.error('设置事件监听器失败', error)
     }
   }
 
@@ -344,7 +346,7 @@ export function useWindowControls() {
       try {
         unlisten()
       } catch (error) {
-        console.error('❌ [Window] 清理事件监听器失败:', error)
+        logger.error('清理事件监听器失败', error)
       }
     })
     unlistenFunctions.value = []
@@ -352,20 +354,21 @@ export function useWindowControls() {
 
   // 组件挂载时初始化
   onMounted(async () => {
-    console.log('🚀 [Window] 初始化窗口控制...')
-    console.log('   - isTauri:', isTauri())
-    console.log('   - window.__TAURI__:', typeof window !== 'undefined' ? !!window.__TAURI__ : false)
+    logger.info('初始化窗口控制', {
+      isTauri: isTauri(),
+      hasTauriGlobal: typeof window !== 'undefined' ? !!window.__TAURI__ : false
+    })
     
     await updateWindowState()
     await setupEventListeners()
     
-    console.log('✅ [Window] 窗口控制初始化完成')
+    logger.info('窗口控制初始化完成')
   })
 
   // 组件卸载时清理
   onUnmounted(() => {
     cleanup()
-    console.log('✅ [Window] 窗口控制已清理')
+    logger.debug('窗口控制已清理')
   })
 
   return {

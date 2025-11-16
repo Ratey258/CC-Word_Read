@@ -15,21 +15,25 @@
 ### 🎨 性能优化
 • **非阻塞式初始化**：应用启动时先渲染界面再异步初始化服务，显著提升启动速度和用户体验
 • **存储性能提升**：IndexedDB 支持更大容量数据存储，突破 localStorage 的 5-10MB 限制
+• **大文件处理优化**：智能区分大文件（>1MB）和小文件，大文件显示分阶段进度（解析→验证→创建→加载）
 
 ### 🔧 优化改进
 • **代码质量提升**：移除所有硬编码的 UI 尺寸值，统一使用常量管理，提高可维护性
 • **依赖更新**：新增 mitt (3.0.1)、idb (8.0.3)、pinia-plugin-persistedstate (4.7.1) 等现代化依赖
-• **服务层架构**：新增 services 目录，包含 eventBus、logger、storage、errorHandler 四个核心服务（共 615 行）
+• **服务层架构**：新增 services 目录，包含 eventBus、logger、storage、errorHandler、progress 五个核心服务（共 835 行）
+• **进度提示系统**：新增 ProgressIndicator 组件和 progress 服务，大文件导入时显示详细进度
 
 ### 📝 技术债务清理
-• **清理残余代码**：移除 44 处 console.log/console.error，6 处 window.dispatchEvent
+• **清理残余代码**：移除 113 处 console.log/console.error/console.warn，6 处 window.dispatchEvent
 • **类型安全增强**：所有事件通信和日志调用都具备完整的 TypeScript 类型检查
-• **代码规范统一**：所有核心文件（8 个）已应用新的日志系统和事件总线
+• **代码规范统一**：15 个核心文件已应用新的日志系统和事件总线
+• **Composables 现代化**：useWindowControls、useHistory、useFileSystem 等全部使用日志系统
 
 ### 🎯 开发体验
 • **更好的调试能力**：结构化日志输出，支持日志级别过滤，便于开发和生产环境调试
 • **更强的可测试性**：服务层解耦，便于单元测试和集成测试
 • **更清晰的错误提示**：统一的错误处理机制，提供用户友好的错误消息
+• **完整的日志覆盖**：15 个核心文件全部使用日志系统，包括所有 Stores、Composables 和核心组件
 
 ---
 

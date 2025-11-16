@@ -12,6 +12,10 @@ import { useHistory } from './useHistory'
 import { validateFile, validateNovelContent } from '@/utils/validator'
 import type { Novel, NovelFormat } from '@/types/novel'
 import { nanoid } from 'nanoid'
+import { progressService } from '@/services/progress'
+import { createLogger } from '@/services/logger'
+
+const logger = createLogger('FileImporter')
 
 export function useFileImporter() {
   const novelStore = useNovelStore()
@@ -67,7 +71,7 @@ export function useFileImporter() {
       // 导入文件
       await importFileFromResult(result)
     } catch (error) {
-      console.error('文件选择失败:', error)
+      logger.error('文件选择失败', error)
       uiStore.showError('文件选择失败')
     }
   }
@@ -82,17 +86,15 @@ export function useFileImporter() {
     if (isImporting.value) return
 
     isImporting.value = true
-    uiStore.showLoading('正在导入文件...')
 
     try {
-      const { name: fileName, path } = fileResult
+      const { name: fileName, path, file } = fileResult
       
       // 检查是否已存在相同路径的历史记录
       if (path) {
         const existingHistory = historyStore.getHistoryItemByPath(path)
         if (existingHistory) {
-          console.log('[FileImporter] 发现相同文件的历史记录，直接恢复:', existingHistory.title)
-          uiStore.hideLoading()
+          logger.debug('发现相同文件的历史记录，直接恢复', { title: existingHistory.title })
           isImporting.value = false
           
           // 直接加载历史记录
@@ -101,23 +103,38 @@ export function useFileImporter() {
         }
       }
 
-      const { content, file } = fileResult
+      // 获取文件大小
+      const fileSize = file?.size || new Blob([fileResult.content]).size
+      const isLargeFile = fileSize > 1024 * 1024 // 大于 1MB
+
+      // 开始进度提示
+      if (isLargeFile) {
+        progressService.start('正在导入文件...', 100)
+      } else {
+        uiStore.showLoading('正在导入文件...')
+      }
 
       // 解析文档
       let parsedDoc
       if (file) {
+        if (isLargeFile) progressService.update(30, '正在解析文档...')
         // 浏览器环境：使用 File 对象
         parsedDoc = await documentParser.parseDocument(file, fileName)
       } else {
+        if (isLargeFile) progressService.update(30, '正在解析文档...')
         // Tauri 环境：使用文本内容
-        parsedDoc = await documentParser.parseDocument(content, fileName)
+        parsedDoc = await documentParser.parseDocument(fileResult.content, fileName)
       }
+
+      if (isLargeFile) progressService.update(60, '正在验证内容...')
 
       // 验证内容
       const validation = validateNovelContent(parsedDoc.text)
       if (!validation.valid) {
         throw new Error(validation.message)
       }
+
+      if (isLargeFile) progressService.update(70, '正在创建小说对象...')
 
       // 提取文件信息
       const format = getFileFormat(fileName)
@@ -133,7 +150,7 @@ export function useFileImporter() {
           chapters: undefined,
           createdAt: Date.now(),
           updatedAt: Date.now(),
-          fileSize: new Blob([parsedDoc.text]).size,
+          fileSize,
           format,
           // 保存 HTML 格式内容（如果有）
           htmlContent: parsedDoc.hasFormatting ? parsedDoc.html : undefined
@@ -142,13 +159,27 @@ export function useFileImporter() {
         chapters: undefined
       }
 
+      if (isLargeFile) progressService.update(90, '正在加载小说...')
+
       // 加载小说（传递文件路径以便历史记录使用）
       await novelStore.loadNovel(novel, path || undefined)
 
+      if (isLargeFile) {
+        progressService.complete('导入完成')
+      } else {
+        uiStore.hideLoading()
+      }
+
       uiStore.showSuccess(`${novel.metadata.title}`)
       uiStore.hideWelcome()
+      
+      logger.info('文件导入成功', { 
+        title: novel.metadata.title, 
+        size: fileSize, 
+        length: novel.totalLength 
+      })
     } catch (error) {
-      console.error('文件导入失败:', error)
+      logger.error('文件导入失败', error)
       uiStore.showError(
         error instanceof Error ? error.message : '文件导入失败'
       )

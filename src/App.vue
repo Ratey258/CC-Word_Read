@@ -11,6 +11,7 @@ import UpdateChecker from '@/components/UpdateChecker.vue'
 import SuccessDialog from '@/components/SuccessDialog.vue'
 import OnboardingGuide from '@/components/OnboardingGuide.vue'
 import NotificationContainer from '@/components/NotificationContainer.vue'
+import ProgressIndicator from '@/components/ProgressIndicator.vue'
 import { useFileImporter } from '@/composables/useFileImporter'
 import { useUIStore } from '@/stores/ui'
 import { useSettingsStore } from '@/stores/settings'
@@ -141,6 +142,9 @@ onUnmounted(() => {
 
     <!-- 通知容器 -->
     <NotificationContainer />
+
+    <!-- 进度指示器 -->
+    <ProgressIndicator />
 
     <!-- 拖放遮罩层 -->
     <div v-if="isDragging" class="drop-overlay">

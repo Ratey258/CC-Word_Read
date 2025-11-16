@@ -6,6 +6,9 @@ import { useNovelStore } from '@/stores/novel'
 import { useUIStore } from '@/stores/ui'
 import { useWindowControls } from '@/composables/useWindowControls'
 import Icon from './Icon.vue'
+import { createLogger } from '@/services/logger'
+
+const logger = createLogger('TitleBar')
 
 // Stores
 const settingsStore = useSettingsStore()
@@ -52,23 +55,22 @@ const toggleRibbonCollapse = () => {
 
 // 窗口控制方法
 const handleMinimize = () => {
-  console.log('🔘 [TitleBar] 点击最小化按钮')
+  logger.debug('点击最小化按钮')
   minimize()
 }
 
 const handleToggleMaximize = () => {
-  console.log('🔘 [TitleBar] 点击最大化按钮')
+  logger.debug('点击最大化按钮')
   toggleMaximize()
 }
 
 const handleClose = async () => {
-  console.log('🔘 [TitleBar] 点击关闭按钮')
-  console.log('🔘 [TitleBar] supportsWindowControls:', supportsWindowControls.value)
+  logger.debug('点击关闭按钮', { supportsWindowControls: supportsWindowControls.value })
   try {
     await close()
-    console.log('🔘 [TitleBar] 关闭函数执行完毕')
+    logger.debug('关闭函数执行完毕')
   } catch (error) {
-    console.error('🔘 [TitleBar] 关闭失败:', error)
+    logger.error('关闭失败', error)
   }
 }
 </script>

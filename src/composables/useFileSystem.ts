@@ -5,6 +5,9 @@
  */
 
 import { ref } from 'vue'
+import { createLogger } from '@/services/logger'
+
+const logger = createLogger('FileSystem')
 
 // ESLint 全局类型定义
 /* global HTMLInputElement */
@@ -123,7 +126,7 @@ export function useFileSystem() {
       }
     } catch (err) {
       error.value = err instanceof Error ? err.message : '文件打开失败'
-      console.error('Failed to open file:', err)
+      logger.error('文件打开失败', err)
       return null
     } finally {
       isLoading.value = false
@@ -174,7 +177,7 @@ export function useFileSystem() {
       }
     } catch (err) {
       error.value = err instanceof Error ? err.message : '文件保存失败'
-      console.error('Failed to save file:', err)
+      logger.error('文件保存失败', err)
       return false
     } finally {
       isLoading.value = false
@@ -199,7 +202,7 @@ export function useFileSystem() {
       return content
     } catch (err) {
       error.value = err instanceof Error ? err.message : '文件读取失败'
-      console.error('Failed to read file:', err)
+      logger.error('文件读取失败', err)
       return null
     } finally {
       isLoading.value = false
@@ -224,7 +227,7 @@ export function useFileSystem() {
       return true
     } catch (err) {
       error.value = err instanceof Error ? err.message : '文件写入失败'
-      console.error('Failed to write file:', err)
+      logger.error('文件写入失败', err)
       return false
     } finally {
       isLoading.value = false
@@ -243,7 +246,7 @@ export function useFileSystem() {
       const { exists } = await import('@tauri-apps/plugin-fs')
       return await exists(path)
     } catch (err) {
-      console.error('Failed to check file existence:', err)
+      logger.error('检查文件存在性失败', err)
       return false
     }
   }
@@ -260,7 +263,7 @@ export function useFileSystem() {
       const { appDataDir } = await import('@tauri-apps/api/path')
       return await appDataDir()
     } catch (err) {
-      console.error('Failed to get app data directory:', err)
+      logger.error('获取应用数据目录失败', err)
       return null
     }
   }
@@ -277,7 +280,7 @@ export function useFileSystem() {
       const { appConfigDir } = await import('@tauri-apps/api/path')
       return await appConfigDir()
     } catch (err) {
-      console.error('Failed to get app config directory:', err)
+      logger.error('获取应用配置目录失败', err)
       return null
     }
   }
