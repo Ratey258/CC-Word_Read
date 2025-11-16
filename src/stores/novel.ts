@@ -1,105 +1,22 @@
 /**
- * 小说状态管理 Store
+ * 小说状态管理 Store（重构版）
  */
 
 import { defineStore } from 'pinia'
-import { ref, computed, nextTick } from 'vue'
-import type { Novel, NovelMetadata, Bookmark, ReadingProgress, Chapter } from '@/types/novel'
-import { STORAGE_KEYS } from '@/utils/constants'
+import { nextTick } from 'vue'
+import type { Novel, Bookmark } from '@/types/novel'
+import { parseChapters } from '@/utils/chapterParser'
 import { useHistoryStore } from './history'
-import { useUIStore } from './ui'
-import { parseChapters, findChapterByPosition } from '@/utils/chapterParser'
-import { emit } from '@/services/eventBus'
+import { createNovelState, normalizeContent } from './novelState'
+import { createNovelStorage } from './novelStorage'
+import { createNovelChapters } from './novelChapters'
 import { createLogger } from '@/services/logger'
 
 const logger = createLogger('NovelStore')
 
 export const useNovelStore = defineStore('novel', () => {
-  function normalizeContent(rawContent: string): string {
-    if (!rawContent) return ''
-
-    return rawContent
-      .replace(/\r\n/g, '\n')
-      .replace(/\r/g, '\n')
-      .replace(/\n{2,}/g, '\n')
-  }
-
-  // ===== State =====
-  
-  /** 当前小说 */
-  const currentNovel = ref<Novel | null>(null)
-  
-  /** 小说内容 */
-  const content = ref<string>('')
-  
-  /** 当前阅读位置 */
-  const currentPosition = ref<number>(0)
-  
-  /** 编辑器实际内容长度（用于页面计算） */
-  const editorContentLength = ref<number>(0)
-  
-  /** 书签列表 */
-  const bookmarks = ref<Bookmark[]>([])
-  
-  /** 最近打开的文件列表 */
-  const recentFiles = ref<NovelMetadata[]>([])
-  
-  /** 显示的文件名（用于标题栏显示） */
-  const displayName = ref<string>('文档-Word')
-  
-  /** 是否正在从历史记录恢复（用于避免 Editor 清空内容） */
-  const isRestoringFromHistory = ref<boolean>(false)
-  
-  /** 章节列表 */
-  const chapters = ref<Chapter[]>([])
-  
-  /** 当前章节索引 */
-  const currentChapterIndex = ref<number>(-1)
-  
-  // ===== Getters =====
-  
-  /** 小说总长度 */
-  const totalLength = computed(() => content.value.length)
-  
-  /** 阅读进度（百分比） */
-  const progress = computed(() => {
-    if (totalLength.value === 0) return 0
-    return (currentPosition.value / totalLength.value) * 100
-  })
-  
-  /** 阅读进度百分比（整数） */
-  const progressPercent = computed(() => {
-    return Math.round(progress.value)
-  })
-  
-  /** 剩余字符数 */
-  const remainingChars = computed(() => {
-    return totalLength.value - currentPosition.value
-  })
-  
-  /** 是否已加载小说 */
-  const hasNovel = computed(() => currentNovel.value !== null)
-  
-  /** 小说元数据 */
-  const metadata = computed(() => currentNovel.value?.metadata || null)
-  
-  /** 是否有章节 */
-  const hasChapters = computed(() => chapters.value.length > 0)
-  
-  /** 当前章节 */
-  const currentChapter = computed(() => {
-    if (currentChapterIndex.value >= 0 && currentChapterIndex.value < chapters.value.length) {
-      return chapters.value[currentChapterIndex.value]
-    }
-    // 如果没有设置当前章节，根据阅读位置自动查找
-    if (hasChapters.value && currentPosition.value >= 0) {
-      return findChapterByPosition(chapters.value, currentPosition.value)
-    }
-    return null
-  })
-  
-  /** 章节总数 */
-  const chapterCount = computed(() => chapters.value.length)
+  // 创建状态
+  const state = createNovelState()
   
   // ===== Actions =====
   
@@ -113,7 +30,7 @@ export const useNovelStore = defineStore('novel', () => {
     // 如果是从历史记录恢复，先设置标志并等待 Vue 处理
     if (isHistoryRestore) {
       logger.debug('设置历史恢复标志')
-      isRestoringFromHistory.value = true
+      state.isRestoringFromHistory.value = true
       // 使用 nextTick 确保 Vue 已经更新所有依赖这个状态的组件
       await nextTick()
       // 再等待一次，确保所有 watch 都已经执行完毕
@@ -123,36 +40,36 @@ export const useNovelStore = defineStore('novel', () => {
     
     const normalizedContent = normalizeContent(novel.content)
 
-    currentNovel.value = {
+    state.currentNovel.value = {
       ...novel,
       content: normalizedContent
     }
-    content.value = normalizedContent
-    currentPosition.value = 0
+    state.content.value = normalizedContent
+    state.currentPosition.value = 0
     
     // 解析章节（如果小说对象中没有章节信息）
     if (!novel.chapters || novel.chapters.length === 0) {
       // 使用标准化后的内容解析章节，确保章节位置与实际阅读内容一致
-      chapters.value = parseChapters(normalizedContent)
+      state.chapters.value = parseChapters(normalizedContent)
       // 更新小说对象中的章节信息
-      if (currentNovel.value) {
-        currentNovel.value.chapters = chapters.value
+      if (state.currentNovel.value) {
+        state.currentNovel.value.chapters = state.chapters.value
       }
     } else {
-      chapters.value = novel.chapters
+      state.chapters.value = novel.chapters
     }
     
     // 重置当前章节索引
-    currentChapterIndex.value = -1
+    state.currentChapterIndex.value = -1
     
     // 保持默认显示名称为"文档-Word"，不使用导入的文件名
-    displayName.value = '文档-Word'
+    state.displayName.value = '文档-Word'
     
     // 保存到本地存储
-    saveToStorage()
+    storage.saveToStorage()
     
     // 添加到最近打开列表
-    addToRecentFiles(novel.metadata)
+    storage.addToRecentFiles(novel.metadata)
     
     // 添加到历史记录（仅在非历史恢复时添加）
     if (!isHistoryRestore) {
@@ -169,30 +86,20 @@ export const useNovelStore = defineStore('novel', () => {
    * @param flag 是否正在从历史记录恢复
    */
   function setRestoringFromHistory(flag: boolean): void {
-    isRestoringFromHistory.value = flag
+    state.isRestoringFromHistory.value = flag
   }
   
   /**
    * 清空当前小说
    */
   function clearNovel(): void {
-    currentNovel.value = null
-    content.value = ''
-    currentPosition.value = 0
-    bookmarks.value = []
-    chapters.value = []
-    currentChapterIndex.value = -1
-    displayName.value = '文档-Word'
-  }
-  
-  /**
-   * 设置显示的文件名
-   * @param name 新的显示名称
-   */
-  function setDisplayName(name: string): void {
-    displayName.value = name || '文档-Word'
-    // 保存到本地存储
-    localStorage.setItem(STORAGE_KEYS.DISPLAY_NAME, displayName.value)
+    state.currentNovel.value = null
+    state.content.value = ''
+    state.currentPosition.value = 0
+    state.bookmarks.value = []
+    state.chapters.value = []
+    state.currentChapterIndex.value = -1
+    state.displayName.value = '文档-Word'
   }
   
   /**
@@ -200,14 +107,14 @@ export const useNovelStore = defineStore('novel', () => {
    * @param position 新位置
    */
   function updatePosition(position: number): void {
-    if (position >= 0 && position <= totalLength.value) {
-      currentPosition.value = position
-      saveProgress()
+    if (position >= 0 && position <= state.totalLength.value) {
+      state.currentPosition.value = position
+      storage.saveProgress()
       
       // 同步到历史记录
-      if (currentNovel.value) {
+      if (state.currentNovel.value) {
         const historyStore = useHistoryStore()
-        historyStore.updateProgress(currentNovel.value.id, position)
+        historyStore.updateProgress(state.currentNovel.value.id, position)
       }
     }
   }
@@ -225,8 +132,8 @@ export const useNovelStore = defineStore('novel', () => {
    * @param bookmark 书签对象
    */
   function addBookmark(bookmark: Bookmark): void {
-    bookmarks.value.push(bookmark)
-    saveBookmarks()
+    state.bookmarks.value.push(bookmark)
+    storage.saveBookmarks()
   }
   
   /**
@@ -234,10 +141,10 @@ export const useNovelStore = defineStore('novel', () => {
    * @param bookmarkId 书签ID
    */
   function removeBookmark(bookmarkId: string): void {
-    const index = bookmarks.value.findIndex(b => b.id === bookmarkId)
+    const index = state.bookmarks.value.findIndex(b => b.id === bookmarkId)
     if (index !== -1) {
-      bookmarks.value.splice(index, 1)
-      saveBookmarks()
+      state.bookmarks.value.splice(index, 1)
+      storage.saveBookmarks()
     }
   }
   
@@ -246,144 +153,7 @@ export const useNovelStore = defineStore('novel', () => {
    * @param bookmarkId 书签ID
    */
   function getBookmark(bookmarkId: string): Bookmark | undefined {
-    return bookmarks.value.find(b => b.id === bookmarkId)
-  }
-  
-  /**
-   * 保存阅读进度
-   */
-  function saveProgress(): void {
-    if (!currentNovel.value) return
-    
-    const progressData: ReadingProgress = {
-      novelId: currentNovel.value.id,
-      currentPosition: currentPosition.value,
-      percentage: progress.value,
-      lastReadAt: Date.now()
-    }
-    
-    localStorage.setItem(STORAGE_KEYS.READING_PROGRESS, JSON.stringify(progressData))
-  }
-  
-  /**
-   * 加载阅读进度
-   */
-  function loadProgress(): void {
-    const data = localStorage.getItem(STORAGE_KEYS.READING_PROGRESS)
-    if (!data || !currentNovel.value) return
-    
-    try {
-      const progressData: ReadingProgress = JSON.parse(data)
-      if (progressData.novelId === currentNovel.value.id) {
-        currentPosition.value = progressData.currentPosition
-      }
-    } catch (error) {
-      logger.error('加载进度失败', error)
-    }
-  }
-  
-  /**
-   * 保存书签到本地存储
-   */
-  function saveBookmarks(): void {
-    localStorage.setItem(STORAGE_KEYS.BOOKMARKS, JSON.stringify(bookmarks.value))
-  }
-  
-  /**
-   * 加载书签
-   */
-  function loadBookmarks(): void {
-    const data = localStorage.getItem(STORAGE_KEYS.BOOKMARKS)
-    if (!data) return
-    
-    try {
-      bookmarks.value = JSON.parse(data)
-    } catch (error) {
-      logger.error('加载书签失败', error)
-    }
-  }
-  
-  /**
-   * 保存到本地存储
-   */
-  function saveToStorage(): void {
-    if (currentNovel.value) {
-      localStorage.setItem(STORAGE_KEYS.CURRENT_NOVEL, JSON.stringify(currentNovel.value))
-    }
-  }
-  
-  /**
-   * 从本地存储加载
-   */
-  async function loadFromStorage(): Promise<void> {
-    const data = localStorage.getItem(STORAGE_KEYS.CURRENT_NOVEL)
-    if (!data) return
-    
-    try {
-      const novel: Novel = JSON.parse(data)
-      // 页面刷新时也需要设置恢复标志，避免 Editor 清空内容
-      logger.debug('从存储加载，设置恢复标志')
-      isRestoringFromHistory.value = true
-      await nextTick()
-      await nextTick()
-      
-      await loadNovel(novel, undefined, true) // 传递 isHistoryRestore=true
-      loadProgress()
-      loadBookmarks()
-      
-      // 延迟重置标志，确保 Editor 已恢复内容
-      setTimeout(() => {
-        logger.debug('存储加载完成，重置恢复标志')
-        isRestoringFromHistory.value = false
-      }, 500)
-    } catch (error) {
-      logger.error('加载小说失败', error)
-      isRestoringFromHistory.value = false
-    }
-  }
-  
-  /**
-   * 添加到最近文件列表
-   * @param metadata 小说元数据
-   */
-  function addToRecentFiles(metadata: NovelMetadata): void {
-    // 移除重复项
-    recentFiles.value = recentFiles.value.filter(f => f.title !== metadata.title)
-    
-    // 添加到开头
-    recentFiles.value.unshift(metadata)
-    
-    // 限制数量（最多10个）
-    if (recentFiles.value.length > 10) {
-      recentFiles.value = recentFiles.value.slice(0, 10)
-    }
-    
-    // 保存
-    localStorage.setItem(STORAGE_KEYS.RECENT_FILES, JSON.stringify(recentFiles.value))
-  }
-  
-  /**
-   * 加载最近文件列表
-   */
-  function loadRecentFiles(): void {
-    const data = localStorage.getItem(STORAGE_KEYS.RECENT_FILES)
-    if (!data) return
-    
-    try {
-      recentFiles.value = JSON.parse(data)
-    } catch (error) {
-      logger.error('加载最近文件失败', error)
-    }
-  }
-  
-  /**
-   * 加载显示名称
-   */
-  function loadDisplayName(): void {
-    const data = localStorage.getItem(STORAGE_KEYS.DISPLAY_NAME)
-    if (data) {
-      displayName.value = data
-    }
+    return state.bookmarks.value.find(b => b.id === bookmarkId)
   }
   
   /**
@@ -391,116 +161,71 @@ export const useNovelStore = defineStore('novel', () => {
    * @param length 编辑器当前内容的字符数
    */
   function updateEditorContentLength(length: number): void {
-    editorContentLength.value = length
+    state.editorContentLength.value = length
   }
   
-  /**
-   * 跳转到指定章节
-   * @param chapterIndex 章节索引
-   */
-  function jumpToChapter(chapterIndex: number): void {
-    if (chapterIndex >= 0 && chapterIndex < chapters.value.length) {
-      const chapter = chapters.value[chapterIndex]
-      currentChapterIndex.value = chapterIndex
-      
-      // 显示章节跳转通知
-      const uiStore = useUIStore()
-      uiStore.showSuccess(`${chapter.title}`)
-      
-      // 触发清空编辑器事件
-      emit('editor:clear')
-      
-      // 稍微延迟更新位置，确保编辑器已经清空
-      setTimeout(() => {
-        updatePosition(chapter.startPosition)
-      }, 50)
-    }
-  }
+  // 创建存储功能
+  const storage = createNovelStorage({
+    currentNovel: state.currentNovel,
+    currentPosition: state.currentPosition,
+    bookmarks: state.bookmarks,
+    recentFiles: state.recentFiles,
+    displayName: state.displayName,
+    isRestoringFromHistory: state.isRestoringFromHistory,
+    progress: state.progress
+  })
   
-  /**
-   * 跳转到下一章节
-   */
-  function jumpToNextChapter(): void {
-    if (hasChapters.value) {
-      const currentIndex = currentChapterIndex.value >= 0 ? currentChapterIndex.value : 
-        chapters.value.findIndex(chapter => 
-          currentPosition.value >= chapter.startPosition && currentPosition.value < chapter.endPosition
-        )
-      
-      const nextIndex = currentIndex + 1
-      if (nextIndex < chapters.value.length) {
-        jumpToChapter(nextIndex)
-      }
+  // 创建章节功能
+  const chapters = createNovelChapters(
+    {
+      currentNovel: state.currentNovel,
+      content: state.content,
+      currentPosition: state.currentPosition,
+      chapters: state.chapters,
+      currentChapterIndex: state.currentChapterIndex,
+      hasChapters: state.hasChapters
+    },
+    {
+      updatePosition,
+      saveToStorage: storage.saveToStorage
     }
-  }
-  
-  /**
-   * 跳转到上一章节
-   */
-  function jumpToPrevChapter(): void {
-    if (hasChapters.value) {
-      const currentIndex = currentChapterIndex.value >= 0 ? currentChapterIndex.value : 
-        chapters.value.findIndex(chapter => 
-          currentPosition.value >= chapter.startPosition && currentPosition.value < chapter.endPosition
-        )
-      
-      const prevIndex = currentIndex - 1
-      if (prevIndex >= 0) {
-        jumpToChapter(prevIndex)
-      }
-    }
-  }
-  
-  /**
-   * 重新解析章节
-   */
-  function reparseChapters(): void {
-    if (content.value) {
-      chapters.value = parseChapters(content.value)
-      if (currentNovel.value) {
-        currentNovel.value.chapters = chapters.value
-      }
-      // 重置当前章节索引
-      currentChapterIndex.value = -1
-      saveToStorage()
-    }
-  }
+  )
   
   // ===== 初始化 =====
   
   // 自动加载数据
-  loadFromStorage()
-  loadRecentFiles()
-  loadDisplayName()
+  storage.loadFromStorage(loadNovel)
+  storage.loadRecentFiles()
+  storage.loadDisplayName()
   
   return {
     // State
-    currentNovel,
-    content,
-    currentPosition,
-    editorContentLength,
-    bookmarks,
-    recentFiles,
-    displayName,
-    isRestoringFromHistory,
-    chapters,
-    currentChapterIndex,
+    currentNovel: state.currentNovel,
+    content: state.content,
+    currentPosition: state.currentPosition,
+    editorContentLength: state.editorContentLength,
+    bookmarks: state.bookmarks,
+    recentFiles: state.recentFiles,
+    displayName: state.displayName,
+    isRestoringFromHistory: state.isRestoringFromHistory,
+    chapters: state.chapters,
+    currentChapterIndex: state.currentChapterIndex,
     
     // Getters
-    totalLength,
-    progress,
-    progressPercent,
-    remainingChars,
-    hasNovel,
-    metadata,
-    hasChapters,
-    currentChapter,
-    chapterCount,
+    totalLength: state.totalLength,
+    progress: state.progress,
+    progressPercent: state.progressPercent,
+    remainingChars: state.remainingChars,
+    hasNovel: state.hasNovel,
+    metadata: state.metadata,
+    hasChapters: state.hasChapters,
+    currentChapter: chapters.currentChapter,
+    chapterCount: state.chapterCount,
     
     // Actions
     loadNovel,
     clearNovel,
-    setDisplayName,
+    setDisplayName: storage.setDisplayName,
     setRestoringFromHistory,
     updatePosition,
     updateEditorContentLength,
@@ -508,15 +233,15 @@ export const useNovelStore = defineStore('novel', () => {
     addBookmark,
     removeBookmark,
     getBookmark,
-    saveProgress,
-    loadProgress,
-    saveBookmarks,
-    loadBookmarks,
-    loadFromStorage,
-    loadRecentFiles,
-    jumpToChapter,
-    jumpToNextChapter,
-    jumpToPrevChapter,
-    reparseChapters
+    saveProgress: storage.saveProgress,
+    loadProgress: storage.loadProgress,
+    saveBookmarks: storage.saveBookmarks,
+    loadBookmarks: storage.loadBookmarks,
+    loadFromStorage: () => storage.loadFromStorage(loadNovel),
+    loadRecentFiles: storage.loadRecentFiles,
+    jumpToChapter: chapters.jumpToChapter,
+    jumpToNextChapter: chapters.jumpToNextChapter,
+    jumpToPrevChapter: chapters.jumpToPrevChapter,
+    reparseChapters: chapters.reparseChapters
   }
 })

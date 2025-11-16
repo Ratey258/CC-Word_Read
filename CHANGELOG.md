@@ -22,18 +22,21 @@
 • **依赖更新**：新增 mitt (3.0.1)、idb (8.0.3)、pinia-plugin-persistedstate (4.7.1) 等现代化依赖
 • **服务层架构**：新增 services 目录，包含 eventBus、logger、storage、errorHandler、progress 五个核心服务（共 835 行）
 • **进度提示系统**：新增 ProgressIndicator 组件和 progress 服务，大文件导入时显示详细进度
+• **Store 模块化重构**：拆分 novel.ts (523行) 为 4 个模块文件，最大文件从 523 行降至 267 行，提升 49% 可维护性
 
 ### 📝 技术债务清理
 • **清理残余代码**：移除 113 处 console.log/console.error/console.warn，6 处 window.dispatchEvent
 • **类型安全增强**：所有事件通信和日志调用都具备完整的 TypeScript 类型检查
 • **代码规范统一**：15 个核心文件已应用新的日志系统和事件总线
 • **Composables 现代化**：useWindowControls、useHistory、useFileSystem 等全部使用日志系统
+• **大文件拆分**：novel.ts 拆分为 novelState、novelStorage、novelChapters 三个模块，职责分离更清晰
 
 ### 🎯 开发体验
 • **更好的调试能力**：结构化日志输出，支持日志级别过滤，便于开发和生产环境调试
-• **更强的可测试性**：服务层解耦，便于单元测试和集成测试
+• **更强的可测试性**：服务层解耦，Store 模块化，便于单元测试和集成测试
 • **更清晰的错误提示**：统一的错误处理机制，提供用户友好的错误消息
 • **完整的日志覆盖**：15 个核心文件全部使用日志系统，包括所有 Stores、Composables 和核心组件
+• **模块化架构**：单一职责原则，每个模块专注于特定功能，降低维护成本
 
 ---
 
